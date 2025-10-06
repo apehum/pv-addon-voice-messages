@@ -1,0 +1,40 @@
+[server.pv.addon.voice_messages.command]
+# argument:0 is activation name
+# argument:1 is recording timeout in seconds
+# argument:2 is cancel button component
+start_recording = "Say something to <argument:0> to start recording a voice message.<br>If you don't, recording will be cancelled automatically in <argument:1> sec.<br><argument:2>"
+cancel_recording = "<red><hover:show_text:Click to cancel>[Cancel]"
+# argument:0 is send button component
+# argument:1 is cancel button component
+recording_started = "Recording is started.<br><argument:0> <argument:1>"
+send_recording = "<yellow><hover:show_text:Click to send>[Send]"
+cancel_and_delete_recording = "<red><hover:show_text:Click to cancel>[Cancel & Delete]"
+# argument:0 is current duration
+# argument:1 is remaining duration
+max_duration_warning = "Warning! Recording is already <argument:0> seconds long. In <argument:1> seconds voice message will be sent automatically."
+# argument:0 is max duration
+max_duration_reached = "Voice message sent automatically due to reaching limit in <argument:0>."
+# argument:0 is timeout in seconds
+recording_timeout = "Timeout is reaching, recording is cancelled."
+
+message_not_found = "Voice message not found."
+
+recording_cancelled = "Recording cancelled."
+no_active_recording = "There is no active recordings."
+
+no_active_playback = "There is no active playback."
+playback_cancelled = "Playback cancelled."
+# argument:0 is playback_cancel
+playback_started = "Playback started.<br><argument:0>"
+playback_cancel = "<red><hover:show_text:Click to cancel>[Cancel]"
+# argument:0 is current duration
+# argument:1 is max duration
+playback_actionbar = "[<argument:0> / <argument:1>] Recording voice message"
+
+[server.pv.addon.voice_messages.component]
+# argument:0 is duration in seconds
+# argument:1 is waveform
+voice_message = "<yellow><hover:show_text:Click to play>[▶ Voice Message]"
+
+[client.pv.addon.voice_messages]
+source_line = "Voice Messages"
