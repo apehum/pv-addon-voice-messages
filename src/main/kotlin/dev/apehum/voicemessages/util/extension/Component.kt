@@ -33,3 +33,5 @@ private fun Array<out Any>.asComponents() =
             McTextComponent.literal(it.toString())
         }
     }.toTypedArray()
+
+fun Collection<McTextComponent>.merge(): McTextComponent = McTextComponent.empty().append(this)

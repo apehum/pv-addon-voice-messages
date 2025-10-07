@@ -41,7 +41,7 @@ playback_actionbar = "[<argument:0> / <argument:1>] Recording voice message"
 [server.pv.addon.voice_messages.component]
 # argument:0 is duration in seconds
 # argument:1 is waveform
-voice_message = "<yellow><hover:show_text:Click to play>[▶ Voice Message]"
+voice_message = "<blue><hover:show_text:Click to play>[▶ <argument:1> <argument:0>]"
 
 [client.pv.addon.voice_messages]
 source_line = "Voice Messages"
