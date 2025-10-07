@@ -1,5 +1,7 @@
 package dev.apehum.voicemessages.command
 
+import dev.apehum.voicemessages.chat.ChatContext
+import dev.apehum.voicemessages.chat.ChatMessageSender
 import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.command.dsl.dslCommand
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
@@ -112,18 +114,19 @@ fun voiceMessageActionsCommand(
                     return@executesCoroutine
                 }
 
+            @Suppress("UNCHECKED_CAST")
             val chatSender =
-                senderRegistry.getSender(draft.chatContext) ?: run {
+                senderRegistry.getSender(draft.chatSenderName) as? ChatMessageSender<ChatContext> ?: run {
                     player.sendTranslatable("pv.addon.voice_messages.command.unknown_chat_context")
                     return@executesCoroutine
                 }
 
-            if (!chatSender.canSendMessage(player)) return@executesCoroutine
+            if (!chatSender.canSendMessage(draft.chatContext)) return@executesCoroutine
 
             messageStore.save(draft.message)
             draftStore.remove(player.uuid)
 
-            chatSender.sendVoiceMessage(player, draft.message)
+            chatSender.sendVoiceMessage(draft.chatContext, draft.message)
         }
     }
 }

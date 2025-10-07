@@ -25,7 +25,7 @@ class DslCommandArgument<T>(
         property: KProperty<*>,
     ): ReadOnlyProperty<Any?, T> =
         ReadOnlyProperty { _, _ ->
-            currentContext.get().getArgument(name)
+            currentContext.get().getArgumentValue(name)
         }
 }
 
@@ -40,12 +40,12 @@ data class DslCommandContext(
     val arguments: Map<String, DslParsedCommandArgument<*>>,
 ) {
     @Suppress("UNCHECKED_CAST")
-    fun <T> getArgument(name: String): T = arguments[name]?.value as T
+    fun <T> getArgumentValue(name: String): T = arguments[name]?.value as T
 
     operator fun <T> DslCommandArgument<T>.getValue(
         thisRef: Nothing?,
         property: KProperty<*>,
-    ): T = getArgument(name)
+    ): T = getArgumentValue(name)
 }
 
 fun dslCommand(
@@ -153,10 +153,19 @@ class DslCommand(
             this.arguments
                 .map { argument ->
                     argumentsReader.skipWhitespaces()
+
+                    val parsed =
+                        try {
+                            argument.inner.parse(argumentsReader)
+                        } catch (e: Throwable) {
+                            // todo: parse exception with friendly message
+                            source.sendMessage("Failed to parse argument ${argument.name}: ${e.message}")
+                        }
+
                     DslParsedCommandArgument(
                         argument.name,
                         argument.inner,
-                        argument.inner.parse(argumentsReader),
+                        parsed,
                     )
                 }.associateBy { it.name }
 
@@ -194,6 +203,14 @@ class DslCommand(
             return command.suggest(source, newArguments)
         }
 
-        return super.suggest(source, arguments)
+        val argumentIndex = arguments.size - 1
+        val argument = this.arguments.getOrNull(argumentIndex) ?: return emptyList()
+
+        val argumentsReader =
+            StringReader(
+                arguments.copyOfRange(argumentIndex, arguments.size).joinToString(" "),
+            )
+
+        return argument.inner.suggest(source, argumentsReader)
     }
 }

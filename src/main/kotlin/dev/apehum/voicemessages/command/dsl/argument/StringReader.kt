@@ -30,9 +30,7 @@ class StringReader(
     }
 
     fun readString(): String {
-        if (!isReadable()) {
-            throw IndexOutOfBoundsException(readerIndex + 1)
-        }
+        if (!isReadable()) return ""
 
         val start = readerIndex
         while (isReadable()) {

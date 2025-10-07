@@ -1,13 +1,18 @@
 package dev.apehum.voicemessages.chat
 
+import dev.apehum.voicemessages.command.dsl.DslCommandContext
+import dev.apehum.voicemessages.command.dsl.argument.NamedCommandArgument
 import dev.apehum.voicemessages.playback.VoiceMessage
-import su.plo.slib.api.server.entity.player.McServerPlayer
 
-interface ChatMessageSender {
+interface ChatMessageSender<T : ChatContext> {
     suspend fun sendVoiceMessage(
-        sender: McServerPlayer,
+        context: T,
         message: VoiceMessage,
     )
 
-    suspend fun canSendMessage(sender: McServerPlayer): Boolean
+    suspend fun canSendMessage(context: T): Boolean
+
+    suspend fun createContext(context: DslCommandContext): T
+
+    fun createArguments(): List<NamedCommandArgument<out Any>> = emptyList()
 }

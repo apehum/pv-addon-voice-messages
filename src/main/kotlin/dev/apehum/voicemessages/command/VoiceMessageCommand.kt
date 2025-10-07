@@ -1,6 +1,7 @@
 package dev.apehum.voicemessages.command
 
 import dev.apehum.voicemessages.AddonConfig
+import dev.apehum.voicemessages.chat.ChatContext
 import dev.apehum.voicemessages.chat.ChatMessageSender
 import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.command.dsl.DslCommand
@@ -29,7 +30,8 @@ private suspend fun recordAndSaveVoiceMessage(
     voiceServer: PlasmoVoiceServer,
     voiceRecorder: VoiceActivationRecorder,
     draftStore: VoiceMessageDraftStore,
-    chatContext: String,
+    chatSenderName: String,
+    chatContext: ChatContext,
 ): VoiceMessage? {
     val timeoutDuration = 5.seconds
 
@@ -106,7 +108,7 @@ private suspend fun recordAndSaveVoiceMessage(
         )
     }
 
-    draftStore.save(player.uuid, VoiceMessageDraft(voiceMessage, chatContext))
+    draftStore.save(player.uuid, VoiceMessageDraft(voiceMessage, chatSenderName, chatContext))
 
     player.sendTranslatable(
         "pv.addon.voice_messages.command.draft_saved",
@@ -153,21 +155,29 @@ private suspend fun recordAndSaveVoiceMessage(
 // }
 
 private fun sendChatVoiceMessageCommand(
-    chatName: String,
-    chatSender: ChatMessageSender,
+    chatSenderName: String,
+    chatSender: ChatMessageSender<ChatContext>,
     config: AddonConfig,
     voiceServer: PlasmoVoiceServer,
     voiceRecorder: VoiceActivationRecorder,
     draftStore: VoiceMessageDraftStore,
-) = dslCommand(chatName) {
+) = dslCommand(chatSenderName) {
+    chatSender
+        .createArguments()
+        .forEach { (name, argument) ->
+            argument(name, argument)
+        }
+
     executesCoroutine { context ->
         val player =
             context.source as? McServerPlayer
                 ?: throw IllegalStateException("Player only command")
 
-        if (!chatSender.canSendMessage(player)) return@executesCoroutine
+        val chatContext = chatSender.createContext(context)
 
-        recordAndSaveVoiceMessage(player, config, voiceServer, voiceRecorder, draftStore, chatName)
+        if (!chatSender.canSendMessage(chatContext)) return@executesCoroutine
+
+        recordAndSaveVoiceMessage(player, config, voiceServer, voiceRecorder, draftStore, chatSenderName, chatContext)
     }
 }
 
@@ -180,14 +190,17 @@ fun voiceMessageCommand(
     senderRegistry: ChatMessageSenderRegistry,
 ): DslCommand =
     dslCommand(name) {
-        command(
-            sendChatVoiceMessageCommand(
-                "global",
-                senderRegistry.getSender("global")!!,
-                config,
-                voiceServer,
-                voiceRecorder,
-                draftStore,
-            ),
-        )
+        senderRegistry.getSenders().forEach { (senderName, sender) ->
+            @Suppress("UNCHECKED_CAST")
+            command(
+                sendChatVoiceMessageCommand(
+                    senderName,
+                    sender as ChatMessageSender<ChatContext>,
+                    config,
+                    voiceServer,
+                    voiceRecorder,
+                    draftStore,
+                ),
+            )
+        }
     }
