@@ -1,8 +1,10 @@
 package dev.apehum.voicemessages.command
 
+import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.command.dsl.dslCommand
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
+import dev.apehum.voicemessages.store.VoiceMessageDraftStore
 import dev.apehum.voicemessages.store.VoiceMessageStore
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import su.plo.slib.api.chat.component.McTextComponent
@@ -40,6 +42,8 @@ fun voiceMessageActionsCommand(
     voiceRecorder: VoiceActivationRecorder,
     messageStore: VoiceMessageStore,
     messagePlayer: VoiceMessagePlayer,
+    draftStore: VoiceMessageDraftStore,
+    senderRegistry: ChatMessageSenderRegistry,
 ) = dslCommand("vm-actions") {
     command(playVoiceMessageCommand(messageStore, messagePlayer))
 
@@ -74,6 +78,52 @@ fun voiceMessageActionsCommand(
             } else {
                 player.sendTranslatable("pv.addon.voice_messages.command.no_active_playback")
             }
+        }
+    }
+
+    command("draft-listen") {
+        executesCoroutine { context ->
+            val player = context.source as? McServerPlayer ?: throw IllegalStateException("Player only command")
+
+            val draft =
+                draftStore.getByPlayerId(player.uuid) ?: run {
+                    player.sendTranslatable("pv.addon.voice_messages.command.no_draft")
+                    return@executesCoroutine
+                }
+
+            messagePlayer.play(player, draft.message, true)
+
+            player.sendTranslatable(
+                "pv.addon.voice_messages.command.playback_started",
+                McTextComponent
+                    .translatable("pv.addon.voice_messages.command.playback_cancel")
+                    .clickEvent(McTextClickEvent.runCommand("/vm-actions playback-cancel")),
+            )
+        }
+    }
+
+    command("draft-send") {
+        executesCoroutine { context ->
+            val player = context.source as? McServerPlayer ?: throw IllegalStateException("Player only command")
+
+            val draft =
+                draftStore.getByPlayerId(player.uuid) ?: run {
+                    player.sendTranslatable("pv.addon.voice_messages.command.no_draft")
+                    return@executesCoroutine
+                }
+
+            val chatSender =
+                senderRegistry.getSender(draft.chatContext) ?: run {
+                    player.sendTranslatable("pv.addon.voice_messages.command.unknown_chat_context")
+                    return@executesCoroutine
+                }
+
+            if (!chatSender.canSendMessage(player)) return@executesCoroutine
+
+            messageStore.save(draft.message)
+            draftStore.remove(player.uuid)
+
+            chatSender.sendVoiceMessage(player, draft.message)
         }
     }
 }

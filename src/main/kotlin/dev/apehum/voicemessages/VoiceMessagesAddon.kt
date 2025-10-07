@@ -1,11 +1,15 @@
 package dev.apehum.voicemessages
 
+import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
+import dev.apehum.voicemessages.chat.default.DefaultGlobalMessageSender
 import dev.apehum.voicemessages.command.LateInitCommand
 import dev.apehum.voicemessages.command.voiceMessageActionsCommand
 import dev.apehum.voicemessages.command.voiceMessageCommand
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
+import dev.apehum.voicemessages.store.MemoryVoiceMessageDraftStore
 import dev.apehum.voicemessages.store.MemoryVoiceMessageStore
+import dev.apehum.voicemessages.store.VoiceMessageDraftStore
 import dev.apehum.voicemessages.store.VoiceMessageStore
 import su.plo.slib.api.server.event.command.McServerCommandsRegisterEvent
 import su.plo.voice.api.addon.AddonInitializer
@@ -26,7 +30,9 @@ class VoiceMessagesAddon : AddonInitializer {
 
     private lateinit var voiceRecorder: VoiceActivationRecorder
     private lateinit var messageStore: VoiceMessageStore
+    private lateinit var draftStore: VoiceMessageDraftStore
     private lateinit var messagePlayer: VoiceMessagePlayer
+    private lateinit var senderRegistry: ChatMessageSenderRegistry
 
     private val voiceMessageCommand = LateInitCommand("vm")
     private val voiceMessageActionsCommand = LateInitCommand("vm-actions")
@@ -60,7 +66,11 @@ class VoiceMessagesAddon : AddonInitializer {
         voiceRecorder = VoiceActivationRecorder(proximityActivation, voiceServer).registerVoiceEvents()
 
         messageStore = MemoryVoiceMessageStore()
+        draftStore = MemoryVoiceMessageDraftStore()
         messagePlayer = VoiceMessagePlayer(sourceLine, voiceServer)
+
+        senderRegistry = ChatMessageSenderRegistry()
+        senderRegistry.register("global", DefaultGlobalMessageSender(voiceServer.minecraftServer))
 
         voiceMessageCommand.initialize(
             voiceMessageCommand(
@@ -68,7 +78,8 @@ class VoiceMessagesAddon : AddonInitializer {
                 config,
                 voiceServer,
                 voiceRecorder,
-                messageStore,
+                draftStore,
+                senderRegistry,
             ),
         )
 
@@ -77,6 +88,8 @@ class VoiceMessagesAddon : AddonInitializer {
                 voiceRecorder,
                 messageStore,
                 messagePlayer,
+                draftStore,
+                senderRegistry,
             ),
         )
     }

@@ -2,13 +2,15 @@ package dev.apehum.voicemessages.command
 
 import dev.apehum.voicemessages.AddonConfig
 import dev.apehum.voicemessages.chat.ChatMessageSender
-import dev.apehum.voicemessages.chat.default.DefaultGlobalMessageSender
+import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.command.dsl.DslCommand
 import dev.apehum.voicemessages.command.dsl.dslCommand
 import dev.apehum.voicemessages.playback.VoiceMessage
+import dev.apehum.voicemessages.playback.component
 import dev.apehum.voicemessages.playback.createVoiceMessage
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
-import dev.apehum.voicemessages.store.VoiceMessageStore
+import dev.apehum.voicemessages.store.VoiceMessageDraft
+import dev.apehum.voicemessages.store.VoiceMessageDraftStore
 import dev.apehum.voicemessages.util.extension.padStartZero
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import dev.apehum.voicemessages.util.extension.sendTranslatableActionbar
@@ -26,7 +28,8 @@ private suspend fun recordAndSaveVoiceMessage(
     config: AddonConfig,
     voiceServer: PlasmoVoiceServer,
     voiceRecorder: VoiceActivationRecorder,
-    messageStore: VoiceMessageStore,
+    draftStore: VoiceMessageDraftStore,
+    chatContext: String,
 ): VoiceMessage? {
     val timeoutDuration = 5.seconds
 
@@ -55,7 +58,7 @@ private suspend fun recordAndSaveVoiceMessage(
                         player.sendTranslatable(
                             "pv.addon.voice_messages.command.recording_started",
                             McTextComponent
-                                .translatable("pv.addon.voice_messages.command.send_recording")
+                                .translatable("pv.addon.voice_messages.command.stop_recording")
                                 .clickEvent(McTextClickEvent.runCommand("/vm-actions record-stop")),
                             McTextComponent
                                 .translatable("pv.addon.voice_messages.command.cancel_and_delete_recording")
@@ -103,7 +106,17 @@ private suspend fun recordAndSaveVoiceMessage(
         )
     }
 
-    messageStore.save(voiceMessage)
+    draftStore.save(player.uuid, VoiceMessageDraft(voiceMessage, chatContext))
+
+    player.sendTranslatable(
+        "pv.addon.voice_messages.command.draft_saved",
+        voiceMessage.component(
+            McTextClickEvent.runCommand("/vm-actions draft-listen"),
+        ),
+        McTextComponent
+            .translatable("pv.addon.voice_messages.command.send_draft")
+            .clickEvent(McTextClickEvent.runCommand("/vm-actions draft-send")),
+    )
 
     return voiceMessage
 }
@@ -145,7 +158,7 @@ private fun sendChatVoiceMessageCommand(
     config: AddonConfig,
     voiceServer: PlasmoVoiceServer,
     voiceRecorder: VoiceActivationRecorder,
-    messageStore: VoiceMessageStore,
+    draftStore: VoiceMessageDraftStore,
 ) = dslCommand(chatName) {
     executesCoroutine { context ->
         val player =
@@ -154,9 +167,7 @@ private fun sendChatVoiceMessageCommand(
 
         if (!chatSender.canSendMessage(player)) return@executesCoroutine
 
-        val voiceMessage = recordAndSaveVoiceMessage(player, config, voiceServer, voiceRecorder, messageStore) ?: return@executesCoroutine
-
-        chatSender.sendVoiceMessage(player, voiceMessage)
+        recordAndSaveVoiceMessage(player, config, voiceServer, voiceRecorder, draftStore, chatName)
     }
 }
 
@@ -165,17 +176,18 @@ fun voiceMessageCommand(
     config: AddonConfig,
     voiceServer: PlasmoVoiceServer,
     voiceRecorder: VoiceActivationRecorder,
-    messageStore: VoiceMessageStore,
+    draftStore: VoiceMessageDraftStore,
+    senderRegistry: ChatMessageSenderRegistry,
 ): DslCommand =
     dslCommand(name) {
         command(
             sendChatVoiceMessageCommand(
                 "global",
-                DefaultGlobalMessageSender(voiceServer.minecraftServer),
+                senderRegistry.getSender("global")!!,
                 config,
                 voiceServer,
                 voiceRecorder,
-                messageStore,
+                draftStore,
             ),
         )
     }

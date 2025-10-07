@@ -7,7 +7,7 @@ cancel_recording = "<red><hover:show_text:Click to cancel>[Cancel]"
 # argument:0 is send button component
 # argument:1 is cancel button component
 recording_started = "Recording is started.<br><argument:0> <argument:1>"
-send_recording = "<yellow><hover:show_text:Click to send>[Send]"
+stop_recording = "<yellow><hover:show_text:Click to stop recording>[Stop]"
 cancel_and_delete_recording = "<red><hover:show_text:Click to cancel>[Cancel & Delete]"
 # argument:0 is current duration
 # argument:1 is remaining duration
@@ -16,6 +16,13 @@ max_duration_warning = "Warning! Recording is already <argument:0> seconds long.
 max_duration_reached = "Voice message sent automatically due to reaching limit in <argument:0>."
 # argument:0 is timeout in seconds
 recording_timeout = "Timeout is reaching, recording is cancelled."
+
+# argument:0 is voice message component
+# argument:1 is send button component
+draft_saved = "Voice message saved as a draft. Use button below to send it.<br><argument:0><br><argument:1>"
+send_draft = "<yellow><hover:show_text:Click to send>[Send]"
+no_draft = "Nothing to send. Use <click:suggest_command:/vm>/vm</click> to record a voice message."
+unknown_chat_context = "Unknown chat context."
 
 message_not_found = "Voice message not found."
 
