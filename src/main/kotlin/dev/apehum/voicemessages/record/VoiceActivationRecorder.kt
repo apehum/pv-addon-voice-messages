@@ -45,8 +45,18 @@ class VoiceActivationRecorder(
         }
     }
 
-    init {
+    fun register(addon: Any) {
+        voiceServer.eventBus.register(addon, this)
         McPlayerQuitEvent.registerListener(this::onPlayerQuit)
+    }
+
+    fun unregister(addon: Any) {
+        contexts.values().forEach { context ->
+            context.senderJob.cancel(CancellationException(null, Exception("Plugin shutting down")))
+        }
+
+        voiceServer.eventBus.unregister(addon, this)
+        McPlayerQuitEvent.unregisterListener(this::onPlayerQuit)
     }
 
     /**

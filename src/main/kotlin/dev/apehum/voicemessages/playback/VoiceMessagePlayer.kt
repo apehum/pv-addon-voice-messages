@@ -26,6 +26,11 @@ class VoiceMessagePlayer(
 ) {
     private val jobs: MutableMap<McServerPlayer, Job> = Maps.newConcurrentMap()
 
+    fun clear() {
+        jobs.values.forEach { it.cancel() }
+        jobs.clear()
+    }
+
     fun play(
         player: McServerPlayer,
         message: VoiceMessage,

@@ -16,7 +16,9 @@ import su.plo.voice.api.addon.AddonInitializer
 import su.plo.voice.api.addon.AddonLoaderScope
 import su.plo.voice.api.addon.InjectPlasmoVoice
 import su.plo.voice.api.addon.annotation.Addon
+import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.PlasmoVoiceServer
+import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent
 
 @Addon(
     id = "pv-addon-voice-messages",
@@ -45,9 +47,28 @@ class VoiceMessagesAddon : AddonInitializer {
     }
 
     override fun onAddonInitialize() {
+        senderRegistry = ChatMessageSenderRegistry()
+        senderRegistry.register("global", DefaultGlobalMessageSender(voiceServer.minecraftServer))
+
+        messageStore = MemoryVoiceMessageStore()
+        draftStore = MemoryVoiceMessageDraftStore()
+
+        reloadConfig()
+    }
+
+    @EventSubscribe
+    fun onConfigReload(event: VoiceServerConfigReloadedEvent) {
+        reloadConfig()
+    }
+
+    private fun reloadConfig() {
+        voiceServer.sourceLineManager.unregister("voice_messages")
+        val oldVoiceRecorder = if (::voiceRecorder.isInitialized) voiceRecorder else null
+        val oldMessagePlayer = if (::messagePlayer.isInitialized) messagePlayer else null
+
         val config = AddonConfig.loadConfig(voiceServer)
 
-        val proximityActivation =
+        val activation =
             voiceServer.activationManager
                 .getActivationByName(config.activation)
                 .orElseThrow { IllegalStateException("\"${config.activation}\" activation not found") }
@@ -63,14 +84,11 @@ class VoiceMessagesAddon : AddonInitializer {
                 ).withPlayers(true) // this allows to show overlay when talking by default
                 .build()
 
-        voiceRecorder = VoiceActivationRecorder(proximityActivation, voiceServer).registerVoiceEvents()
+        voiceRecorder =
+            VoiceActivationRecorder(activation, voiceServer)
+                .also { it.register(this) }
 
-        messageStore = MemoryVoiceMessageStore()
-        draftStore = MemoryVoiceMessageDraftStore()
         messagePlayer = VoiceMessagePlayer(sourceLine, voiceServer)
-
-        senderRegistry = ChatMessageSenderRegistry()
-        senderRegistry.register("global", DefaultGlobalMessageSender(voiceServer.minecraftServer))
 
         voiceMessageCommand.initialize(
             voiceMessageCommand(
@@ -92,10 +110,8 @@ class VoiceMessagesAddon : AddonInitializer {
                 senderRegistry,
             ),
         )
-    }
 
-    private fun <T : Any> T.registerVoiceEvents(): T =
-        apply {
-            voiceServer.eventBus.register(this@VoiceMessagesAddon, this)
-        }
+        oldVoiceRecorder?.unregister(this)
+        oldMessagePlayer?.clear()
+    }
 }
