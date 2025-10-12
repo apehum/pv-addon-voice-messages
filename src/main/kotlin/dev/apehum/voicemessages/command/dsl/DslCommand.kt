@@ -133,6 +133,11 @@ class DslCommand(
         if (commands.isNotEmpty()) {
             val argument =
                 arguments.getOrNull(0) ?: run {
+                    if (executes != null || executesCoroutine != null) {
+                        execute(DslCommandContext(source, emptyMap()))
+                        return
+                    }
+
                     source.sendMessage("Usage: /$name <${commands.map { it.name }}>")
                     return
                 }
@@ -170,6 +175,10 @@ class DslCommand(
                 }.associateBy { it.name }
 
         val context = DslCommandContext(source, parsedArguments)
+        execute(context)
+    }
+
+    private fun execute(context: DslCommandContext) {
         if (executes != null) {
             currentContext.set(context)
             executes.invoke(context)

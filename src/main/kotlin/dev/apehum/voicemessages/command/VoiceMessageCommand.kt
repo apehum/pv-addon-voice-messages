@@ -123,37 +123,6 @@ private suspend fun recordAndSaveVoiceMessage(
     return voiceMessage
 }
 
-// private fun sendDirectVoiceMessageCommand(
-//    sender: DirectMessageSender,
-//    config: AddonConfig,
-//    voiceServer: PlasmoVoiceServer,
-//    voiceRecorder: VoiceActivationRecorder,
-//    messageStore: VoiceMessageStore,
-// ) = literalCommand("private") {
-//    val target by argument("target", StringArgumentType.word()) {
-//        suggests { _, suggestionsBuilder ->
-//            CoroutineScope(Dispatchers.Default).future {
-//                sender
-//                    .getOnlinePlayers()
-//                    .filter { it.startsWith(suggestionsBuilder.remainingLowerCase, ignoreCase = true) }
-//                    .forEach { player -> suggestionsBuilder.suggest(player) }
-//
-//                suggestionsBuilder.build()
-//            }
-//        }
-//    }
-//
-//    executesAsync { context ->
-//        val player =
-//            context.source.executor as? Player
-//                ?: throw IllegalStateException("Player only command")
-//
-//        val voiceMessage = recordAndSaveVoiceMessage(player, config, voiceServer, voiceRecorder, messageStore) ?: return@executesAsync
-//
-//        sender.sendVoiceMessage(player, target, voiceMessage)
-//    }
-// }
-
 private fun sendChatVoiceMessageCommand(
     chatSenderName: String,
     chatSender: ChatMessageSender<ChatContext>,
@@ -202,5 +171,20 @@ fun voiceMessageCommand(
                     draftStore,
                 ),
             )
+        }
+
+        executesCoroutine { context ->
+            @Suppress("UNCHECKED_CAST")
+            val chatSender = senderRegistry.getSender("default") as? ChatMessageSender<ChatContext> ?: return@executesCoroutine
+
+            val player =
+                context.source as? McServerPlayer
+                    ?: throw IllegalStateException("Player only command")
+
+            val chatContext = chatSender.createContext(context)
+
+            if (!chatSender.canSendMessage(chatContext)) return@executesCoroutine
+
+            recordAndSaveVoiceMessage(player, config, voiceServer, voiceRecorder, draftStore, "default", chatContext)
         }
     }

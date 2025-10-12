@@ -2,7 +2,7 @@ package dev.apehum.voicemessages
 
 import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.chat.default.DefaultDirectMessageSender
-import dev.apehum.voicemessages.chat.default.DefaultGlobalMessageSender
+import dev.apehum.voicemessages.chat.default.DefaultMessageSender
 import dev.apehum.voicemessages.command.LateInitCommand
 import dev.apehum.voicemessages.command.voiceMessageActionsCommand
 import dev.apehum.voicemessages.command.voiceMessageCommand
@@ -49,7 +49,7 @@ class VoiceMessagesAddon : AddonInitializer {
 
     override fun onAddonInitialize() {
         senderRegistry = ChatMessageSenderRegistry()
-        senderRegistry.register("global", DefaultGlobalMessageSender(voiceServer.minecraftServer))
+        senderRegistry.register("default", DefaultMessageSender(voiceServer.minecraftServer))
         senderRegistry.register("direct", DefaultDirectMessageSender(voiceServer.minecraftServer))
 
         messageStore = MemoryVoiceMessageStore()

@@ -3,19 +3,17 @@ package dev.apehum.voicemessages.chat.default
 import dev.apehum.voicemessages.chat.ChatContext
 import dev.apehum.voicemessages.chat.ChatMessageSender
 import dev.apehum.voicemessages.command.dsl.DslCommandContext
-import dev.apehum.voicemessages.command.dsl.argument.NamedCommandArgument
 import dev.apehum.voicemessages.playback.VoiceMessage
 import dev.apehum.voicemessages.playback.component
 import su.plo.slib.api.server.McServerLib
-import su.plo.slib.api.server.entity.player.McServerPlayer
 
-data object GlobalChatContext : ChatContext
+data object DefaultChatContext : ChatContext
 
-class DefaultGlobalMessageSender(
+class DefaultMessageSender(
     private val minecraftServer: McServerLib,
-) : ChatMessageSender<GlobalChatContext> {
+) : ChatMessageSender<DefaultChatContext> {
     override suspend fun sendVoiceMessage(
-        context: GlobalChatContext,
+        context: DefaultChatContext,
         message: VoiceMessage,
     ) {
         minecraftServer.players.forEach { player ->
@@ -23,7 +21,7 @@ class DefaultGlobalMessageSender(
         }
     }
 
-    override suspend fun canSendMessage(context: GlobalChatContext): Boolean = true
+    override suspend fun canSendMessage(context: DefaultChatContext): Boolean = true
 
-    override suspend fun createContext(context: DslCommandContext): GlobalChatContext = GlobalChatContext
+    override suspend fun createContext(context: DslCommandContext): DefaultChatContext = DefaultChatContext
 }
