@@ -161,7 +161,7 @@ class DslCommand(
 
                     val parsed =
                         try {
-                            argument.inner.parse(argumentsReader)
+                            argument.inner.parse(source, argumentsReader)
                         } catch (e: Throwable) {
                             // todo: parse exception with friendly message
                             source.sendMessage("Failed to parse argument ${argument.name}: ${e.message}")

@@ -8,7 +8,7 @@ class StringReaderTest {
     fun testEmpty() {
         val reader = StringReader("")
         assertEquals(false, reader.isReadable())
-        assertThrows<IndexOutOfBoundsException> { reader.readString() }
+        assertEquals("", reader.readString())
         assertThrows<IndexOutOfBoundsException> { reader.read() }
     }
 
@@ -20,7 +20,7 @@ class StringReaderTest {
         assertEquals("hello", reader.readString())
         reader.skipWhitespaces()
         assertEquals("world", reader.readString())
-        assertThrows<IndexOutOfBoundsException> { reader.readString() }
+        assertEquals("", reader.readString())
     }
 
     @Test

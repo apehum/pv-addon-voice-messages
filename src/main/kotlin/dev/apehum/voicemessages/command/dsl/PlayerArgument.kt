@@ -9,13 +9,24 @@ import su.plo.slib.api.server.entity.player.McServerPlayer
 class PlayerArgument(
     private val minecraftServer: McServerLib,
 ) : CommandArgument<McServerPlayer> {
-    override fun parse(reader: StringReader): McServerPlayer {
+    override fun parse(
+        source: McCommandSource,
+        reader: StringReader,
+    ): McServerPlayer {
+        require(source is McServerPlayer)
+
         val playerName =
             reader
                 .readString()
                 .takeIf { it.isNotBlank() }
                 ?: throw IllegalArgumentException("Player name can't be empty")
-        return minecraftServer.getPlayerByName(playerName) ?: throw IllegalArgumentException("Player $playerName not found")
+
+        val player =
+            minecraftServer
+                .getPlayerByName(playerName)
+                ?.takeIf { source.canSee(it) }
+
+        return player ?: throw IllegalArgumentException("Player $playerName not found")
     }
 
     override fun suggest(

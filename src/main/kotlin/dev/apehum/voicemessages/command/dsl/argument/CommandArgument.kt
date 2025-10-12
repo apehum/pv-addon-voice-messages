@@ -8,7 +8,10 @@ data class NamedCommandArgument<T>(
 )
 
 interface CommandArgument<T> {
-    fun parse(reader: StringReader): T
+    fun parse(
+        source: McCommandSource,
+        reader: StringReader,
+    ): T
 
     fun suggest(
         source: McCommandSource,
