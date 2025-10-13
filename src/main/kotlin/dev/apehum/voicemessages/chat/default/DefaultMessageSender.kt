@@ -9,6 +9,7 @@ import dev.apehum.voicemessages.util.extension.sendTranslatable
 import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.entity.player.McServerPlayer
+import java.util.concurrent.CompletableFuture
 
 data class DefaultChatContext(
     val source: McCommandSource,
@@ -34,7 +35,8 @@ class DefaultMessageSender(
         }
     }
 
-    override suspend fun canSendMessage(context: DefaultChatContext): Boolean = true
+    override fun canSendMessage(context: DefaultChatContext): Boolean = true
 
-    override suspend fun createContext(context: DslCommandContext): DefaultChatContext = DefaultChatContext(context.source)
+    override fun createContext(context: DslCommandContext): CompletableFuture<DefaultChatContext> =
+        CompletableFuture.completedFuture(DefaultChatContext(context.source))
 }

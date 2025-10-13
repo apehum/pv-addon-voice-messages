@@ -3,6 +3,7 @@ package dev.apehum.voicemessages.chat
 import dev.apehum.voicemessages.command.dsl.DslCommandContext
 import dev.apehum.voicemessages.command.dsl.argument.NamedCommandArgument
 import dev.apehum.voicemessages.playback.VoiceMessage
+import java.util.concurrent.CompletableFuture
 
 interface ChatMessageSender<T : ChatContext> {
     suspend fun sendVoiceMessage(
@@ -10,9 +11,9 @@ interface ChatMessageSender<T : ChatContext> {
         message: VoiceMessage,
     )
 
-    suspend fun canSendMessage(context: T): Boolean
+    fun canSendMessage(context: T): Boolean
 
-    suspend fun createContext(context: DslCommandContext): T
+    fun createContext(context: DslCommandContext): CompletableFuture<T>
 
     fun createArguments(): List<NamedCommandArgument<out Any>> = emptyList()
 }

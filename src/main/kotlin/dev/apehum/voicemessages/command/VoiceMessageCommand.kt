@@ -17,6 +17,7 @@ import dev.apehum.voicemessages.util.extension.sendTranslatable
 import dev.apehum.voicemessages.util.extension.sendTranslatableActionbar
 import dev.apehum.voicemessages.util.extension.translateClientPV
 import kotlinx.coroutines.TimeoutCancellationException
+import kotlinx.coroutines.future.await
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.chat.style.McTextClickEvent
 import su.plo.slib.api.server.entity.player.McServerPlayer
@@ -142,7 +143,7 @@ private fun sendChatVoiceMessageCommand(
             context.source as? McServerPlayer
                 ?: throw IllegalStateException("Player only command")
 
-        val chatContext = chatSender.createContext(context)
+        val chatContext = chatSender.createContext(context).await()
 
         if (!chatSender.canSendMessage(chatContext)) return@executesCoroutine
 
@@ -181,7 +182,7 @@ fun voiceMessageCommand(
                 context.source as? McServerPlayer
                     ?: throw IllegalStateException("Player only command")
 
-            val chatContext = chatSender.createContext(context)
+            val chatContext = chatSender.createContext(context).await()
 
             if (!chatSender.canSendMessage(chatContext)) return@executesCoroutine
 
