@@ -50,7 +50,7 @@ tasks {
     }
 
     runServer {
-        minecraftVersion("1.21.9")
+        minecraftVersion("1.21.10")
 
         downloadPlugins {
             modrinth("plasmo-voice", "spigot-2.1.6")

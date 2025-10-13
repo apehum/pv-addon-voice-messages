@@ -40,7 +40,11 @@ data class DslCommandContext(
     val arguments: Map<String, DslParsedCommandArgument<*>>,
 ) {
     @Suppress("UNCHECKED_CAST")
-    fun <T> getArgumentValue(name: String): T = arguments[name]?.value as T
+    fun <T> getArgumentValue(name: String): T {
+        if (!arguments.containsKey(name)) throw IllegalArgumentException("Argument[$name] not found")
+
+        return arguments[name]?.value as T
+    }
 
     operator fun <T> DslCommandArgument<T>.getValue(
         thisRef: Nothing?,

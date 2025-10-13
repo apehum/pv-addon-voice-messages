@@ -38,6 +38,11 @@ playback_cancel = "<red><hover:show_text:Click to cancel>[Cancel]"
 # argument:1 is max duration
 playback_actionbar = "[<argument:0> / <argument:1>] Recording voice message"
 
+[server.pv.addon.voice_messages.chat_format]
+default = "<lang:chat.type.text:'<argument:0>':'<argument:1>'>"
+direct_incoming = "<italic><gray><lang:commands.message.display.incoming:'<argument:0>':'<argument:1>'>"
+direct_outgoing = "<italic><gray><lang:commands.message.display.outgoing:'<argument:0>':'<argument:1>'>"
+
 [server.pv.addon.voice_messages.component]
 # argument:0 is duration in seconds
 # argument:1 is waveform

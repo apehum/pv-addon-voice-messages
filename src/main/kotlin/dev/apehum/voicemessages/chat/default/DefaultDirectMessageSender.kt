@@ -7,6 +7,7 @@ import dev.apehum.voicemessages.command.dsl.PlayerArgument
 import dev.apehum.voicemessages.command.dsl.argument.NamedCommandArgument
 import dev.apehum.voicemessages.playback.VoiceMessage
 import dev.apehum.voicemessages.playback.component
+import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.entity.player.McServerPlayer
@@ -23,10 +24,29 @@ open class DefaultDirectMessageSender(
         context: DirectChatContext,
         message: VoiceMessage,
     ) {
+        val sourceName =
+            when (context.source) {
+                is McServerPlayer -> context.source.name
+                else -> "Console"
+            }
+
         val voiceMessageComponent = message.component()
 
-        context.source.sendMessage(voiceMessageComponent)
-        context.target.sendMessage(voiceMessageComponent)
+        context.source.sendMessage(
+            McTextComponent.translatable(
+                "pv.addon.voice_messages.chat_format.direct_outgoing",
+                context.target.name,
+                voiceMessageComponent,
+            ),
+        )
+
+        context.target.sendMessage(
+            McTextComponent.translatable(
+                "pv.addon.voice_messages.chat_format.direct_incoming",
+                sourceName,
+                voiceMessageComponent,
+            ),
+        )
     }
 
     override suspend fun canSendMessage(context: DirectChatContext): Boolean {
@@ -41,6 +61,6 @@ open class DefaultDirectMessageSender(
 
     override fun createArguments(): List<NamedCommandArgument<out Any>> =
         listOf(
-            NamedCommandArgument("source", PlayerArgument(minecraftServer)),
+            NamedCommandArgument("target", PlayerArgument(minecraftServer)),
         )
 }
