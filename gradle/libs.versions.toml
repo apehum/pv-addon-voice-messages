@@ -3,12 +3,17 @@ kotlin = "2.0.21"
 kotlinx-coroutines = "1.7.3"
 
 plasmovoice = "2.1.6-SNAPSHOT"
-pv-gradle-plugin = "1.0.5"
+pv-gradle-plugin = "1.1.0"
+run-paper = "3.0.2"
 buildconfig = "5.7.0"
 
+slib = "1.1.4"
+oggus = "1.2.0"
 jedis = "7.0.0"
 
 [libraries]
+slib = { module = "su.plo.slib:common", version.ref = "slib" }
+oggus = { module = "org.chenliang.oggus:oggus", version.ref = "oggus" }
 jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
 plasmovoice = { module = "su.plo.voice.api:server", version.ref = "plasmovoice" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -18,3 +23,4 @@ kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-j
 pv-entrypoints = { id = "su.plo.voice.plugin.entrypoints", version.ref = "pv-gradle-plugin" }
 pv-kotlin-relocate = { id = "su.plo.voice.plugin.relocate-kotlin", version.ref = "pv-gradle-plugin" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
+runpaper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }

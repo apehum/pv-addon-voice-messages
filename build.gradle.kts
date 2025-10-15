@@ -3,8 +3,7 @@ plugins {
     alias(libs.plugins.pv.entrypoints)
     alias(libs.plugins.pv.kotlin.relocate)
     alias(libs.plugins.buildconfig)
-
-    id("xyz.jpenilla.run-paper") version "2.3.1"
+    alias(libs.plugins.runpaper)
 }
 
 dependencies {
@@ -15,9 +14,9 @@ dependencies {
     compileOnly(libs.kotlinx.coroutines.jdk8)
 
     // access for shaded adventure library
-    compileOnly("su.plo.slib:common:1.1.4:all")
+    compileOnly(variantOf(libs.slib) { classifier("all") })
 
-    implementation("org.chenliang.oggus:oggus:1.2.0")
+    implementation(libs.oggus)
     implementation(libs.jedis)
 
     testImplementation(kotlin("test"))
