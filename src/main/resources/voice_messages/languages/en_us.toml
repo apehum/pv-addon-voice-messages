@@ -15,7 +15,7 @@ max_duration_warning = "Warning! Recording is already <argument:0> seconds long.
 # argument:0 is max duration
 max_duration_reached = "Voice message sent automatically due to reaching limit in <argument:0>."
 # argument:0 is timeout in seconds
-recording_timeout = "Timeout is reaching, recording is cancelled."
+recording_timeout = "Timeout is reached, recording is cancelled."
 
 # argument:0 is voice message component
 # argument:1 is send button component
