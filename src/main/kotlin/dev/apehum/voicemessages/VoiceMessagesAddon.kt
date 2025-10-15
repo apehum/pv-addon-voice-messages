@@ -24,13 +24,13 @@ import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent
 
 @Addon(
-    id = "pv-addon-voice-messages",
-    version = BuildConstants.VERSION,
+    id = BuildConfig.PROJECT_NAME,
+    version = BuildConfig.VERSION,
     authors = ["Apehum"],
     scope = AddonLoaderScope.SERVER,
 )
 class VoiceMessagesAddon : AddonInitializer {
-    private val logger = McLoggerFactory.createLogger("pv-addon-voice-messages")
+    private val logger = McLoggerFactory.createLogger(BuildConfig.PROJECT_NAME)
 
     @InjectPlasmoVoice
     private lateinit var voiceServer: PlasmoVoiceServer

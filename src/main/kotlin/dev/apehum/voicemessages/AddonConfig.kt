@@ -73,7 +73,7 @@ class AddonConfig {
         private val toml = ConfigurationProvider.getProvider<ConfigurationProvider>(TomlConfiguration::class.java)
 
         fun loadConfig(server: PlasmoVoiceServer): AddonConfig {
-            val addonFolder = File(server.minecraftServer.configsFolder, "pv-addon-voice-messages")
+            val addonFolder = File(server.minecraftServer.configsFolder, BuildConfig.PROJECT_NAME)
             val configFile = File(addonFolder, "config.toml")
 
             server.languages.register(

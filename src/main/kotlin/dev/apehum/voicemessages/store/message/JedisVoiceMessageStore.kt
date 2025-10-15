@@ -2,8 +2,8 @@ package dev.apehum.voicemessages.store.message
 
 import com.google.common.io.ByteStreams
 import dev.apehum.voicemessages.AddonConfig.RedisStorageConfig
+import dev.apehum.voicemessages.BuildConfig
 import dev.apehum.voicemessages.playback.VoiceMessage
-import dev.apehum.voicemessages.pv_addon_voice_messages.BuildConfig
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import redis.clients.jedis.DefaultJedisClientConfig

@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version libs.versions.kotlin.get()
     alias(libs.plugins.pv.entrypoints)
     alias(libs.plugins.pv.kotlin.relocate)
-    alias(libs.plugins.pv.java.templates)
+    alias(libs.plugins.buildconfig)
 
     id("xyz.jpenilla.run-paper") version "2.3.1"
 }
@@ -35,6 +35,16 @@ repositories {
     mavenLocal()
     maven("https://repo.plasmoverse.com/snapshots")
     maven("https://repo.plasmoverse.com/releases")
+}
+
+buildConfig {
+    packageName = project.group.toString()
+
+    // entrypoint generator doesn't support static kotlin source files parsing
+    useJavaOutput()
+
+    buildConfigField("VERSION", project.version.toString())
+    buildConfigField("PROJECT_NAME", project.name)
 }
 
 tasks {
