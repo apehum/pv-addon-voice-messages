@@ -14,6 +14,7 @@ import dev.apehum.voicemessages.store.message.MemoryVoiceMessageStore
 import dev.apehum.voicemessages.store.message.VoiceMessageStore
 import dev.apehum.voicemessages.store.message.createJedisStore
 import su.plo.slib.api.logging.McLoggerFactory
+import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.event.command.McServerCommandsRegisterEvent
 import su.plo.voice.api.addon.AddonInitializer
 import su.plo.voice.api.addon.AddonLoaderScope
@@ -22,6 +23,8 @@ import su.plo.voice.api.addon.annotation.Addon
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent
+import java.io.File
+import java.io.InputStream
 
 @Addon(
     id = BuildConfig.PROJECT_NAME,
@@ -34,6 +37,14 @@ class VoiceMessagesAddon : AddonInitializer {
 
     @InjectPlasmoVoice
     private lateinit var voiceServer: PlasmoVoiceServer
+
+    private val minecraftServer: McServerLib by lazy {
+        voiceServer.minecraftServer
+    }
+
+    private val addonFolder by lazy {
+        minecraftServer.configsFolder.resolve(BuildConfig.PROJECT_NAME)
+    }
 
     private lateinit var voiceRecorder: VoiceActivationRecorder
     private lateinit var messageStore: VoiceMessageStore
@@ -71,7 +82,11 @@ class VoiceMessagesAddon : AddonInitializer {
         val oldVoiceRecorder = if (::voiceRecorder.isInitialized) voiceRecorder else null
         val oldMessagePlayer = if (::messagePlayer.isInitialized) messagePlayer else null
 
-        val config = AddonConfig.loadConfig(voiceServer)
+        val config = loadConfig<AddonConfig>(addonFolder)
+        voiceServer.languages.register(
+            ::getLanguageResource,
+            File(addonFolder, "languages"),
+        )
 
         val activation =
             voiceServer.activationManager
@@ -129,4 +144,7 @@ class VoiceMessagesAddon : AddonInitializer {
         oldVoiceRecorder?.unregister(this)
         oldMessagePlayer?.clear()
     }
+
+    private fun getLanguageResource(resourcePath: String): InputStream? =
+        VoiceMessagesAddon::class.java.classLoader.getResourceAsStream(String.format("voice_messages/%s", resourcePath))
 }
