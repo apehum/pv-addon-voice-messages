@@ -16,8 +16,13 @@ dependencies {
     // access for shaded adventure library
     compileOnly(variantOf(libs.slib) { classifier("all") })
 
-    implementation(libs.oggus)
-    implementation(libs.jedis)
+    implementation(libs.oggus) {
+        isTransitive = false
+    }
+    implementation(libs.jedis) {
+        exclude("org.slf4j")
+        exclude("com.google.code.gson")
+    }
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("stdlib-jdk8"))
@@ -57,13 +62,22 @@ tasks {
 
     shadowJar {
         archiveClassifier.set("")
+
+        listOf(
+            "redis.clients" to "redis",
+            "org.chenliang.oggus" to "oggus",
+            "org.apache" to "apache",
+            "org.json" to "json",
+        ).forEach { (packageName, libraryName) ->
+            relocate(packageName, "${project.group}.libraries.$libraryName")
+        }
     }
 
     runServer {
         minecraftVersion("1.21.10")
 
         downloadPlugins {
-//            modrinth("plasmo-voice", "spigot-2.1.6")
+            modrinth("plasmo-voice", "spigot-2.1.6")
         }
     }
 }
