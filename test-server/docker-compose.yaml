@@ -24,8 +24,14 @@ x-shared-environment: &shared-environment
   CREATE_CONSOLE_IN_PIPE: true
 
 services:
+  redis:
+    image: redis
+    restart: unless-stopped
+
   server-1:
     image: itzg/minecraft-server:java21
+    depends_on:
+      - redis
     restart: unless-stopped
     stdin_open: true
     tty: true
@@ -47,6 +53,8 @@ services:
 
   server-2:
     image: itzg/minecraft-server:java21
+    depends_on:
+      - redis
     restart: unless-stopped
     stdin_open: true
     tty: true

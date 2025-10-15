@@ -18,6 +18,7 @@ dependencies {
     compileOnly("su.plo.slib:common:1.1.4:all")
 
     implementation("org.chenliang.oggus:oggus:1.2.0")
+    implementation(libs.jedis)
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("stdlib-jdk8"))
@@ -53,7 +54,7 @@ tasks {
         minecraftVersion("1.21.10")
 
         downloadPlugins {
-            modrinth("plasmo-voice", "spigot-2.1.6")
+//            modrinth("plasmo-voice", "spigot-2.1.6")
         }
     }
 }

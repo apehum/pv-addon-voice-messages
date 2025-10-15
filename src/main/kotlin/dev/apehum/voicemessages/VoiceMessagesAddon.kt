@@ -8,10 +8,12 @@ import dev.apehum.voicemessages.command.voiceMessageActionsCommand
 import dev.apehum.voicemessages.command.voiceMessageCommand
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
-import dev.apehum.voicemessages.store.MemoryVoiceMessageDraftStore
-import dev.apehum.voicemessages.store.MemoryVoiceMessageStore
-import dev.apehum.voicemessages.store.VoiceMessageDraftStore
-import dev.apehum.voicemessages.store.VoiceMessageStore
+import dev.apehum.voicemessages.store.draft.MemoryVoiceMessageDraftStore
+import dev.apehum.voicemessages.store.draft.VoiceMessageDraftStore
+import dev.apehum.voicemessages.store.message.MemoryVoiceMessageStore
+import dev.apehum.voicemessages.store.message.VoiceMessageStore
+import dev.apehum.voicemessages.store.message.createJedisStore
+import su.plo.slib.api.logging.McLoggerFactory
 import su.plo.slib.api.server.event.command.McServerCommandsRegisterEvent
 import su.plo.voice.api.addon.AddonInitializer
 import su.plo.voice.api.addon.AddonLoaderScope
@@ -28,6 +30,8 @@ import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent
     scope = AddonLoaderScope.SERVER,
 )
 class VoiceMessagesAddon : AddonInitializer {
+    private val logger = McLoggerFactory.createLogger("pv-addon-voice-messages")
+
     @InjectPlasmoVoice
     private lateinit var voiceServer: PlasmoVoiceServer
 
@@ -52,7 +56,6 @@ class VoiceMessagesAddon : AddonInitializer {
         senderRegistry.register("default", DefaultMessageSender(voiceServer.minecraftServer))
         senderRegistry.register("direct", DefaultDirectMessageSender(voiceServer.minecraftServer))
 
-        messageStore = MemoryVoiceMessageStore()
         draftStore = MemoryVoiceMessageDraftStore()
 
         reloadConfig()
@@ -85,6 +88,16 @@ class VoiceMessagesAddon : AddonInitializer {
                     config.sourceLine.weight,
                 ).withPlayers(true) // this allows to show overlay when talking by default
                 .build()
+
+        messageStore =
+            when (config.storageType) {
+                AddonConfig.StorageType.MEMORY -> MemoryVoiceMessageStore()
+                AddonConfig.StorageType.REDIS -> {
+                    requireNotNull(config.redis)
+                    createJedisStore(config.redis)
+                }
+            }
+        logger.info("Voice message storage: ${config.storageType}")
 
         voiceRecorder =
             VoiceActivationRecorder(activation, voiceServer)

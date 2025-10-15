@@ -1,4 +1,4 @@
-package dev.apehum.voicemessages.store
+package dev.apehum.voicemessages.store.draft
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder

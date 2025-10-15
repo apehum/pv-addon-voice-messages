@@ -5,7 +5,10 @@ kotlinx-coroutines = "1.7.3"
 plasmovoice = "2.1.6-SNAPSHOT"
 pv-gradle-plugin = "1.0.3-SNAPSHOT"
 
+jedis = "7.0.0"
+
 [libraries]
+jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
 plasmovoice = { module = "su.plo.voice.api:server", version.ref = "plasmovoice" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }

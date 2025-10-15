@@ -6,8 +6,8 @@ import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.command.dsl.dslCommand
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
-import dev.apehum.voicemessages.store.VoiceMessageDraftStore
-import dev.apehum.voicemessages.store.VoiceMessageStore
+import dev.apehum.voicemessages.store.draft.VoiceMessageDraftStore
+import dev.apehum.voicemessages.store.message.VoiceMessageStore
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.chat.style.McTextClickEvent

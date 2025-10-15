@@ -10,8 +10,8 @@ import dev.apehum.voicemessages.playback.VoiceMessage
 import dev.apehum.voicemessages.playback.component
 import dev.apehum.voicemessages.playback.createVoiceMessage
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
-import dev.apehum.voicemessages.store.VoiceMessageDraft
-import dev.apehum.voicemessages.store.VoiceMessageDraftStore
+import dev.apehum.voicemessages.store.draft.VoiceMessageDraft
+import dev.apehum.voicemessages.store.draft.VoiceMessageDraftStore
 import dev.apehum.voicemessages.util.extension.padStartZero
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import dev.apehum.voicemessages.util.extension.sendTranslatableActionbar

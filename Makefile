@@ -3,6 +3,7 @@
 COMPOSE_FILE := test-server/docker-compose.yaml
 
 servers-restart:
+	docker compose -f $(COMPOSE_FILE) down server-1 server-2
 	docker compose -f $(COMPOSE_FILE) up -d server-1 server-2
 
 servers-start:

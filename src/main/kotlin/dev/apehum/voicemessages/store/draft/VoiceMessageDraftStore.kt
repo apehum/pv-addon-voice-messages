@@ -1,4 +1,4 @@
-package dev.apehum.voicemessages.store
+package dev.apehum.voicemessages.store.draft
 
 import dev.apehum.voicemessages.chat.ChatContext
 import dev.apehum.voicemessages.playback.VoiceMessage

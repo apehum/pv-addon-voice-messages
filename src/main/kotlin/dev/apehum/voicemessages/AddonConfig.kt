@@ -24,8 +24,49 @@ class AddonConfig {
 
     @Config
     class SourceLineConfig {
+        @ConfigField
         val icon: String = "plasmovoice:textures/icons/speaker.png"
+
+        @ConfigField
         val weight: Int = 100
+    }
+
+    @ConfigField(
+        comment = """
+            Available storage types: [MEMORY, REDIS]
+        """,
+    )
+    val storageType: StorageType = StorageType.MEMORY
+
+    @ConfigField(
+        nullComment = """
+            [redis]
+            host = "localhost"
+            port = 6379
+            user = ""
+            password = ""
+        """,
+    )
+    val redis: RedisStorageConfig? = null
+
+    enum class StorageType {
+        MEMORY,
+        REDIS,
+    }
+
+    @Config
+    class RedisStorageConfig {
+        @ConfigField
+        val host: String = "localhost"
+
+        @ConfigField
+        val port: Int = 6379
+
+        @ConfigField
+        val user: String = ""
+
+        @ConfigField
+        val password: String = ""
     }
 
     companion object {

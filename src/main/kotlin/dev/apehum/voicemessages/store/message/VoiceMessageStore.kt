@@ -1,4 +1,4 @@
-package dev.apehum.voicemessages.store
+package dev.apehum.voicemessages.store.message
 
 import dev.apehum.voicemessages.playback.VoiceMessage
 import java.util.UUID
@@ -13,4 +13,6 @@ interface VoiceMessageStore {
     }
 
     suspend fun remove(id: UUID)
+
+    fun close()
 }

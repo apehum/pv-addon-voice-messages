@@ -1,4 +1,4 @@
-package dev.apehum.voicemessages.store
+package dev.apehum.voicemessages.store.message
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
@@ -25,5 +25,9 @@ class MemoryVoiceMessageStore(
 
     override suspend fun remove(id: UUID) {
         cache.invalidate(id)
+    }
+
+    override fun close() {
+        cache.invalidateAll()
     }
 }
