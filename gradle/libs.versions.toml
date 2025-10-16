@@ -8,10 +8,12 @@ run-paper = "3.0.2"
 buildconfig = "5.7.0"
 
 slib = "1.1.4"
+config = "1.1.0"
 oggus = "1.2.0"
 jedis = "7.0.0"
 
 [libraries]
+config = { module = "su.plo.config:config", version.ref = "config" }
 slib = { module = "su.plo.slib:common", version.ref = "slib" }
 oggus = { module = "org.chenliang.oggus:oggus", version.ref = "oggus" }
 jedis = { module = "redis.clients:jedis", version.ref = "jedis" }

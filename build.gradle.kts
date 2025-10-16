@@ -16,6 +16,9 @@ dependencies {
     // access for shaded adventure library
     compileOnly(variantOf(libs.slib) { classifier("all") })
 
+    // chat plugins
+    compileOnly("de.hexaoxi:carbonchat-api:3.0.0-beta.35")
+
     implementation(libs.oggus) {
         isTransitive = false
     }
@@ -23,6 +26,7 @@ dependencies {
         exclude("org.slf4j")
         exclude("com.google.code.gson")
     }
+    implementation(libs.config)
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("stdlib-jdk8"))
@@ -68,9 +72,12 @@ tasks {
             "org.chenliang.oggus" to "oggus",
             "org.apache" to "apache",
             "org.json" to "json",
+            "su.plo.config" to "config",
         ).forEach { (packageName, libraryName) ->
             relocate(packageName, "${project.group}.libraries.$libraryName")
         }
+
+        mergeServiceFiles()
     }
 
     runServer {

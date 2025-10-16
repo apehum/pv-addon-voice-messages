@@ -14,5 +14,5 @@ inline fun <reified T : Any> loadConfig(
 
     return toml
         .load<T>(T::class.java, configFile, false)
-        .also { toml.save(T::class.java, it, configFile) }
+        .also { toml.save(it, configFile) }
 }
