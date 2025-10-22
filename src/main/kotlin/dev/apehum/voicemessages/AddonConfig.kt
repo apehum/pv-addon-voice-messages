@@ -9,6 +9,7 @@ data class AddonConfig(
     val maxDurationSeconds: Int = 60,
     val actionbarWhenRecording: Boolean = true,
     val sourceLine: SourceLineConfig = SourceLineConfig(),
+    val chatFormat: ChatFormatConfig = ChatFormatConfig(),
     @ConfigField(
         comment = """
             Available storage types: [MEMORY, REDIS]
@@ -43,5 +44,12 @@ data class AddonConfig(
         val port: Int = 6379,
         val user: String = "",
         val password: String = "",
+    )
+
+    @Config
+    data class ChatFormatConfig(
+        val default: String = "<lang:chat.type.text:'<player_name>':'<voice_message>'>",
+        val directIncoming: String = "<italic><gray><lang:commands.message.display.incoming:'<source_player_name>':'<voice_message>'>",
+        val directOutgoing: String = "<italic><gray><lang:commands.message.display.outgoing:'<target_player_name>':'<voice_message>'>",
     )
 }

@@ -64,8 +64,6 @@ class VoiceMessagesAddon : AddonInitializer {
 
     override fun onAddonInitialize() {
         senderRegistry = ChatMessageSenderRegistry()
-        senderRegistry.register("default", DefaultMessageSender(voiceServer.minecraftServer))
-        senderRegistry.register("direct", DefaultDirectMessageSender(voiceServer.minecraftServer))
 
         draftStore = MemoryVoiceMessageDraftStore()
 
@@ -103,6 +101,9 @@ class VoiceMessagesAddon : AddonInitializer {
                     config.sourceLine.weight,
                 ).withPlayers(true) // this allows to show overlay when talking by default
                 .build()
+
+        senderRegistry.register("default", DefaultMessageSender(voiceServer.minecraftServer, config.chatFormat))
+        senderRegistry.register("direct", DefaultDirectMessageSender(voiceServer.minecraftServer, config.chatFormat))
 
         messageStore =
             when (config.storageType) {

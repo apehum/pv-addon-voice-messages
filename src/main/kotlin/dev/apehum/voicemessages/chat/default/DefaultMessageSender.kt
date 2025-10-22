@@ -1,14 +1,18 @@
 package dev.apehum.voicemessages.chat.default
 
+import dev.apehum.voicemessages.AddonConfig
 import dev.apehum.voicemessages.chat.ChatContext
 import dev.apehum.voicemessages.chat.ChatMessageSender
 import dev.apehum.voicemessages.command.dsl.DslCommandContext
 import dev.apehum.voicemessages.playback.VoiceMessage
 import dev.apehum.voicemessages.playback.component
-import dev.apehum.voicemessages.util.extension.sendTranslatable
+import dev.apehum.voicemessages.util.extension.miniMessage
+import dev.apehum.voicemessages.util.extension.toAdventure
+import dev.apehum.voicemessages.util.extension.toMc
 import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.entity.player.McServerPlayer
+import su.plo.slib.libs.adventure.adventure.text.minimessage.tag.resolver.Placeholder
 import java.util.concurrent.CompletableFuture
 
 data class DefaultChatContext(
@@ -17,6 +21,7 @@ data class DefaultChatContext(
 
 class DefaultMessageSender(
     private val minecraftServer: McServerLib,
+    private val formats: AddonConfig.ChatFormatConfig,
 ) : ChatMessageSender<DefaultChatContext> {
     override suspend fun sendVoiceMessage(
         context: DefaultChatContext,
@@ -28,10 +33,17 @@ class DefaultMessageSender(
                 else -> "Console"
             }
 
-        val voiceMessageComponent = message.component()
+        val voiceMessageComponent = message.component().toAdventure()
+
+        val message =
+            formats.default
+                .miniMessage(
+                    Placeholder.parsed("player_name", sourceName),
+                    Placeholder.component("voice_message", voiceMessageComponent),
+                ).toMc()
 
         minecraftServer.players.forEach { player ->
-            player.sendTranslatable("pv.addon.voice_messages.chat_format.default", sourceName, voiceMessageComponent)
+            player.sendMessage(message)
         }
     }
 

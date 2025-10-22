@@ -1,5 +1,6 @@
 package dev.apehum.voicemessages.chat.default
 
+import dev.apehum.voicemessages.AddonConfig
 import dev.apehum.voicemessages.chat.ChatContext
 import dev.apehum.voicemessages.chat.ChatMessageSender
 import dev.apehum.voicemessages.command.dsl.DslCommandContext
@@ -7,6 +8,9 @@ import dev.apehum.voicemessages.command.dsl.PlayerArgument
 import dev.apehum.voicemessages.command.dsl.argument.NamedCommandArgument
 import dev.apehum.voicemessages.playback.VoiceMessage
 import dev.apehum.voicemessages.playback.component
+import dev.apehum.voicemessages.util.extension.miniMessage
+import dev.apehum.voicemessages.util.extension.toAdventure
+import dev.apehum.voicemessages.util.extension.toMc
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.future
@@ -14,6 +18,7 @@ import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.entity.player.McServerPlayer
+import su.plo.slib.libs.adventure.adventure.text.minimessage.tag.resolver.Placeholder
 import java.util.concurrent.CompletableFuture
 
 data class DirectChatContext(
@@ -23,6 +28,7 @@ data class DirectChatContext(
 
 open class DefaultDirectMessageSender(
     private val minecraftServer: McServerLib,
+    private val formats: AddonConfig.ChatFormatConfig,
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
 ) : ChatMessageSender<DirectChatContext> {
     override suspend fun sendVoiceMessage(
@@ -35,23 +41,17 @@ open class DefaultDirectMessageSender(
                 else -> "Console"
             }
 
-        val voiceMessageComponent = message.component()
+        val voiceMessageComponent = message.component().toAdventure()
 
-        context.source.sendMessage(
-            McTextComponent.translatable(
-                "pv.addon.voice_messages.chat_format.direct_outgoing",
-                context.target.name,
-                voiceMessageComponent,
-            ),
-        )
+        val tagResolvers =
+            arrayOf(
+                Placeholder.parsed("source_player_name", sourceName),
+                Placeholder.parsed("target_player_name", context.target.name),
+                Placeholder.component("voice_message", voiceMessageComponent),
+            )
 
-        context.target.sendMessage(
-            McTextComponent.translatable(
-                "pv.addon.voice_messages.chat_format.direct_incoming",
-                sourceName,
-                voiceMessageComponent,
-            ),
-        )
+        context.source.sendMessage(formats.directOutgoing.miniMessage(*tagResolvers).toMc())
+        context.target.sendMessage(formats.directIncoming.miniMessage(*tagResolvers).toMc())
     }
 
     override fun canSendMessage(context: DirectChatContext): Boolean {
