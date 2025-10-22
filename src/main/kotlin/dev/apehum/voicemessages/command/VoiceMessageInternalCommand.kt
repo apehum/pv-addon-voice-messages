@@ -6,15 +6,15 @@ import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.command.dsl.dslCommand
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
-import dev.apehum.voicemessages.store.draft.VoiceMessageDraftStore
-import dev.apehum.voicemessages.store.message.VoiceMessageStore
+import dev.apehum.voicemessages.storage.draft.VoiceMessageDraftStorage
+import dev.apehum.voicemessages.storage.message.VoiceMessageStorage
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.chat.style.McTextClickEvent
 import su.plo.slib.api.server.entity.player.McServerPlayer
 
 private fun playVoiceMessageCommand(
-    messageStore: VoiceMessageStore,
+    messageStore: VoiceMessageStorage,
     messagePlayer: VoiceMessagePlayer,
 ) = dslCommand("play") {
     val id by argument("id", UUIDArgumentType())
@@ -42,9 +42,9 @@ private fun playVoiceMessageCommand(
 // additional command for actions to avoid bloat in tab completion
 fun voiceMessageActionsCommand(
     voiceRecorder: VoiceActivationRecorder,
-    messageStore: VoiceMessageStore,
+    messageStore: VoiceMessageStorage,
     messagePlayer: VoiceMessagePlayer,
-    draftStore: VoiceMessageDraftStore,
+    draftStore: VoiceMessageDraftStorage,
     senderRegistry: ChatMessageSenderRegistry,
 ) = dslCommand("vm-actions") {
     command(playVoiceMessageCommand(messageStore, messagePlayer))

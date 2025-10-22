@@ -1,4 +1,4 @@
-package dev.apehum.voicemessages.store.message
+package dev.apehum.voicemessages.storage.message
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
@@ -8,9 +8,9 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
 
-class MemoryVoiceMessageStore(
+class MemoryVoiceMessageStorage(
     expireAfter: Duration = 10.minutes,
-) : VoiceMessageStore {
+) : VoiceMessageStorage {
     private val cache: Cache<UUID, VoiceMessage> =
         CacheBuilder
             .newBuilder()

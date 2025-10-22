@@ -1,4 +1,4 @@
-package dev.apehum.voicemessages.store.message
+package dev.apehum.voicemessages.storage.message
 
 import com.google.common.io.ByteStreams
 import dev.apehum.voicemessages.AddonConfig.RedisStorageConfig
@@ -14,7 +14,7 @@ import java.util.UUID
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
-fun createJedisStore(config: RedisStorageConfig): JedisVoiceMessageStore {
+fun createJedisStore(config: RedisStorageConfig): JedisVoiceMessageStorage {
     val configBuilder = DefaultJedisClientConfig.builder()
     if (config.user.isNotBlank()) {
         configBuilder.user(config.user)
@@ -26,13 +26,13 @@ fun createJedisStore(config: RedisStorageConfig): JedisVoiceMessageStore {
 
     val jedisPool = JedisPooled(HostAndPort(config.host, config.port), configBuilder.build())
 
-    return JedisVoiceMessageStore(jedisPool)
+    return JedisVoiceMessageStorage(jedisPool)
 }
 
-class JedisVoiceMessageStore(
+class JedisVoiceMessageStorage(
     private val jedis: JedisPooled,
     private val expireAfter: Duration = 10.minutes,
-) : VoiceMessageStore {
+) : VoiceMessageStorage {
     override suspend fun getById(id: UUID): VoiceMessage? =
         withContext(Dispatchers.IO) {
             val messageKey = id.asKey()

@@ -10,8 +10,8 @@ import dev.apehum.voicemessages.playback.VoiceMessage
 import dev.apehum.voicemessages.playback.component
 import dev.apehum.voicemessages.playback.createVoiceMessage
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
-import dev.apehum.voicemessages.store.draft.VoiceMessageDraft
-import dev.apehum.voicemessages.store.draft.VoiceMessageDraftStore
+import dev.apehum.voicemessages.storage.draft.VoiceMessageDraft
+import dev.apehum.voicemessages.storage.draft.VoiceMessageDraftStorage
 import dev.apehum.voicemessages.util.extension.padStartZero
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import dev.apehum.voicemessages.util.extension.sendTranslatableActionbar
@@ -30,7 +30,7 @@ private suspend fun recordAndSaveVoiceMessage(
     config: AddonConfig,
     voiceServer: PlasmoVoiceServer,
     voiceRecorder: VoiceActivationRecorder,
-    draftStore: VoiceMessageDraftStore,
+    draftStore: VoiceMessageDraftStorage,
     chatSenderName: String,
     chatContext: ChatContext,
 ): VoiceMessage? {
@@ -130,7 +130,7 @@ private fun sendChatVoiceMessageCommand(
     config: AddonConfig,
     voiceServer: PlasmoVoiceServer,
     voiceRecorder: VoiceActivationRecorder,
-    draftStore: VoiceMessageDraftStore,
+    draftStore: VoiceMessageDraftStorage,
 ) = dslCommand(chatSenderName) {
     chatSender
         .createArguments()
@@ -156,7 +156,7 @@ fun voiceMessageCommand(
     config: AddonConfig,
     voiceServer: PlasmoVoiceServer,
     voiceRecorder: VoiceActivationRecorder,
-    draftStore: VoiceMessageDraftStore,
+    draftStore: VoiceMessageDraftStorage,
     senderRegistry: ChatMessageSenderRegistry,
 ): DslCommand =
     dslCommand(name) {

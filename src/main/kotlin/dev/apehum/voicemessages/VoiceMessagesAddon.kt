@@ -1,18 +1,21 @@
 package dev.apehum.voicemessages
 
+import dev.apehum.voicemessages.api.VoiceMessagesAPI
+import dev.apehum.voicemessages.api.VoiceMessagesAPIProvider
 import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.chat.default.DefaultDirectMessageSender
 import dev.apehum.voicemessages.chat.default.DefaultMessageSender
 import dev.apehum.voicemessages.command.LateInitCommand
 import dev.apehum.voicemessages.command.voiceMessageActionsCommand
 import dev.apehum.voicemessages.command.voiceMessageCommand
+import dev.apehum.voicemessages.playback.VoiceMessage
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
-import dev.apehum.voicemessages.store.draft.MemoryVoiceMessageDraftStore
-import dev.apehum.voicemessages.store.draft.VoiceMessageDraftStore
-import dev.apehum.voicemessages.store.message.MemoryVoiceMessageStore
-import dev.apehum.voicemessages.store.message.VoiceMessageStore
-import dev.apehum.voicemessages.store.message.createJedisStore
+import dev.apehum.voicemessages.storage.draft.MemoryVoiceMessageDraftStorage
+import dev.apehum.voicemessages.storage.draft.VoiceMessageDraftStorage
+import dev.apehum.voicemessages.storage.message.MemoryVoiceMessageStorage
+import dev.apehum.voicemessages.storage.message.VoiceMessageStorage
+import dev.apehum.voicemessages.storage.message.createJedisStore
 import su.plo.slib.api.logging.McLoggerFactory
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.event.command.McServerCommandsRegisterEvent
@@ -23,6 +26,7 @@ import su.plo.voice.api.addon.annotation.Addon
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent
+import su.plo.voice.api.server.player.VoiceServerPlayer
 import java.io.File
 import java.io.InputStream
 
@@ -32,7 +36,9 @@ import java.io.InputStream
     authors = ["Apehum"],
     scope = AddonLoaderScope.SERVER,
 )
-class VoiceMessagesAddon : AddonInitializer {
+class VoiceMessagesAddon :
+    AddonInitializer,
+    VoiceMessagesAPI {
     private val logger = McLoggerFactory.createLogger(BuildConfig.PROJECT_NAME)
 
     @InjectPlasmoVoice
@@ -47,10 +53,11 @@ class VoiceMessagesAddon : AddonInitializer {
     }
 
     private lateinit var voiceRecorder: VoiceActivationRecorder
-    private lateinit var messageStore: VoiceMessageStore
-    private lateinit var draftStore: VoiceMessageDraftStore
     private lateinit var messagePlayer: VoiceMessagePlayer
-    private lateinit var senderRegistry: ChatMessageSenderRegistry
+
+    override lateinit var messageStorage: VoiceMessageStorage
+    override lateinit var draftMessageStorage: VoiceMessageDraftStorage
+    override lateinit var messageSenderRegistry: ChatMessageSenderRegistry
 
     private val voiceMessageCommand = LateInitCommand("vm")
     private val voiceMessageActionsCommand = LateInitCommand("vm-actions")
@@ -63,12 +70,23 @@ class VoiceMessagesAddon : AddonInitializer {
     }
 
     override fun onAddonInitialize() {
-        senderRegistry = ChatMessageSenderRegistry()
+        messageSenderRegistry = ChatMessageSenderRegistry()
 
-        draftStore = MemoryVoiceMessageDraftStore()
+        draftMessageStorage = MemoryVoiceMessageDraftStorage()
 
         reloadConfig()
+        VoiceMessagesAPIProvider.setInstance(this)
     }
+
+    override fun playVoiceMessage(
+        player: VoiceServerPlayer,
+        voiceMessage: VoiceMessage,
+        showWaveform: Boolean,
+    ) {
+        messagePlayer.play(player.instance, voiceMessage, showWaveform)
+    }
+
+    override fun stopVoiceMessage(player: VoiceServerPlayer) = messagePlayer.cancel(player.instance)
 
     @EventSubscribe
     fun onConfigReload(event: VoiceServerConfigReloadedEvent) {
@@ -102,12 +120,12 @@ class VoiceMessagesAddon : AddonInitializer {
                 ).withPlayers(true) // this allows to show overlay when talking by default
                 .build()
 
-        senderRegistry.register("default", DefaultMessageSender(voiceServer.minecraftServer, config.chatFormat))
-        senderRegistry.register("direct", DefaultDirectMessageSender(voiceServer.minecraftServer, config.chatFormat))
+        messageSenderRegistry.register("default", DefaultMessageSender(voiceServer.minecraftServer, config.chatFormat))
+        messageSenderRegistry.register("direct", DefaultDirectMessageSender(voiceServer.minecraftServer, config.chatFormat))
 
-        messageStore =
+        messageStorage =
             when (config.storageType) {
-                AddonConfig.StorageType.MEMORY -> MemoryVoiceMessageStore()
+                AddonConfig.StorageType.MEMORY -> MemoryVoiceMessageStorage()
                 AddonConfig.StorageType.REDIS -> {
                     requireNotNull(config.redis)
                     createJedisStore(config.redis)
@@ -127,18 +145,18 @@ class VoiceMessagesAddon : AddonInitializer {
                 config,
                 voiceServer,
                 voiceRecorder,
-                draftStore,
-                senderRegistry,
+                draftMessageStorage,
+                messageSenderRegistry,
             ),
         )
 
         voiceMessageActionsCommand.initialize(
             voiceMessageActionsCommand(
                 voiceRecorder,
-                messageStore,
+                messageStorage,
                 messagePlayer,
-                draftStore,
-                senderRegistry,
+                draftMessageStorage,
+                messageSenderRegistry,
             ),
         )
 
