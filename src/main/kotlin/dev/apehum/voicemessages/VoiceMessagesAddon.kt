@@ -3,8 +3,8 @@ package dev.apehum.voicemessages
 import dev.apehum.voicemessages.api.VoiceMessagesAPI
 import dev.apehum.voicemessages.api.VoiceMessagesAPIProvider
 import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
-import dev.apehum.voicemessages.chat.default.DefaultDirectMessageSender
-import dev.apehum.voicemessages.chat.default.DefaultMessageSender
+import dev.apehum.voicemessages.chat.builtin.DefaultDirectMessageSender
+import dev.apehum.voicemessages.chat.builtin.DefaultMessageSender
 import dev.apehum.voicemessages.command.LateInitCommand
 import dev.apehum.voicemessages.command.voiceMessageActionsCommand
 import dev.apehum.voicemessages.command.voiceMessageCommand
@@ -115,7 +115,7 @@ class VoiceMessagesAddon :
                     this,
                     "voice_messages",
                     "pv.addon.voice_messages.source_line",
-                    config.sourceLine.icon,
+                    VoiceMessagesAddon::class.java.classLoader.getResourceAsStream("source_line_icon.png")!!,
                     config.sourceLine.weight,
                 ).withPlayers(true) // this allows to show overlay when talking by default
                 .build()

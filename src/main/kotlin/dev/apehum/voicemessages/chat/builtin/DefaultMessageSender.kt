@@ -1,4 +1,4 @@
-package dev.apehum.voicemessages.chat.default
+package dev.apehum.voicemessages.chat.builtin
 
 import dev.apehum.voicemessages.AddonConfig
 import dev.apehum.voicemessages.chat.ChatContext

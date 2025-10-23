@@ -3,7 +3,7 @@ kotlin = "2.0.21"
 kotlinx-coroutines = "1.7.3"
 
 plasmovoice = "2.1.6-SNAPSHOT"
-pv-gradle-plugin = "1.1.0"
+pv-gradle-plugin = "1.0.7"
 run-paper = "3.0.2"
 buildconfig = "5.7.0"
 

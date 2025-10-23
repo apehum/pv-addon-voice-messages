@@ -1,4 +1,4 @@
-package dev.apehum.voicemessages.chat.default
+package dev.apehum.voicemessages.chat.builtin
 
 import dev.apehum.voicemessages.AddonConfig
 import dev.apehum.voicemessages.chat.ChatContext
@@ -14,7 +14,6 @@ import dev.apehum.voicemessages.util.extension.toMc
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.future
-import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.entity.player.McServerPlayer
