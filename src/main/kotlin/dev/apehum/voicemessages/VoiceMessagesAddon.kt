@@ -116,7 +116,7 @@ class VoiceMessagesAddon :
                     "voice_messages",
                     "pv.addon.voice_messages.source_line",
                     VoiceMessagesAddon::class.java.classLoader.getResourceAsStream("source_line_icon.png")!!,
-                    config.sourceLine.weight,
+                    config.sourceLineWeight,
                 ).withPlayers(true) // this allows to show overlay when talking by default
                 .build()
 

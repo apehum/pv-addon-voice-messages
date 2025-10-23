@@ -8,7 +8,13 @@ data class AddonConfig(
     val activation: String = "proximity",
     val maxDurationSeconds: Int = 60,
     val actionbarWhenRecording: Boolean = true,
-    val sourceLine: SourceLineConfig = SourceLineConfig(),
+    @ConfigField(
+        comment = """
+        Source line weight controls sorting order in "Volume"
+        Higher weights are placed at the bottom of the list
+    """,
+    )
+    val sourceLineWeight: Int = 100,
     val chatFormat: ChatFormatConfig = ChatFormatConfig(),
     @ConfigField(
         comment = """
@@ -27,12 +33,6 @@ data class AddonConfig(
     )
     val redis: RedisStorageConfig? = null,
 ) {
-    @Config
-    data class SourceLineConfig(
-        val icon: String = "plasmovoice:textures/icons/speaker.png",
-        val weight: Int = 100,
-    )
-
     enum class StorageType {
         MEMORY,
         REDIS,
