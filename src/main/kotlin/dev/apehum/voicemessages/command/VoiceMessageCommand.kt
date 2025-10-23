@@ -71,18 +71,19 @@ private suspend fun recordAndSaveVoiceMessage(
 
                     if (config.actionbarWhenRecording && (isFirstFrame || duration.inWholeMilliseconds % 1000L == 0L)) {
                         player.sendTranslatableActionbar(
-                            "pv.addon.voice_messages.command.playback_actionbar",
+                            "pv.addon.voice_messages.command.recording_actionbar",
                             duration.inWholeSeconds.padStartZero(),
                             maxDuration.inWholeSeconds.padStartZero(),
                         )
                     }
 
                     if (!maxDurationWarningSent && maxDuration.inWholeSeconds - duration.inWholeSeconds <= 10) {
+                        val remainingDuration = maxDuration.inWholeSeconds - duration.inWholeSeconds
                         maxDurationWarningSent = true
                         player.sendTranslatable(
                             "pv.addon.voice_messages.command.max_duration_warning",
                             duration.inWholeSeconds,
-                            10,
+                            remainingDuration,
                         )
                     }
                 },
@@ -102,12 +103,6 @@ private suspend fun recordAndSaveVoiceMessage(
     // todo: check min length?
 
     val voiceMessage = createVoiceMessage(voiceServer, encodedFrames)
-    if (voiceMessage.duration == maxDuration) {
-        player.sendTranslatable(
-            "pv.addon.voice_messages.command.max_duration_reached",
-            maxDuration.inWholeSeconds.padStartZero(),
-        )
-    }
 
     draftStore.save(player.uuid, VoiceMessageDraft(voiceMessage, chatSenderName, chatContext))
 

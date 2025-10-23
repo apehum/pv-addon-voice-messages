@@ -2,46 +2,44 @@
 # argument:0 is activation name
 # argument:1 is recording timeout in seconds
 # argument:2 is cancel button component
-start_recording = "Say something to <argument:0> to start recording a voice message.<br>If you don't, recording will be cancelled automatically in <argument:1> sec.<br><argument:2>"
+start_recording = "Speak into \"<argument:0>\" to record a voice message. <argument:2>"
 cancel_recording = "<red><hover:show_text:Click to cancel>[Cancel]"
 # argument:0 is send button component
 # argument:1 is cancel button component
-recording_started = "Recording is started.<br><argument:0> <argument:1>"
+recording_started = "Recording is started: <argument:0> <argument:1>"
 stop_recording = "<yellow><hover:show_text:Click to stop recording>[Stop]"
 cancel_and_delete_recording = "<red><hover:show_text:Click to cancel>[Cancel & Delete]"
 # argument:0 is current duration
 # argument:1 is remaining duration
-max_duration_warning = "Warning! Recording is already <argument:0> seconds long. In <argument:1> seconds voice message will be sent automatically."
-# argument:0 is max duration
-max_duration_reached = "Voice message sent automatically due to reaching limit in <argument:0>."
+max_duration_warning = "<yellow>Warning:</yellow> Recording is <argument:0> seconds long. It will stop automatically in <bold><argument:1></bold> seconds."
 # argument:0 is timeout in seconds
-recording_timeout = "Timeout is reached, recording is cancelled."
+recording_timeout = "<red>You didn't say anything in time, recording is cancelled."
 
 # argument:0 is voice message component
 # argument:1 is send button component
-draft_saved = "Voice message saved as a draft. Use button below to send it.<br><argument:0><br><argument:1>"
+draft_saved = "Voice message saved as a draft:<br><argument:0> <argument:1>"
 send_draft = "<yellow><hover:show_text:Click to send>[Send]"
-no_draft = "Nothing to send. Use <click:suggest_command:/vm>/vm</click> to record a voice message."
-unknown_chat_context = "Unknown chat context."
+no_draft = "<red>Nothing to send. Use <click:suggest_command:/vm>/vm</click> to record a voice message."
+unknown_chat_context = "<red>Unknown chat context."
 
-message_not_found = "Voice message not found."
+message_not_found = "<red>Voice message not found."
 
 recording_cancelled = "Recording cancelled."
-no_active_recording = "There is no active recordings."
+no_active_recording = "<red>There is no active recording."
 
-no_active_playback = "There is no active playback."
+no_active_playback = "<red>There is no active playback."
 playback_cancelled = "Playback cancelled."
 # argument:0 is playback_cancel
-playback_started = "Playback started.<br><argument:0>"
+playback_started = "Playback started: <argument:0>"
 playback_cancel = "<red><hover:show_text:Click to cancel>[Cancel]"
 # argument:0 is current duration
 # argument:1 is max duration
-playback_actionbar = "[<argument:0> / <argument:1>] Recording voice message"
+recording_actionbar = "[<argument:0> / <argument:1>] Recording voice message"
 
 [server.pv.addon.voice_messages.component]
 # argument:0 is duration in seconds
 # argument:1 is waveform
-voice_message = "<blue><hover:show_text:Click to play>[▶ <argument:1> <argument:0>]"
+voice_message = "<blue><hover:show_text:Click to play>[▶ <argument:0> <argument:1>]"
 
 [client.pv.addon.voice_messages]
 source_line = "Voice Messages"
