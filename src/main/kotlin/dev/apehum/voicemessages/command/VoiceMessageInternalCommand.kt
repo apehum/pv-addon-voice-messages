@@ -5,6 +5,7 @@ import dev.apehum.voicemessages.chat.ChatMessageSender
 import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.command.dsl.dslCommand
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
+import dev.apehum.voicemessages.record.RecordingCancelCause
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
 import dev.apehum.voicemessages.storage.draft.VoiceMessageDraftStorage
 import dev.apehum.voicemessages.storage.message.VoiceMessageStorage
@@ -53,7 +54,7 @@ fun voiceMessageActionsCommand(
         executes { context ->
             val player = context.source as? McServerPlayer ?: throw IllegalStateException("Player only command")
 
-            if (voiceRecorder.stop(player, Exception("Recording is cancelled"))) {
+            if (voiceRecorder.stop(player, RecordingCancelCause())) {
                 player.sendTranslatable("pv.addon.voice_messages.command.recording_cancelled")
             } else {
                 player.sendTranslatable("pv.addon.voice_messages.command.no_active_recording")

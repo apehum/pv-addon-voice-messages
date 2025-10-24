@@ -9,6 +9,8 @@ import dev.apehum.voicemessages.command.dsl.dslCommand
 import dev.apehum.voicemessages.playback.VoiceMessage
 import dev.apehum.voicemessages.playback.component
 import dev.apehum.voicemessages.playback.createVoiceMessage
+import dev.apehum.voicemessages.record.NewRecordingStartCause
+import dev.apehum.voicemessages.record.RecordingStopCause
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
 import dev.apehum.voicemessages.storage.draft.VoiceMessageDraft
 import dev.apehum.voicemessages.storage.draft.VoiceMessageDraftStorage
@@ -50,7 +52,7 @@ private suspend fun recordAndSaveVoiceMessage(
 
     val encodedFrames =
         try {
-            voiceRecorder.stop(player, Exception("New recording started"))
+            voiceRecorder.stop(player, NewRecordingStartCause())
             voiceRecorder.record(
                 player,
                 timeout = timeoutDuration,
@@ -88,11 +90,13 @@ private suspend fun recordAndSaveVoiceMessage(
                     }
                 },
             )
+        } catch (_: RecordingStopCause) {
+            // we don't care about cause here
+            return null
         } catch (_: TimeoutCancellationException) {
             player.sendTranslatable(
                 "pv.addon.voice_messages.command.recording_timeout",
                 timeoutDuration.inWholeSeconds,
-                10,
             )
             return null
         } catch (e: Throwable) {

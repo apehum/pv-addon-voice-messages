@@ -113,8 +113,12 @@ class VoiceActivationRecorder(
                 senderJob.await()
             } catch (e: TimeoutCancellationException) {
                 throw e
-            } catch (e: CancellationException) {
-                if (e.cause != null) throw e
+            } catch (e: RecordingStopCause) {
+                throw e
+            } catch (_: CancellationException) {
+                // we don't want to propagate CancellationException further
+                // any CancellationException that is not RecordingStopCause
+                // are treated as "recording stop signal"
             }
 
             frames
@@ -122,21 +126,19 @@ class VoiceActivationRecorder(
 
     fun stop(
         player: McPlayer,
-        cause: Exception? = null,
+        cause: RecordingStopCause? = null,
     ): Boolean {
         val playerContexts = contexts.removeAll(player)
 
         playerContexts.forEach { context ->
-            context.senderJob.cancel(
-                cause?.let { CancellationException(null, cause) },
-            )
+            context.senderJob.cancel(cause)
         }
 
         return playerContexts.isNotEmpty()
     }
 
     private fun onPlayerQuit(player: McPlayer) {
-        stop(player, Exception("Player left the server"))
+        stop(player, PlayerLeftStopCause())
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
