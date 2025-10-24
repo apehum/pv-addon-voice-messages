@@ -9,6 +9,7 @@ import dev.apehum.voicemessages.command.dsl.dslCommand
 import dev.apehum.voicemessages.playback.VoiceMessage
 import dev.apehum.voicemessages.playback.component
 import dev.apehum.voicemessages.playback.createVoiceMessage
+import dev.apehum.voicemessages.playback.minutesAndSeconds
 import dev.apehum.voicemessages.record.NewRecordingStartCause
 import dev.apehum.voicemessages.record.RecordingStopCause
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
@@ -75,8 +76,8 @@ private suspend fun recordAndSaveVoiceMessage(
                     if (config.actionbarWhenRecording && (isFirstFrame || duration.inWholeMilliseconds % 1000L == 0L)) {
                         player.sendTranslatableActionbar(
                             "pv.addon.voice_messages.command.recording_actionbar",
-                            duration.inWholeSeconds.padStartZero(),
-                            maxDuration.inWholeSeconds.padStartZero(),
+                            duration.minutesAndSeconds(),
+                            maxDuration.minutesAndSeconds(),
                         )
                     }
 
@@ -85,7 +86,7 @@ private suspend fun recordAndSaveVoiceMessage(
                         maxDurationWarningSent = true
                         player.sendTranslatable(
                             "pv.addon.voice_messages.command.max_duration_warning",
-                            duration.inWholeSeconds,
+                            duration.minutesAndSeconds(),
                             remainingDuration,
                         )
                     }

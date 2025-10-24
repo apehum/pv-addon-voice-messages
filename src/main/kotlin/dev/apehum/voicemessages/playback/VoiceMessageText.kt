@@ -4,6 +4,15 @@ import dev.apehum.voicemessages.util.extension.merge
 import dev.apehum.voicemessages.util.extension.padStartZero
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.chat.style.McTextClickEvent
+import kotlin.time.Duration
+
+/**
+ * Formats duration in XX:XX format.
+ */
+fun Duration.minutesAndSeconds(): McTextComponent =
+    McTextComponent.literal(
+        "${inWholeMinutes.padStartZero()}:${(inWholeSeconds % 60).padStartZero()}",
+    )
 
 fun VoiceMessage.component(clickEvent: McTextClickEvent = McTextClickEvent.runCommand("/vm-actions play $id")): McTextComponent =
     McTextComponent
@@ -12,7 +21,7 @@ fun VoiceMessage.component(clickEvent: McTextClickEvent = McTextClickEvent.runCo
             McTextComponent
                 .translatable(
                     "pv.addon.voice_messages.component.voice_message",
-                    duration.inWholeSeconds.padStartZero(),
+                    duration.minutesAndSeconds(),
                     waveformComponents().merge(),
                 ).clickEvent(clickEvent),
         )

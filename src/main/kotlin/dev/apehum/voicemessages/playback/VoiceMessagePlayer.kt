@@ -78,7 +78,7 @@ class VoiceMessagePlayer(
         // delay sending source name to compensate jitter and audio buffer on the client
         // this is not perfect, but we can't know current jitter buffer on the client
         // this should be good enough
-        var delayedSequenceNumber = -7L
+        var delayedSequenceNumber = -4L
 
         return AudioSender(
             frameProvider,
@@ -91,7 +91,7 @@ class VoiceMessagePlayer(
 
                 val currentTime =
                     McTextComponent.literal(
-                        "[${currentDuration.inWholeSeconds.padStartZero()} / ${totalDuration.inWholeSeconds.padStartZero()}]",
+                        "[${currentDuration.minutesAndSeconds()} / ${totalDuration.minutesAndSeconds()}]",
                     )
 
                 val sourceName =

@@ -9,9 +9,9 @@ cancel_recording = "<red><hover:show_text:Click to cancel>[Cancel]"
 recording_started = "Recording is started: <argument:0> <argument:1>"
 stop_recording = "<yellow><hover:show_text:Click to stop recording>[Stop]"
 cancel_and_delete_recording = "<red><hover:show_text:Click to cancel>[Cancel & Delete]"
-# argument:0 is current duration
+# argument:0 is current duration (XX:XX)
 # argument:1 is remaining duration
-max_duration_warning = "<yellow>Warning:</yellow> Recording is <argument:0> seconds long. It will stop automatically in <bold><argument:1></bold> seconds."
+max_duration_warning = "<yellow>Warning:</yellow> Recording is <argument:0> long. It will stop automatically in <bold><argument:1></bold> seconds."
 # argument:0 is timeout in seconds
 recording_timeout = "<red>You didn't say anything in time, recording is cancelled."
 
@@ -34,12 +34,12 @@ playback_cancelled = "Playback cancelled."
 # argument:0 is playback_cancel
 playback_started = "Playback started: <argument:0>"
 playback_cancel = "<red><hover:show_text:Click to cancel>[Cancel]"
-# argument:0 is current duration
-# argument:1 is max duration
+# argument:0 is current duration (XX:XX)
+# argument:1 is max duration (XX:XX)
 recording_actionbar = "[<argument:0> / <argument:1>] Recording voice message"
 
 [server.pv.addon.voice_messages.component]
-# argument:0 is duration in seconds
+# argument:0 is duration (XX:XX)
 # argument:1 is waveform
 voice_message = "<blue><hover:show_text:Click to play>[▶ <argument:0> <argument:1>]"
 
