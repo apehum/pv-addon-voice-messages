@@ -15,6 +15,8 @@ max_duration_warning = "<yellow>Warning:</yellow> Recording is <argument:0> seco
 # argument:0 is timeout in seconds
 recording_timeout = "<red>You didn't say anything in time, recording is cancelled."
 
+pv_not_installed = "<red>You don't have <hover:show_text:'https://modrinth.com/plugin/plasmo-voice'><click:open_url:https://modrinth.com/plugin/plasmo-voice><u><blue>Plasmo Voice</blue></u></click></hover> installed."
+
 # argument:0 is voice message component
 # argument:1 is send button component
 draft_saved = "Voice message saved as a draft:<br><argument:0> <argument:1>"

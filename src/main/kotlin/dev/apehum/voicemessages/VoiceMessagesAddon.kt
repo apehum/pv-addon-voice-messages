@@ -152,6 +152,7 @@ class VoiceMessagesAddon :
 
         voiceMessageActionsCommand.initialize(
             voiceMessageActionsCommand(
+                voiceServer,
                 voiceRecorder,
                 messageStorage,
                 messagePlayer,

@@ -14,6 +14,7 @@ import dev.apehum.voicemessages.record.RecordingStopCause
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
 import dev.apehum.voicemessages.storage.draft.VoiceMessageDraft
 import dev.apehum.voicemessages.storage.draft.VoiceMessageDraftStorage
+import dev.apehum.voicemessages.util.extension.asVoicePlayer
 import dev.apehum.voicemessages.util.extension.padStartZero
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import dev.apehum.voicemessages.util.extension.sendTranslatableActionbar
@@ -142,6 +143,12 @@ private fun sendChatVoiceMessageCommand(
             context.source as? McServerPlayer
                 ?: throw IllegalStateException("Player only command")
 
+        val voicePlayer = player.asVoicePlayer(voiceServer)
+        if (!voicePlayer.hasVoiceChat()) {
+            player.sendTranslatable("pv.addon.voice_messages.command.pv_not_installed")
+            return@executesCoroutine
+        }
+
         val chatContext = chatSender.createContext(context).await()
 
         if (!chatSender.canSendMessage(chatContext)) return@executesCoroutine
@@ -180,6 +187,12 @@ fun voiceMessageCommand(
             val player =
                 context.source as? McServerPlayer
                     ?: throw IllegalStateException("Player only command")
+
+            val voicePlayer = player.asVoicePlayer(voiceServer)
+            if (!voicePlayer.hasVoiceChat()) {
+                player.sendTranslatable("pv.addon.voice_messages.command.pv_not_installed")
+                return@executesCoroutine
+            }
 
             val chatContext = chatSender.createContext(context).await()
 

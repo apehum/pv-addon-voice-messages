@@ -9,12 +9,15 @@ import dev.apehum.voicemessages.record.RecordingCancelCause
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
 import dev.apehum.voicemessages.storage.draft.VoiceMessageDraftStorage
 import dev.apehum.voicemessages.storage.message.VoiceMessageStorage
+import dev.apehum.voicemessages.util.extension.asVoicePlayer
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.chat.style.McTextClickEvent
 import su.plo.slib.api.server.entity.player.McServerPlayer
+import su.plo.voice.api.server.PlasmoVoiceServer
 
 private fun playVoiceMessageCommand(
+    voiceServer: PlasmoVoiceServer,
     messageStore: VoiceMessageStorage,
     messagePlayer: VoiceMessagePlayer,
 ) = dslCommand("play") {
@@ -22,6 +25,12 @@ private fun playVoiceMessageCommand(
 
     executesCoroutine { context ->
         val player = context.source as? McServerPlayer ?: return@executesCoroutine
+
+        val voicePlayer = player.asVoicePlayer(voiceServer)
+        if (!voicePlayer.hasVoiceChat()) {
+            player.sendTranslatable("pv.addon.voice_messages.command.pv_not_installed")
+            return@executesCoroutine
+        }
 
         val voiceMessage =
             messageStore.getById(id) ?: run {
@@ -42,13 +51,14 @@ private fun playVoiceMessageCommand(
 
 // additional command for actions to avoid bloat in tab completion
 fun voiceMessageActionsCommand(
+    voiceServer: PlasmoVoiceServer,
     voiceRecorder: VoiceActivationRecorder,
     messageStore: VoiceMessageStorage,
     messagePlayer: VoiceMessagePlayer,
     draftStore: VoiceMessageDraftStorage,
     senderRegistry: ChatMessageSenderRegistry,
 ) = dslCommand("vm-actions") {
-    command(playVoiceMessageCommand(messageStore, messagePlayer))
+    command(playVoiceMessageCommand(voiceServer, messageStore, messagePlayer))
 
     command("record-cancel") {
         executes { context ->
