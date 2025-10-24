@@ -5,6 +5,7 @@ import su.plo.config.ConfigField
 
 @Config
 data class AddonConfig(
+    @ConfigField(comment = "Activation to use for recording")
     val activation: String = "proximity",
     val maxDurationSeconds: Int = 60,
     val actionbarWhenRecording: Boolean = true,
@@ -23,6 +24,7 @@ data class AddonConfig(
     )
     val storageType: StorageType = StorageType.MEMORY,
     @ConfigField(
+        comment = "Redis configuration (required if storageType is REDIS)",
         nullComment = """
             [redis]
             host = "localhost"
