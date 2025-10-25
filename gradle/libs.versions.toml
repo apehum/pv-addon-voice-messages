@@ -2,10 +2,11 @@
 kotlin = "2.0.21"
 kotlinx-coroutines = "1.7.3"
 
-plasmovoice = "2.1.6-SNAPSHOT"
+plasmovoice = "2.1.6"
 pv-gradle-plugin = "1.0.7"
 run-paper = "3.0.2"
 buildconfig = "5.7.0"
+publish = "0.30.0"
 
 slib = "1.1.4"
 config = "1.1.0"
@@ -22,7 +23,9 @@ kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core",
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
 
 [plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 pv-entrypoints = { id = "su.plo.voice.plugin.entrypoints", version.ref = "pv-gradle-plugin" }
 pv-kotlin-relocate = { id = "su.plo.voice.plugin.relocate-kotlin", version.ref = "pv-gradle-plugin" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
 runpaper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }
+publish = { id = "com.vanniktech.maven.publish", version.ref = "publish" }
