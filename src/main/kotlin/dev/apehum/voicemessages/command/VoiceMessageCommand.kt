@@ -16,7 +16,6 @@ import dev.apehum.voicemessages.record.VoiceActivationRecorder
 import dev.apehum.voicemessages.storage.draft.VoiceMessageDraft
 import dev.apehum.voicemessages.storage.draft.VoiceMessageDraftStorage
 import dev.apehum.voicemessages.util.extension.asVoicePlayer
-import dev.apehum.voicemessages.util.extension.padStartZero
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import dev.apehum.voicemessages.util.extension.sendTranslatableActionbar
 import dev.apehum.voicemessages.util.extension.translateClientPV
@@ -139,6 +138,11 @@ private fun sendChatVoiceMessageCommand(
             argument(name, argument)
         }
 
+    checkPermission { context ->
+        context.source.hasPermission("pv.addon.voice_messages.record.*") ||
+            context.source.hasPermission("pv.addon.voice_messages.record.$chatSenderName")
+    }
+
     executesCoroutine { context ->
         val player =
             context.source as? McServerPlayer
@@ -167,6 +171,13 @@ fun voiceMessageCommand(
     senderRegistry: ChatMessageSenderRegistry,
 ): DslCommand =
     dslCommand(name) {
+        checkPermission { context ->
+            context.source.hasPermission("pv.addon.voice_messages.record.*") ||
+                senderRegistry.getSenders().map { it.key }.any {
+                    context.source.hasPermission("pv.addon.voice_messages.record.$it")
+                }
+        }
+
         senderRegistry.getSenders().forEach { (senderName, sender) ->
             @Suppress("UNCHECKED_CAST")
             command(
@@ -181,24 +192,5 @@ fun voiceMessageCommand(
             )
         }
 
-        executesCoroutine { context ->
-            @Suppress("UNCHECKED_CAST")
-            val chatSender = senderRegistry.getSender("default") as? ChatMessageSender<ChatContext> ?: return@executesCoroutine
-
-            val player =
-                context.source as? McServerPlayer
-                    ?: throw IllegalStateException("Player only command")
-
-            val voicePlayer = player.asVoicePlayer(voiceServer)
-            if (!voicePlayer.hasVoiceChat()) {
-                player.sendTranslatable("pv.addon.voice_messages.command.pv_not_installed")
-                return@executesCoroutine
-            }
-
-            val chatContext = chatSender.createContext(context).await()
-
-            if (!chatSender.canSendMessage(chatContext)) return@executesCoroutine
-
-            recordAndSaveVoiceMessage(player, config, voiceServer, voiceRecorder, draftStore, "default", chatContext)
-        }
+        redirect { arrayOf("default") }
     }

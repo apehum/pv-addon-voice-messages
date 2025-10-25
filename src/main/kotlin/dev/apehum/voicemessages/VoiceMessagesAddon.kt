@@ -17,6 +17,7 @@ import dev.apehum.voicemessages.storage.message.MemoryVoiceMessageStorage
 import dev.apehum.voicemessages.storage.message.VoiceMessageStorage
 import dev.apehum.voicemessages.storage.message.createJedisStore
 import su.plo.slib.api.logging.McLoggerFactory
+import su.plo.slib.api.permission.PermissionDefault
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.event.command.McServerCommandsRegisterEvent
 import su.plo.voice.api.addon.AddonInitializer
@@ -73,6 +74,12 @@ class VoiceMessagesAddon :
         messageSenderRegistry = ChatMessageSenderRegistry()
 
         draftMessageStorage = MemoryVoiceMessageDraftStorage()
+
+        val permissions = voiceServer.minecraftServer.permissionManager
+        permissions.register("pv.addon.voice_messages.play", PermissionDefault.TRUE)
+        permissions.register("pv.addon.voice_messages.record.default", PermissionDefault.TRUE)
+        permissions.register("pv.addon.voice_messages.record.direct", PermissionDefault.TRUE)
+        permissions.register("pv.addon.voice_messages.record.*", PermissionDefault.OP)
 
         reloadConfig()
         VoiceMessagesAPIProvider.setInstance(this)

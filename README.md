@@ -17,13 +17,19 @@
 
 Server-side [Plasmo Voice](https://github.com/plasmoapp/plasmo-voice) addon that adds voice messages.
 
-![](.github/assets/output.gif)
+![](.github/assets/showcase.gif)
 
 ## Commands
 
 - `/vm` — Record and send a voice message to all players (same as `/vm default`)
 - `/vm default` — Record and send a voice message to all players
 - `/vm direct <player>` — Record and send a voice message to a specific player
+
+## Permissions
+- `pv.addon.voice_messages.play` — Play voice messages (default true)
+- `pv.addon.voice_messages.record.default` — Record and send global voice messages (default true)
+- `pv.addon.voice_messages.record.direct` — Record and send direct voice messages (default true)
+- `pv.addon.voice_messages.record.*` — Record and send voice messages in any context (default OP)
 
 ## Configuration
 

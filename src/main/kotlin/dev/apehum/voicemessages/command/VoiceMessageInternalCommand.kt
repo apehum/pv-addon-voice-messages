@@ -23,6 +23,8 @@ private fun playVoiceMessageCommand(
 ) = dslCommand("play") {
     val id by argument("id", UUIDArgumentType())
 
+    checkPermission { it.source.hasPermission("pv.addon.voice_messages.play") }
+
     executesCoroutine { context ->
         val player = context.source as? McServerPlayer ?: return@executesCoroutine
 

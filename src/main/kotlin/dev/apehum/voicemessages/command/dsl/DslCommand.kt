@@ -14,6 +14,10 @@ typealias DslCommandRunnable = (context: DslCommandContext) -> Unit
 
 typealias DslCommandCoroutineRunnable = suspend (context: DslCommandContext) -> Unit
 
+typealias DslCommandRedirect = (source: McCommandSource) -> Array<String>
+
+typealias DslCommandPermissionCheck = (context: DslCommandContext) -> Boolean
+
 private val currentContext = ThreadLocal<DslCommandContext>()
 
 class DslCommandArgument<T>(
@@ -66,6 +70,8 @@ class DslCommandBuilder(
     private var executes: DslCommandRunnable? = null
     private var executesCoroutine: DslCommandCoroutineRunnable? = null
     private var coroutineScope: CoroutineScope? = null
+    private var permissionCheck: DslCommandPermissionCheck? = null
+    private var redirect: DslCommandRedirect? = null
 
     fun command(
         name: String,
@@ -99,6 +105,14 @@ class DslCommandBuilder(
             .also { arguments.add(it) }
     }
 
+    fun checkPermission(permissionCheck: DslCommandPermissionCheck) {
+        this@DslCommandBuilder.permissionCheck = permissionCheck
+    }
+
+    fun redirect(redirect: DslCommandRedirect) {
+        this@DslCommandBuilder.redirect = redirect
+    }
+
     fun executes(runnable: DslCommandRunnable) {
         executes = runnable
     }
@@ -119,6 +133,8 @@ class DslCommandBuilder(
             executes,
             executesCoroutine,
             coroutineScope,
+            permissionCheck,
+            redirect,
         )
 }
 
@@ -126,15 +142,27 @@ class DslCommand(
     val name: String,
     private val commands: List<DslCommand> = mutableListOf(),
     private val arguments: List<DslCommandArgument<*>> = mutableListOf(),
-    private val executes: DslCommandRunnable? = null,
-    private val executesCoroutine: DslCommandCoroutineRunnable? = null,
-    private val coroutineScope: CoroutineScope? = null,
+    private val executes: DslCommandRunnable?,
+    private val executesCoroutine: DslCommandCoroutineRunnable?,
+    private val coroutineScope: CoroutineScope?,
+    private val permissionCheck: DslCommandPermissionCheck?,
+    private val redirect: DslCommandRedirect?,
 ) : McCommand {
     override fun execute(
         source: McCommandSource,
         arguments: Array<String>,
     ) {
+        if (redirect != null && arguments.isEmpty()) {
+            val newArguments = redirect(source)
+            if (newArguments.isNotEmpty()) {
+                return execute(source, newArguments)
+            }
+        }
+
         if (commands.isNotEmpty()) {
+            val newArguments = arguments.takeIf { it.size > 1 }?.copyOfRange(1, arguments.size) ?: emptyArray()
+            val availableCommands = commands.filter { it.hasPermission(source, newArguments) }
+
             val argument =
                 arguments.getOrNull(0) ?: run {
                     if (executes != null || executesCoroutine != null) {
@@ -142,16 +170,15 @@ class DslCommand(
                         return
                     }
 
-                    source.sendMessage("Usage: /$name <${commands.map { it.name }}>")
+                    source.sendMessage("Usage: /$name <${availableCommands.map { it.name }}>")
                     return
                 }
 
             val command =
-                commands.find { it.name == argument } ?: run {
-                    source.sendMessage("$argument not found. Usage: /$name <${commands.map { it.name }}>")
+                availableCommands.find { it.name == argument } ?: run {
+                    source.sendMessage("$argument not found. Usage: /$name <${availableCommands.map { it.name }}>")
                     return
                 }
-            val newArguments = arguments.takeIf { it.size > 1 }?.copyOfRange(1, arguments.size) ?: emptyArray()
             command.execute(source, newArguments)
             return
         }
@@ -200,19 +227,28 @@ class DslCommand(
         source: McCommandSource,
         arguments: Array<String>,
     ): List<String> {
+        if (redirect != null && arguments.isEmpty()) {
+            val newArguments = redirect(source)
+            if (newArguments.isNotEmpty()) {
+                return suggest(source, newArguments)
+            }
+        }
+
         if (commands.isNotEmpty()) {
+            val newArguments = arguments.takeIf { it.size > 1 }?.copyOfRange(1, arguments.size) ?: emptyArray()
+            val availableCommands = commands.filter { it.hasPermission(source, newArguments) }
+
             val argument =
                 arguments.getOrNull(0) ?: run {
-                    return commands.map { it.name }
+                    return availableCommands.map { it.name }
                 }
 
             val command =
-                commands.find { it.name == argument } ?: run {
-                    return commands
+                availableCommands.find { it.name == argument } ?: run {
+                    return availableCommands
                         .map { it.name }
                         .filter { it.startsWith(argument, ignoreCase = true) }
                 }
-            val newArguments = arguments.takeIf { it.size > 1 }?.copyOfRange(1, arguments.size) ?: emptyArray()
             return command.suggest(source, newArguments)
         }
 
@@ -225,5 +261,44 @@ class DslCommand(
             )
 
         return argument.inner.suggest(source, argumentsReader)
+    }
+
+    override fun hasPermission(
+        source: McCommandSource,
+        arguments: Array<String>?,
+    ): Boolean {
+        val hasRootPermission =
+            if (permissionCheck != null) {
+                permissionCheck(DslCommandContext(source, emptyMap()))
+            } else {
+                super.hasPermission(source, arguments)
+            }
+
+        if (!hasRootPermission) return false
+
+        if (redirect != null && (arguments != null && arguments.isEmpty())) {
+            val newArguments = redirect(source)
+            if (newArguments.isNotEmpty()) {
+                return hasPermission(source, newArguments)
+            }
+        }
+
+        if (commands.isNotEmpty()) {
+            val argument =
+                arguments?.getOrNull(0) ?: run {
+                    return true
+                }
+
+            val command =
+                commands.find { it.name == argument } ?: run {
+                    return true
+                }
+            val newArguments = arguments.takeIf { it.size > 1 }?.copyOfRange(1, arguments.size) ?: emptyArray()
+            return command.hasPermission(source, newArguments)
+        }
+
+        // todo: arguments permissions
+
+        return super.hasPermission(source, arguments)
     }
 }
