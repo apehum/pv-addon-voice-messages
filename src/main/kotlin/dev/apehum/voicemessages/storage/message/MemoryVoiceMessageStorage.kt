@@ -4,6 +4,7 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import dev.apehum.voicemessages.playback.VoiceMessage
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
@@ -14,7 +15,7 @@ class MemoryVoiceMessageStorage(
     private val cache: Cache<UUID, VoiceMessage> =
         CacheBuilder
             .newBuilder()
-            .expireAfterAccess(expireAfter.toJavaDuration())
+            .expireAfterAccess(expireAfter.toJavaDuration().toNanos(), TimeUnit.NANOSECONDS)
             .build()
 
     override suspend fun getById(id: UUID): VoiceMessage? = cache.getIfPresent(id)

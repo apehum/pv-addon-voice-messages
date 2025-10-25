@@ -3,6 +3,7 @@ package dev.apehum.voicemessages.storage.draft
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import java.util.UUID
+import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
@@ -13,7 +14,7 @@ class MemoryVoiceMessageDraftStorage(
     private val cache: Cache<UUID, VoiceMessageDraft> =
         CacheBuilder
             .newBuilder()
-            .expireAfterAccess(expireAfter.toJavaDuration())
+            .expireAfterAccess(expireAfter.toJavaDuration().toNanos(), TimeUnit.NANOSECONDS)
             .build()
 
     override suspend fun getByPlayerId(playerId: UUID): VoiceMessageDraft? = cache.getIfPresent(playerId)
