@@ -30,6 +30,7 @@ import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent
 import su.plo.voice.api.server.player.VoiceServerPlayer
 import java.io.File
 import java.io.InputStream
+import kotlin.time.Duration.Companion.minutes
 
 @Addon(
     id = BuildConfig.PROJECT_NAME,
@@ -72,8 +73,6 @@ class VoiceMessagesAddon :
 
     override fun onAddonInitialize() {
         messageSenderRegistry = ChatMessageSenderRegistry()
-
-        draftMessageStorage = MemoryVoiceMessageDraftStorage()
 
         val permissions = voiceServer.minecraftServer.permissionManager
         permissions.register("pv.addon.voice_messages.play", PermissionDefault.TRUE)
@@ -132,12 +131,13 @@ class VoiceMessagesAddon :
 
         messageStorage =
             when (config.storageType) {
-                AddonConfig.StorageType.MEMORY -> MemoryVoiceMessageStorage()
+                AddonConfig.StorageType.MEMORY -> MemoryVoiceMessageStorage(config.expireAfterMinutes.minutes)
                 AddonConfig.StorageType.REDIS -> {
                     requireNotNull(config.redis)
-                    createJedisStore(config.redis)
+                    createJedisStore(config.redis, config.expireAfterMinutes.minutes)
                 }
             }
+        draftMessageStorage = MemoryVoiceMessageDraftStorage(config.expireAfterMinutes.minutes)
         logger.info("Voice message storage: ${config.storageType}")
 
         voiceRecorder =

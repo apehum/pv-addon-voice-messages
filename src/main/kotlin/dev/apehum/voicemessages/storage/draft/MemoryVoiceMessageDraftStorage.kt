@@ -5,11 +5,10 @@ import com.google.common.cache.CacheBuilder
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
 
 class MemoryVoiceMessageDraftStorage(
-    expireAfter: Duration = 10.minutes,
+    expireAfter: Duration,
 ) : VoiceMessageDraftStorage {
     private val cache: Cache<UUID, VoiceMessageDraft> =
         CacheBuilder

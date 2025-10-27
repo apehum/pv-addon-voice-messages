@@ -12,9 +12,11 @@ import redis.clients.jedis.JedisPooled
 import java.util.Base64
 import java.util.UUID
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
 
-fun createJedisStore(config: RedisStorageConfig): JedisVoiceMessageStorage {
+fun createJedisStore(
+    config: RedisStorageConfig,
+    expireAfter: Duration,
+): JedisVoiceMessageStorage {
     val configBuilder = DefaultJedisClientConfig.builder()
     if (config.user.isNotBlank()) {
         configBuilder.user(config.user)
@@ -26,12 +28,12 @@ fun createJedisStore(config: RedisStorageConfig): JedisVoiceMessageStorage {
 
     val jedisPool = JedisPooled(HostAndPort(config.host, config.port), configBuilder.build())
 
-    return JedisVoiceMessageStorage(jedisPool)
+    return JedisVoiceMessageStorage(jedisPool, expireAfter)
 }
 
 class JedisVoiceMessageStorage(
     private val jedis: JedisPooled,
-    private val expireAfter: Duration = 10.minutes,
+    private val expireAfter: Duration,
 ) : VoiceMessageStorage {
     override suspend fun getById(id: UUID): VoiceMessage? =
         withContext(Dispatchers.IO) {

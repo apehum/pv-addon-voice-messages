@@ -6,11 +6,10 @@ import dev.apehum.voicemessages.playback.VoiceMessage
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
-import kotlin.time.Duration.Companion.minutes
 import kotlin.time.toJavaDuration
 
 class MemoryVoiceMessageStorage(
-    expireAfter: Duration = 10.minutes,
+    expireAfter: Duration,
 ) : VoiceMessageStorage {
     private val cache: Cache<UUID, VoiceMessage> =
         CacheBuilder

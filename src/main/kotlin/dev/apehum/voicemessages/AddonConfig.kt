@@ -8,6 +8,8 @@ data class AddonConfig(
     @ConfigField(comment = "Activation to use for recording")
     val activation: String = "proximity",
     val maxDurationSeconds: Int = 60,
+    @ConfigField(comment = "How long recorded voice messages will be stored")
+    val expireAfterMinutes: Int = 10,
     val actionbarWhenRecording: Boolean = true,
     @ConfigField(
         comment = """
