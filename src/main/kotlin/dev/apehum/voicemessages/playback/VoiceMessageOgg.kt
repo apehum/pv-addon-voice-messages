@@ -5,25 +5,6 @@ import org.chenliang.oggus.opus.CommentHeader
 import org.chenliang.oggus.opus.IdHeader
 import java.io.ByteArrayOutputStream
 
-// https://github.com/Gagravarr/VorbisJava
-// I've tried it, but it doesn't work in Discord for some reason
-//    private fun VoiceMessage.oggStream(): ByteArray {
-//        val buffer = ByteArrayOutputStream()
-//        OpusFile(buffer).use { opusFile ->
-//            opusFile.info.apply {
-//                numChannels = 1
-//                preSkip = 312
-//                setSampleRate(48000)
-//                outputGain = 0
-//            }
-//            opusFile.tags.vendor = "Plasmo Voice"
-//
-//            encodedFrames.forEach { opusFile.writeAudioData(OpusAudioData(it)) }
-//        }
-//
-//        return buffer.toByteArray()
-//    }
-
 fun VoiceMessage.ogg(): ByteArray {
     var sequenceNumber = 0L
     val idHeader = createOggPage(0, sequenceNumber++, createIdHeader().dump())
