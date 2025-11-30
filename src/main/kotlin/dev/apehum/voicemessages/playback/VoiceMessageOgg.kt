@@ -1,5 +1,6 @@
 package dev.apehum.voicemessages.playback
 
+import dev.apehum.voicemessages.api.VoiceMessage
 import org.chenliang.oggus.ogg.OggPage
 import org.chenliang.oggus.opus.CommentHeader
 import org.chenliang.oggus.opus.IdHeader

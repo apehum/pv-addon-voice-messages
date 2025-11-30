@@ -1,12 +1,12 @@
 package dev.apehum.voicemessages.chat.builtin
 
 import dev.apehum.voicemessages.AddonConfig
-import dev.apehum.voicemessages.chat.ChatContext
-import dev.apehum.voicemessages.chat.ChatMessageSender
-import dev.apehum.voicemessages.command.dsl.DslCommandContext
-import dev.apehum.voicemessages.command.dsl.PlayerArgument
-import dev.apehum.voicemessages.command.dsl.argument.NamedCommandArgument
-import dev.apehum.voicemessages.playback.VoiceMessage
+import dev.apehum.voicemessages.api.VoiceMessage
+import dev.apehum.voicemessages.api.chat.ChatContext
+import dev.apehum.voicemessages.api.chat.ChatMessageSender
+import dev.apehum.voicemessages.api.command.dsl.CommandContext
+import dev.apehum.voicemessages.api.command.dsl.argument.NamedCommandArgument
+import dev.apehum.voicemessages.api.command.dsl.argument.PlayerArgument
 import dev.apehum.voicemessages.playback.component
 import dev.apehum.voicemessages.util.extension.miniMessage
 import dev.apehum.voicemessages.util.extension.toAdventure
@@ -30,7 +30,7 @@ open class DefaultDirectMessageSender(
     private val formats: AddonConfig.ChatFormatConfig,
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
 ) : ChatMessageSender<DirectChatContext> {
-    override suspend fun sendVoiceMessage(
+    override fun sendVoiceMessage(
         context: DirectChatContext,
         message: VoiceMessage,
     ) {
@@ -59,7 +59,7 @@ open class DefaultDirectMessageSender(
         return context.source.canSee(context.target)
     }
 
-    override fun createContext(context: DslCommandContext): CompletableFuture<DirectChatContext> =
+    override fun createContext(context: CommandContext): CompletableFuture<DirectChatContext> =
         coroutineScope.future {
             val target = context.getArgumentValue<McServerPlayer>("target")
             DirectChatContext(context.source, target)

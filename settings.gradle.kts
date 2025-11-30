@@ -9,3 +9,6 @@ pluginManagement {
 }
 
 rootProject.name = "pv-addon-voice-messages"
+
+include("api")
+include("api-example")

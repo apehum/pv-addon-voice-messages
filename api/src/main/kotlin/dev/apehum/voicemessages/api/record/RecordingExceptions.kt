@@ -1,10 +1,15 @@
-package dev.apehum.voicemessages.record
+package dev.apehum.voicemessages.api.record
 
-import kotlin.coroutines.cancellation.CancellationException
+import java.time.Duration
+import java.util.concurrent.CancellationException
 
 sealed class RecordingStopCause(
     message: String,
 ) : CancellationException(message)
+
+class RecordingTimeoutCause(
+    val timeout: Duration,
+) : RecordingStopCause("Recording timed out")
 
 class PlayerLeftStopCause : RecordingStopCause("Player left the server")
 

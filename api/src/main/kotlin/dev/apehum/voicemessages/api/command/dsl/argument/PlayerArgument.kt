@@ -1,7 +1,5 @@
-package dev.apehum.voicemessages.command.dsl
+package dev.apehum.voicemessages.api.command.dsl.argument
 
-import dev.apehum.voicemessages.command.dsl.argument.CommandArgument
-import dev.apehum.voicemessages.command.dsl.argument.StringReader
 import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.entity.player.McServerPlayer

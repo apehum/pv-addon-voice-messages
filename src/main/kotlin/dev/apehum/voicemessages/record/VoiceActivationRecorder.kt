@@ -3,6 +3,8 @@ package dev.apehum.voicemessages.record
 import com.google.common.collect.ArrayListMultimap
 import com.google.common.collect.ListMultimap
 import com.google.common.collect.Multimaps
+import dev.apehum.voicemessages.api.record.PlayerLeftStopCause
+import dev.apehum.voicemessages.api.record.RecordingStopCause
 import dev.apehum.voicemessages.util.extension.startCancellable
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope

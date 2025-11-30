@@ -2,6 +2,8 @@ package dev.apehum.voicemessages.storage.draft
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import dev.apehum.voicemessages.api.storage.draft.VoiceMessageDraft
+import dev.apehum.voicemessages.api.storage.draft.VoiceMessageDraftStorage
 import java.util.UUID
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration

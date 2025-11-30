@@ -1,4 +1,4 @@
-package dev.apehum.voicemessages.chat
+package dev.apehum.voicemessages.api.chat
 
 /**
  * Registry for managing [ChatMessageSender] implementations by context name.

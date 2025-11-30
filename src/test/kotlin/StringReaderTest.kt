@@ -1,4 +1,4 @@
-import dev.apehum.voicemessages.command.dsl.argument.StringReader
+import dev.apehum.voicemessages.api.command.dsl.argument.StringReader
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.Test
 import kotlin.test.assertEquals

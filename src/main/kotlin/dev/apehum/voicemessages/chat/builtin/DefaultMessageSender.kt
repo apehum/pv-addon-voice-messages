@@ -1,10 +1,10 @@
 package dev.apehum.voicemessages.chat.builtin
 
 import dev.apehum.voicemessages.AddonConfig
-import dev.apehum.voicemessages.chat.ChatContext
-import dev.apehum.voicemessages.chat.ChatMessageSender
-import dev.apehum.voicemessages.command.dsl.DslCommandContext
-import dev.apehum.voicemessages.playback.VoiceMessage
+import dev.apehum.voicemessages.api.VoiceMessage
+import dev.apehum.voicemessages.api.chat.ChatContext
+import dev.apehum.voicemessages.api.chat.ChatMessageSender
+import dev.apehum.voicemessages.api.command.dsl.CommandContext
 import dev.apehum.voicemessages.playback.component
 import dev.apehum.voicemessages.util.extension.miniMessage
 import dev.apehum.voicemessages.util.extension.toAdventure
@@ -23,7 +23,7 @@ class DefaultMessageSender(
     private val minecraftServer: McServerLib,
     private val formats: AddonConfig.ChatFormatConfig,
 ) : ChatMessageSender<DefaultChatContext> {
-    override suspend fun sendVoiceMessage(
+    override fun sendVoiceMessage(
         context: DefaultChatContext,
         message: VoiceMessage,
     ) {
@@ -49,6 +49,6 @@ class DefaultMessageSender(
 
     override fun canSendMessage(context: DefaultChatContext): Boolean = true
 
-    override fun createContext(context: DslCommandContext): CompletableFuture<DefaultChatContext> =
+    override fun createContext(context: CommandContext): CompletableFuture<DefaultChatContext> =
         CompletableFuture.completedFuture(DefaultChatContext(context.source))
 }

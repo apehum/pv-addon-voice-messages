@@ -1,7 +1,7 @@
-package dev.apehum.voicemessages.storage.draft
+package dev.apehum.voicemessages.api.storage.draft
 
-import dev.apehum.voicemessages.chat.ChatContext
-import dev.apehum.voicemessages.playback.VoiceMessage
+import dev.apehum.voicemessages.api.VoiceMessage
+import dev.apehum.voicemessages.api.chat.ChatContext
 import java.util.UUID
 
 /**

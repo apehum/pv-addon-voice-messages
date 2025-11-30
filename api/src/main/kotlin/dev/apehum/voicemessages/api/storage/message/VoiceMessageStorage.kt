@@ -1,6 +1,6 @@
-package dev.apehum.voicemessages.storage.message
+package dev.apehum.voicemessages.api.storage.message
 
-import dev.apehum.voicemessages.playback.VoiceMessage
+import dev.apehum.voicemessages.api.VoiceMessage
 import java.util.UUID
 
 /**

@@ -1,8 +1,8 @@
-package dev.apehum.voicemessages.chat
+package dev.apehum.voicemessages.api.chat
 
-import dev.apehum.voicemessages.command.dsl.DslCommandContext
-import dev.apehum.voicemessages.command.dsl.argument.NamedCommandArgument
-import dev.apehum.voicemessages.playback.VoiceMessage
+import dev.apehum.voicemessages.api.VoiceMessage
+import dev.apehum.voicemessages.api.command.dsl.CommandContext
+import dev.apehum.voicemessages.api.command.dsl.argument.NamedCommandArgument
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -20,7 +20,7 @@ interface ChatMessageSender<T : ChatContext> {
      * @param context The chat context containing delivery information
      * @param message The voice message to send
      */
-    suspend fun sendVoiceMessage(
+    fun sendVoiceMessage(
         context: T,
         message: VoiceMessage,
     )
@@ -39,7 +39,7 @@ interface ChatMessageSender<T : ChatContext> {
      * @param context The command context to extract information from
      * @return A future that completes with the created chat context
      */
-    fun createContext(context: DslCommandContext): CompletableFuture<T>
+    fun createContext(context: CommandContext): CompletableFuture<T>
 
     /**
      * Defines additional command arguments required for this sender.

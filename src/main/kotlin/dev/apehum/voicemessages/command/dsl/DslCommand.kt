@@ -1,14 +1,21 @@
 package dev.apehum.voicemessages.command.dsl
 
-import dev.apehum.voicemessages.command.dsl.argument.CommandArgument
-import dev.apehum.voicemessages.command.dsl.argument.StringReader
+import dev.apehum.voicemessages.api.command.dsl.CommandContext
+import dev.apehum.voicemessages.api.command.dsl.argument.CommandArgument
+import dev.apehum.voicemessages.api.command.dsl.argument.StringReader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.asContextElement
 import kotlinx.coroutines.launch
 import su.plo.slib.api.command.McCommand
 import su.plo.slib.api.command.McCommandSource
 import kotlin.properties.ReadOnlyProperty
 import kotlin.reflect.KProperty
+
+fun dslCommand(
+    name: String,
+    builder: DslCommandBuilder.() -> Unit = {},
+): DslCommand = DslCommandBuilder(name).apply(builder).build()
 
 typealias DslCommandRunnable = (context: DslCommandContext) -> Unit
 
@@ -40,11 +47,11 @@ data class DslParsedCommandArgument<T>(
 )
 
 data class DslCommandContext(
-    val source: McCommandSource,
+    override val source: McCommandSource,
     val arguments: Map<String, DslParsedCommandArgument<*>>,
-) {
+) : CommandContext {
     @Suppress("UNCHECKED_CAST")
-    fun <T> getArgumentValue(name: String): T {
+    override fun <T> getArgumentValue(name: String): T {
         if (!arguments.containsKey(name)) throw IllegalArgumentException("Argument[$name] not found")
 
         return arguments[name]?.value as T
@@ -55,11 +62,6 @@ data class DslCommandContext(
         property: KProperty<*>,
     ): T = getArgumentValue(name)
 }
-
-fun dslCommand(
-    name: String,
-    builder: DslCommandBuilder.() -> Unit = {},
-): DslCommand = DslCommandBuilder(name).apply(builder).build()
 
 class DslCommandBuilder(
     val name: String,
@@ -215,10 +217,8 @@ class DslCommand(
             executes.invoke(context)
             currentContext.remove()
         } else if (executesCoroutine != null && coroutineScope != null) {
-            coroutineScope.launch {
-                currentContext.set(context)
+            coroutineScope.launch(currentContext.asContextElement(context)) {
                 executesCoroutine.invoke(context)
-                currentContext.remove()
             }
         }
     }

@@ -1,14 +1,14 @@
 package dev.apehum.voicemessages.command
 
-import dev.apehum.voicemessages.chat.ChatContext
-import dev.apehum.voicemessages.chat.ChatMessageSender
-import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
+import dev.apehum.voicemessages.api.chat.ChatContext
+import dev.apehum.voicemessages.api.chat.ChatMessageSender
+import dev.apehum.voicemessages.api.chat.ChatMessageSenderRegistry
+import dev.apehum.voicemessages.api.record.RecordingCancelCause
+import dev.apehum.voicemessages.api.storage.draft.VoiceMessageDraftStorage
+import dev.apehum.voicemessages.api.storage.message.VoiceMessageStorage
 import dev.apehum.voicemessages.command.dsl.dslCommand
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
-import dev.apehum.voicemessages.record.RecordingCancelCause
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
-import dev.apehum.voicemessages.storage.draft.VoiceMessageDraftStorage
-import dev.apehum.voicemessages.storage.message.VoiceMessageStorage
 import dev.apehum.voicemessages.util.extension.asVoicePlayer
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import su.plo.slib.api.chat.component.McTextComponent

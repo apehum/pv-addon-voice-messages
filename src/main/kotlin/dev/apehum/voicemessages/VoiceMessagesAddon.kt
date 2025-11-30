@@ -1,21 +1,29 @@
 package dev.apehum.voicemessages
 
+import dev.apehum.voicemessages.api.VoiceMessage
 import dev.apehum.voicemessages.api.VoiceMessagesAPI
 import dev.apehum.voicemessages.api.VoiceMessagesAPIProvider
-import dev.apehum.voicemessages.chat.ChatMessageSenderRegistry
+import dev.apehum.voicemessages.api.chat.ChatMessageSenderRegistry
+import dev.apehum.voicemessages.api.event.MessageSenderRegistrationEvent
+import dev.apehum.voicemessages.api.storage.draft.VoiceMessageDraftStorage
+import dev.apehum.voicemessages.api.storage.message.VoiceMessageStorage
 import dev.apehum.voicemessages.chat.builtin.DefaultDirectMessageSender
 import dev.apehum.voicemessages.chat.builtin.DefaultMessageSender
 import dev.apehum.voicemessages.command.LateInitCommand
 import dev.apehum.voicemessages.command.voiceMessageActionsCommand
 import dev.apehum.voicemessages.command.voiceMessageCommand
-import dev.apehum.voicemessages.playback.VoiceMessage
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
+import dev.apehum.voicemessages.playback.component
+import dev.apehum.voicemessages.playback.ogg
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
+import dev.apehum.voicemessages.record.VoiceMessageRecorder
 import dev.apehum.voicemessages.storage.draft.MemoryVoiceMessageDraftStorage
-import dev.apehum.voicemessages.storage.draft.VoiceMessageDraftStorage
 import dev.apehum.voicemessages.storage.message.MemoryVoiceMessageStorage
-import dev.apehum.voicemessages.storage.message.VoiceMessageStorage
 import dev.apehum.voicemessages.storage.message.createJedisStore
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.future
+import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.logging.McLoggerFactory
 import su.plo.slib.api.permission.PermissionDefault
 import su.plo.slib.api.server.McServerLib
@@ -30,6 +38,7 @@ import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent
 import su.plo.voice.api.server.player.VoiceServerPlayer
 import java.io.File
 import java.io.InputStream
+import java.util.concurrent.CompletableFuture
 import kotlin.time.Duration.Companion.minutes
 
 @Addon(
@@ -41,8 +50,6 @@ import kotlin.time.Duration.Companion.minutes
 class VoiceMessagesAddon :
     AddonInitializer,
     VoiceMessagesAPI {
-    private val logger = McLoggerFactory.createLogger(BuildConfig.PROJECT_NAME)
-
     @InjectPlasmoVoice
     private lateinit var voiceServer: PlasmoVoiceServer
 
@@ -55,6 +62,7 @@ class VoiceMessagesAddon :
     }
 
     private lateinit var voiceRecorder: VoiceActivationRecorder
+    private lateinit var voiceMessageRecorder: VoiceMessageRecorder
     private lateinit var messagePlayer: VoiceMessagePlayer
 
     override lateinit var messageStorage: VoiceMessageStorage
@@ -69,6 +77,8 @@ class VoiceMessagesAddon :
             voiceMessageCommand.register(commandManager)
             voiceMessageActionsCommand.register(commandManager)
         }
+
+        VoiceMessagesAPIProvider.setInstance(this)
     }
 
     override fun onAddonInitialize() {
@@ -81,7 +91,6 @@ class VoiceMessagesAddon :
         permissions.register("pv.addon.voice_messages.record.*", PermissionDefault.OP)
 
         reloadConfig()
-        VoiceMessagesAPIProvider.setInstance(this)
     }
 
     override fun playVoiceMessage(
@@ -92,7 +101,28 @@ class VoiceMessagesAddon :
         messagePlayer.play(player.instance, voiceMessage, showWaveform)
     }
 
+    override fun recordVoiceMessage(player: VoiceServerPlayer): CompletableFuture<VoiceMessage> =
+        CoroutineScope(Dispatchers.Default).future {
+            voiceMessageRecorder.record(player.instance)
+        }
+
     override fun stopVoiceMessage(player: VoiceServerPlayer) = messagePlayer.cancel(player.instance)
+
+    override fun createVoiceMessage(encodedFrames: List<ByteArray>): VoiceMessage =
+        dev.apehum.voicemessages.record
+            .createVoiceMessage(voiceServer, encodedFrames)
+
+    override fun formatVoiceMessage(voiceMessage: VoiceMessage): McTextComponent = voiceMessage.component()
+
+    override fun formatVoiceMessageToJson(voiceMessage: VoiceMessage): String =
+        minecraftServer.textConverter.convertToJson(voiceMessage.component())
+
+    override fun formatVoiceMessageToJson(
+        voiceMessage: VoiceMessage,
+        language: String,
+    ): String = minecraftServer.textConverter.convertToJson(language, voiceMessage.component())
+
+    override fun convertVoiceMessageToOgg(voiceMessage: VoiceMessage): ByteArray = voiceMessage.ogg()
 
     @EventSubscribe
     fun onConfigReload(event: VoiceServerConfigReloadedEvent) {
@@ -128,6 +158,7 @@ class VoiceMessagesAddon :
 
         messageSenderRegistry.register("default", DefaultMessageSender(voiceServer.minecraftServer, config.chatFormat))
         messageSenderRegistry.register("direct", DefaultDirectMessageSender(voiceServer.minecraftServer, config.chatFormat))
+        MessageSenderRegistrationEvent.invoker.onRegistration(messageSenderRegistry)
 
         messageStorage =
             when (config.storageType) {
@@ -143,15 +174,15 @@ class VoiceMessagesAddon :
         voiceRecorder =
             VoiceActivationRecorder(activation, voiceServer)
                 .also { it.register(this) }
+        voiceMessageRecorder = VoiceMessageRecorder(config, voiceServer, voiceRecorder)
 
         messagePlayer = VoiceMessagePlayer(sourceLine, voiceServer)
 
         voiceMessageCommand.initialize(
             voiceMessageCommand(
                 voiceMessageCommand.name,
-                config,
                 voiceServer,
-                voiceRecorder,
+                voiceMessageRecorder,
                 draftMessageStorage,
                 messageSenderRegistry,
             ),
@@ -174,4 +205,8 @@ class VoiceMessagesAddon :
 
     private fun getLanguageResource(resourcePath: String): InputStream? =
         VoiceMessagesAddon::class.java.classLoader.getResourceAsStream(String.format("voice_messages/%s", resourcePath))
+
+    companion object {
+        val logger = McLoggerFactory.createLogger(BuildConfig.PROJECT_NAME)
+    }
 }

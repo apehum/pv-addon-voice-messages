@@ -1,4 +1,4 @@
-import dev.apehum.voicemessages.playback.VoiceMessage
+import dev.apehum.voicemessages.api.VoiceMessage
 import dev.apehum.voicemessages.playback.ogg
 import org.chenliang.oggus.ogg.OggStream
 import org.chenliang.oggus.opus.CommentHeader
