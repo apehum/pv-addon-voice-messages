@@ -38,7 +38,11 @@ The configuration file is located at `plugins/pv-addon-voicemessages/config.toml
 ```toml
 # Activation to use for recording
 activation = "proximity"
-max_duration_seconds = 5
+# Maximum duration of voice message
+max_duration_seconds = 60
+# How long recorded voice messages will be stored
+expire_after_minutes = 10
+# Whether actionbar text should be shown when recording a voice message
 actionbar_when_recording = true
 # Source line weight controls sorting order in "Volume"
 # Higher weights are placed at the bottom of the list

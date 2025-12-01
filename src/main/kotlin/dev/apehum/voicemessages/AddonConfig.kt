@@ -3,13 +3,17 @@ package dev.apehum.voicemessages
 import su.plo.config.Config
 import su.plo.config.ConfigField
 
-@Config
+@Config(
+    loadConfigFieldOnly = false,
+)
 data class AddonConfig(
     @ConfigField(comment = "Activation to use for recording")
     val activation: String = "proximity",
+    @ConfigField(comment = "Maximum duration of voice message")
     val maxDurationSeconds: Int = 60,
     @ConfigField(comment = "How long recorded voice messages will be stored")
     val expireAfterMinutes: Int = 10,
+    @ConfigField(comment = "Whether actionbar text should be shown when recording a voice message")
     val actionbarWhenRecording: Boolean = true,
     @ConfigField(
         comment = """
@@ -50,7 +54,9 @@ data class AddonConfig(
         val password: String = "",
     )
 
-    @Config
+    @Config(
+        loadConfigFieldOnly = false,
+    )
     data class ChatFormatConfig(
         val default: String = "<lang:chat.type.text:'<player_name>':'<voice_message>'>",
         val directIncoming: String = "<italic><gray><lang:commands.message.display.incoming:'<source_player_name>':'<voice_message>'>",
