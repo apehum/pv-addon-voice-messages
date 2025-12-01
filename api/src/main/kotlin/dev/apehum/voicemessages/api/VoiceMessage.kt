@@ -3,6 +3,8 @@ package dev.apehum.voicemessages.api
 import java.time.Duration
 import java.util.UUID
 
+private const val FRAME_TIME = 20L
+
 /**
  * Represents a recorded voice message.
  *
@@ -16,5 +18,5 @@ data class VoiceMessage(
     val encodedFrames: List<ByteArray>,
     val waveform: List<Double>,
 ) {
-    val duration: Duration = Duration.ofMillis(encodedFrames.size * 20L)
+    val duration: Duration = Duration.ofMillis(encodedFrames.size * FRAME_TIME)
 }

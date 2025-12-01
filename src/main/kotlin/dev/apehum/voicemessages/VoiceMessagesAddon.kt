@@ -122,7 +122,7 @@ class VoiceMessagesAddon :
         language: String,
     ): String = minecraftServer.textConverter.convertToJson(language, voiceMessage.component())
 
-    override fun convertVoiceMessageToOgg(voiceMessage: VoiceMessage): ByteArray = voiceMessage.ogg()
+    override fun wrapVoiceMessageInOgg(voiceMessage: VoiceMessage): ByteArray = voiceMessage.ogg()
 
     @EventSubscribe
     fun onConfigReload(event: VoiceServerConfigReloadedEvent) {

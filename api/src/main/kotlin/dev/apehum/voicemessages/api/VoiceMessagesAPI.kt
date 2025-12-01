@@ -3,6 +3,7 @@ package dev.apehum.voicemessages.api
 import dev.apehum.voicemessages.api.chat.ChatMessageSender
 import dev.apehum.voicemessages.api.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.api.event.MessageSenderRegistrationEvent
+import dev.apehum.voicemessages.api.record.RecordingStopCause
 import dev.apehum.voicemessages.api.storage.draft.VoiceMessageDraftStorage
 import dev.apehum.voicemessages.api.storage.message.VoiceMessageStorage
 import su.plo.slib.api.chat.component.McTextComponent
@@ -54,6 +55,13 @@ interface VoiceMessagesAPI {
         showWaveform: Boolean = false,
     )
 
+    /**
+     * Prompts a player to record voice message.
+     *
+     * @param player The player who will be prompted to record voice message
+     *
+     * @return A new [VoiceMessage] or exception. See [RecordingStopCause].
+     */
     fun recordVoiceMessage(player: VoiceServerPlayer): CompletableFuture<VoiceMessage>
 
     /**
@@ -103,5 +111,11 @@ interface VoiceMessagesAPI {
         language: String,
     ): String
 
-    fun convertVoiceMessageToOgg(voiceMessage: VoiceMessage): ByteArray
+    /**
+     * Wraps the Opus-encoded audio data from the given [VoiceMessage] into an Ogg container.
+     *
+     * @param voiceMessage The voice message whose Opus data should be wrapped into an Ogg container.
+     * @return A byte array containing the Ogg Opus container.
+     */
+    fun wrapVoiceMessageInOgg(voiceMessage: VoiceMessage): ByteArray
 }

@@ -4,6 +4,9 @@ import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.entity.player.McServerPlayer
 
+/**
+ * A command argument that resolves a [McServerPlayer] by name.
+ */
 class PlayerArgument(
     private val minecraftServer: McServerLib,
 ) : CommandArgument<McServerPlayer> {
