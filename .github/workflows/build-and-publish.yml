@@ -22,7 +22,7 @@ jobs:
       uses: gradle/actions/setup-gradle@v5
 
     - name: Publish with Gradle
-      run: ./gradlew build publishAndReleaseToMavenCentral
+      run: ./gradlew build
       env:
         GITHUB_ACTOR: ${{ github.actor }}
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
