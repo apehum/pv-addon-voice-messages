@@ -161,6 +161,7 @@ class VoiceActivationRecorder(
         }
 
         event.result = ServerActivation.Result.HANDLED
+        event.isCancelled = true
     }
 
     inner class RecordFrameProvider : AudioFrameProvider {
