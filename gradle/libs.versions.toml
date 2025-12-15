@@ -2,6 +2,8 @@
 kotlin = "2.0.21"
 kotlinx-coroutines = "1.7.3"
 
+minecraft = "1.21.11"
+
 plasmovoice = "2.1.7"
 pv-gradle-plugin = "1.0.7"
 run-paper = "3.0.2"

@@ -7,8 +7,8 @@ volumes:
 
 x-shared-environment: &shared-environment
   EULA: "TRUE"
-  VERSION: "1.21.10"
-  MINECRAFT_VERSION: "1.21.10"
+  VERSION: "1.21.11"
+  MINECRAFT_VERSION: "1.21.11"
   PAPER_CHANNEL: "experimental"
 
   REPLACE_ENV_VARIABLES: "true"

@@ -19,12 +19,12 @@ dependencies {
 
 tasks {
     runServer {
-        minecraftVersion("1.21.10")
+        minecraftVersion(libs.versions.minecraft.get())
 
         pluginJars.from(project(":").tasks.shadowJar)
 
         downloadPlugins {
-            modrinth("plasmo-voice", "spigot-2.1.6")
+            modrinth("plasmo-voice", "spigot-${libs.versions.plasmovoice.get()}")
             modrinth("carbon", "6gfp1kIe")
             modrinth("LuckPerms", "v5.5.17-bukkit")
         }
