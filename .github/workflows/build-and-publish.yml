@@ -34,4 +34,4 @@ jobs:
       with:
         name: pv-addon-voice-messages
         path: |
-          plugin/build/libs/*-all.jar
+          build/libs/*-all.jar
