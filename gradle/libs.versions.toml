@@ -8,7 +8,7 @@ plasmovoice = "2.1.7"
 pv-gradle-plugin = "1.0.7"
 run-paper = "3.0.2"
 buildconfig = "5.7.0"
-publish = "0.30.0"
+publish = "0.35.0"
 
 slib = "1.1.4"
 oggus = "1.2.0"

@@ -1,5 +1,3 @@
-import com.vanniktech.maven.publish.SonatypeHost
-
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.publish)
@@ -22,7 +20,7 @@ mavenPublishing {
         artifactId = "api",
     )
 
-    publishToMavenCentral(SonatypeHost.CENTRAL_PORTAL)
+    publishToMavenCentral(true, false)
 
     pom {
         name.set("pv-addon-voice-messages")
