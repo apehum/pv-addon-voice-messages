@@ -73,3 +73,5 @@ dependencies {
     compileOnly("dev.apehum.voicemessages:api:1.0.0-beta.1")
 }
 ```
+
+See [api-example](https://github.com/apehum/pv-addon-voice-messages/tree/main/api-example) for basic usage.
