@@ -2,19 +2,17 @@
 kotlin = "2.0.21"
 kotlinx-coroutines = "1.7.3"
 
-plasmovoice = "2.1.6"
+plasmovoice = "2.1.7"
 pv-gradle-plugin = "1.0.7"
 run-paper = "3.0.2"
 buildconfig = "5.7.0"
 publish = "0.30.0"
 
 slib = "1.1.4"
-config = "1.1.0"
 oggus = "1.2.0"
 jedis = "7.0.0"
 
 [libraries]
-config = { module = "su.plo.config:config", version.ref = "config" }
 slib = { module = "su.plo.slib:common", version.ref = "slib" }
 oggus = { module = "org.chenliang.oggus:oggus", version.ref = "oggus" }
 jedis = { module = "redis.clients:jedis", version.ref = "jedis" }

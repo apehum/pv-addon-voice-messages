@@ -27,7 +27,6 @@ dependencies {
         exclude("org.slf4j")
         exclude("com.google.code.gson")
     }
-    shadow(libs.config)
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("stdlib-jdk8"))
@@ -78,7 +77,6 @@ tasks {
             "org.chenliang.oggus" to "oggus",
             "org.apache" to "apache",
             "org.json" to "json",
-            "su.plo.config" to "config",
         ).forEach { (packageName, libraryName) ->
             relocate(packageName, "${project.group}.libraries.$libraryName")
         }
@@ -90,7 +88,7 @@ tasks {
         minecraftVersion("1.21.10")
 
         downloadPlugins {
-            modrinth("plasmo-voice", "spigot-2.1.6")
+            modrinth("plasmo-voice", "spigot-2.1.7")
         }
     }
 }
