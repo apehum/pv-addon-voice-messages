@@ -13,6 +13,7 @@ import dev.apehum.voicemessages.util.extension.toAdventure
 import dev.apehum.voicemessages.util.extension.toMc
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.future.future
 import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.McServerLib
@@ -28,7 +29,7 @@ data class DirectChatContext(
 open class DefaultDirectMessageSender(
     private val minecraftServer: McServerLib,
     private val formats: AddonConfig.ChatFormatConfig,
-    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default),
+    private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
 ) : ChatMessageSender<DirectChatContext> {
     override fun sendVoiceMessage(
         context: DirectChatContext,

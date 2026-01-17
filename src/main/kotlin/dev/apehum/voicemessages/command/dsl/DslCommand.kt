@@ -5,6 +5,7 @@ import dev.apehum.voicemessages.api.command.dsl.argument.CommandArgument
 import dev.apehum.voicemessages.api.command.dsl.argument.StringReader
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asContextElement
 import kotlinx.coroutines.launch
 import su.plo.slib.api.command.McCommand
@@ -120,7 +121,7 @@ class DslCommandBuilder(
     }
 
     fun executesCoroutine(
-        scope: CoroutineScope = CoroutineScope(Dispatchers.Default),
+        scope: CoroutineScope = CoroutineScope(Dispatchers.Default + SupervisorJob()),
         runnable: DslCommandCoroutineRunnable,
     ) {
         executesCoroutine = runnable
