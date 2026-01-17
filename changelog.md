@@ -1,0 +1,1 @@
+- Fixed voice messages stops working after any exception is thrown at command execution.
