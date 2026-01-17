@@ -199,6 +199,7 @@ class DslCommand(
                         } catch (e: Throwable) {
                             // todo: parse exception with friendly message
                             source.sendMessage("Failed to parse argument ${argument.name}: ${e.message}")
+                            return
                         }
 
                     DslParsedCommandArgument(
