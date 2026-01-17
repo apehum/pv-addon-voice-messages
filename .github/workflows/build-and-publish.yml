@@ -30,6 +30,31 @@ jobs:
         ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
         ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.MAVEN_CENTRAL_GPG }}
 
+    - name: Publish to Modrinth/CurseForge
+      uses: apehum/mc-publish@v1.2
+      with:
+        changelog-file: changelog.md
+
+        modrinth-id: OrjwT7hp
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+        curseforge-id: 1412711
+        curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+        loaders: |
+          fabric
+          forge
+          neoforge
+          spigot
+          paper
+          purpur
+          folia
+        game-versions: |
+          1.16.5
+          1.17.1
+          1.18.2
+          >=1.19.2
+
     - uses: actions/upload-artifact@v5
       with:
         name: pv-addon-voice-messages
