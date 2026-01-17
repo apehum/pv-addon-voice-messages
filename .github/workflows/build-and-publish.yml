@@ -41,6 +41,8 @@ jobs:
         curseforge-id: 1412711
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
+        files: build/libs/*-all.jar
+
         loaders: |
           fabric
           forge
