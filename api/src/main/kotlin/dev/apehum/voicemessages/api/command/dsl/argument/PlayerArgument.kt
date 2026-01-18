@@ -37,6 +37,7 @@ class PlayerArgument(
         val playerName = reader.readString()
 
         return minecraftServer.players
+            .filter { (source as? McServerPlayer)?.canSee(it) ?: true }
             .map { it.name }
             .filter { it.startsWith(playerName, ignoreCase = true) }
     }
