@@ -1,2 +1,3 @@
 - Fixed redis configuration not loading properly.
+- Fixed player suggestions in `/vm direct` not respecting vanish.
 - Added support for other chat plugins on Paper via packetevents.
