@@ -8,7 +8,7 @@ class LateInitCommand(
     val name: String,
     private val aliases: List<String> = emptyList(),
 ) : McCommand {
-    private lateinit var command: McCommand
+    private var command: McCommand? = null
 
     constructor(name: String, vararg aliases: String) : this(name, aliases.toList())
 
@@ -24,16 +24,16 @@ class LateInitCommand(
         source: McCommandSource,
         arguments: Array<String>,
     ) {
-        command.execute(source, arguments)
+        command?.execute(source, arguments)
     }
 
     override fun suggest(
         source: McCommandSource,
         arguments: Array<String>,
-    ): List<String> = command.suggest(source, arguments)
+    ): List<String> = command?.suggest(source, arguments) ?: super.suggest(source, arguments)
 
     override fun hasPermission(
         source: McCommandSource,
         arguments: Array<String>?,
-    ): Boolean = command.hasPermission(source, arguments)
+    ): Boolean = command?.hasPermission(source, arguments) ?: super.hasPermission(source, arguments)
 }
