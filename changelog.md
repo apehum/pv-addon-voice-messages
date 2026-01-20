@@ -1,3 +1,2 @@
-- Fixed redis configuration not loading properly.
-- Fixed player suggestions in `/vm direct` not respecting vanish.
-- Added support for other chat plugins on Paper via packetevents.
+- Fixed packevents chat integration not loading properly.
+- Fixed LateInitCommand#hasPermission throwing an exception when not initialized yet.
