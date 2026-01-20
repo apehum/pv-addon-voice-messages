@@ -4,8 +4,11 @@ kotlinx-coroutines = "1.7.3"
 
 minecraft = "1.21.11"
 
+paper = "1.21.11-R0.1-SNAPSHOT"
+packetevents = "2.11.1"
+
 plasmovoice = "2.1.7"
-pv-gradle-plugin = "1.0.7"
+pv-gradle-plugin = "1.0.9"
 run-paper = "3.0.2"
 buildconfig = "5.7.0"
 publish = "0.35.0"
@@ -21,6 +24,8 @@ jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
 plasmovoice = { module = "su.plo.voice.api:server", version.ref = "plasmovoice" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
+paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+packetevents = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

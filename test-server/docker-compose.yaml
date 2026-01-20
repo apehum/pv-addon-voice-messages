@@ -9,7 +9,6 @@ x-shared-environment: &shared-environment
   EULA: "TRUE"
   VERSION: "1.21.11"
   MINECRAFT_VERSION: "1.21.11"
-  PAPER_CHANNEL: "experimental"
 
   REPLACE_ENV_VARIABLES: "true"
   COPY_CONFIG_DEST: "/data"
@@ -47,7 +46,10 @@ services:
       ONLINE_MODE: "false"
       MEMORY: "1G"
       MODRINTH_PROJECTS: |
-        plasmo-voice:spigot-2.1.6
+        plasmo-voice:spigot-2.1.8
+        carbon:6gfp1kIe
+        luckperms:OrIs0S6b
+        packetevents:2.11.1+spigot
       PLUGINS: |
         /build-plugins
 
@@ -70,7 +72,10 @@ services:
       ONLINE_MODE: "false"
       MEMORY: "1G"
       MODRINTH_PROJECTS: |
-        plasmo-voice:spigot-2.1.6
+        plasmo-voice:spigot-2.1.8
+        carbon:6gfp1kIe
+        luckperms:OrIs0S6b
+        packetevents:2.11.1+spigot
       PLUGINS: |
         /build-plugins
 
@@ -90,5 +95,6 @@ services:
     environment:
       <<: *shared-environment
       MODRINTH_PROJECTS: |
-        plasmo-voice:velocity-2.1.6
+        plasmo-voice:velocity-2.1.8
       TYPE: "VELOCITY"
+      VELOCITY_BUILD_ID: 562

@@ -1,1 +1,2 @@
 - Fixed redis configuration not loading properly.
+- Added support for other chat plugins on Paper via packetevents.

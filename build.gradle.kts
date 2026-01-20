@@ -7,11 +7,7 @@ plugins {
 }
 
 dependencies {
-    compileOnly(kotlin("stdlib-jdk8"))
-
     compileOnly(libs.plasmovoice)
-    compileOnly(libs.kotlinx.coroutines)
-    compileOnly(libs.kotlinx.coroutines.jdk8)
 
     // access for shaded adventure library
     compileOnly(variantOf(libs.slib) { classifier("all") })
@@ -19,6 +15,7 @@ dependencies {
     shadow(project(":api")) {
         isTransitive = false
     }
+    shadow(project(":integration:paper"))
 
     shadow(libs.oggus) {
         isTransitive = false
@@ -31,6 +28,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(kotlin("stdlib-jdk8"))
     testImplementation(project(":api"))
+    testImplementation(project(":integration:paper"))
 
     testImplementation(libs.plasmovoice)
     testImplementation(libs.kotlinx.coroutines)
@@ -42,6 +40,14 @@ dependencies {
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 
 allprojects {
+    apply(plugin = "kotlin")
+
+    dependencies {
+        compileOnly(kotlin("stdlib-jdk8"))
+        compileOnly(rootProject.libs.kotlinx.coroutines)
+        compileOnly(rootProject.libs.kotlinx.coroutines.jdk8)
+    }
+
     repositories {
         mavenCentral()
         mavenLocal()
@@ -89,6 +95,10 @@ tasks {
 
         downloadPlugins {
             modrinth("plasmo-voice", "spigot-${libs.versions.plasmovoice.get()}")
+            modrinth("packetevents", "2.11.1+spigot")
+
+            modrinth("carbon", "6gfp1kIe")
+            modrinth("LuckPerms", "v5.5.17-bukkit")
         }
     }
 }

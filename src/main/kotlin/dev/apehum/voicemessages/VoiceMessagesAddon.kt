@@ -12,6 +12,7 @@ import dev.apehum.voicemessages.chat.builtin.DefaultMessageSender
 import dev.apehum.voicemessages.command.LateInitCommand
 import dev.apehum.voicemessages.command.voiceMessageActionsCommand
 import dev.apehum.voicemessages.command.voiceMessageCommand
+import dev.apehum.voicemessages.integration.paper.PaperIntegration
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
 import dev.apehum.voicemessages.playback.component
 import dev.apehum.voicemessages.playback.ogg
@@ -32,6 +33,7 @@ import su.plo.voice.api.addon.AddonInitializer
 import su.plo.voice.api.addon.AddonLoaderScope
 import su.plo.voice.api.addon.InjectPlasmoVoice
 import su.plo.voice.api.addon.annotation.Addon
+import su.plo.voice.api.addon.annotation.Dependency
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent
@@ -46,6 +48,9 @@ import kotlin.time.Duration.Companion.minutes
     version = BuildConfig.VERSION,
     authors = ["Apehum"],
     scope = AddonLoaderScope.SERVER,
+    dependencies = [
+        Dependency(id = "packetevents", optional = true),
+    ],
 )
 class VoiceMessagesAddon :
     AddonInitializer,
@@ -90,7 +95,13 @@ class VoiceMessagesAddon :
         permissions.register("pv.addon.voice_messages.record.direct", PermissionDefault.TRUE)
         permissions.register("pv.addon.voice_messages.record.*", PermissionDefault.OP)
 
-        reloadConfig()
+        val config = reloadConfig()
+        if (config.usePacketEventsIntegration) {
+            try {
+                PaperIntegration(BuildConfig.PROJECT_NAME).load()
+            } catch (_: LinkageError) {
+            }
+        }
     }
 
     override fun playVoiceMessage(
@@ -129,7 +140,7 @@ class VoiceMessagesAddon :
         reloadConfig()
     }
 
-    private fun reloadConfig() {
+    private fun reloadConfig(): AddonConfig {
         voiceServer.sourceLineManager.unregister("voice_messages")
         val oldVoiceRecorder = if (::voiceRecorder.isInitialized) voiceRecorder else null
         val oldMessagePlayer = if (::messagePlayer.isInitialized) messagePlayer else null
@@ -162,7 +173,10 @@ class VoiceMessagesAddon :
 
         messageStorage =
             when (config.storageType) {
-                AddonConfig.StorageType.MEMORY -> MemoryVoiceMessageStorage(config.expireAfterMinutes.minutes)
+                AddonConfig.StorageType.MEMORY -> {
+                    MemoryVoiceMessageStorage(config.expireAfterMinutes.minutes)
+                }
+
                 AddonConfig.StorageType.REDIS -> {
                     requireNotNull(config.redis)
                     createJedisStore(config.redis, config.expireAfterMinutes.minutes)
@@ -201,6 +215,8 @@ class VoiceMessagesAddon :
 
         oldVoiceRecorder?.unregister(this)
         oldMessagePlayer?.clear()
+
+        return config
     }
 
     private fun getLanguageResource(resourcePath: String): InputStream? =

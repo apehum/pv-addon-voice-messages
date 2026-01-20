@@ -22,6 +22,16 @@ data class AddonConfig(
     """,
     )
     val sourceLineWeight: Int = 100,
+    @ConfigField(
+        comment = """
+            Whether packetevents chat integration should be used
+            Only works on Paper-based servers with packetevents installed,
+            otherwise integration won't be loaded
+            
+            If enabled, addon will send messages "as player" and they'll be formatted with installed chat plugin
+        """,
+    )
+    val usePacketEventsIntegration: Boolean = true,
     val chatFormat: ChatFormatConfig = ChatFormatConfig(),
     @ConfigField(
         comment = """

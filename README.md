@@ -23,7 +23,7 @@ Server-side [Plasmo Voice](https://github.com/plasmoapp/plasmo-voice) addon that
 
 - `/vm` — Record and send a voice message to all players (same as `/vm default`)
 - `/vm default` — Record and send a voice message to all players
-- `/vm direct <player>` — Record and send a voice message to a specific player
+- `/vm direct <player>` — Record and send a voice message to a specific player (NOTE: anyone with voice message id can listen your voice message, so it's not fully private)
 
 ## Permissions
 - `pv.addon.voice_messages.play` — Play voice messages (default true)
@@ -47,6 +47,12 @@ actionbar_when_recording = true
 # Source line weight controls sorting order in "Volume"
 # Higher weights are placed at the bottom of the list
 source_line_weight = 100
+# Whether packetevents chat integration should be used
+# Only works on Paper-based servers with packetevents installed,
+# otherwise integration won't be loaded
+# 
+# If enabled, addon will send messages "as player" and they'll be formatted with installed chat plugin
+use_packet_events_integration = true
 # Available storage types: [MEMORY, REDIS]
 storage_type = "MEMORY"
 
