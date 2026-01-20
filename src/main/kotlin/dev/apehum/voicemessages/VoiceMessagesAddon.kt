@@ -77,6 +77,14 @@ class VoiceMessagesAddon :
     private val voiceMessageCommand = LateInitCommand("vm")
     private val voiceMessageActionsCommand = LateInitCommand("vm-actions")
 
+    private val paperIntegration by lazy {
+        try {
+            PaperIntegration(BuildConfig.PROJECT_NAME)
+        } catch (_: LinkageError) {
+            null
+        }
+    }
+
     init {
         McServerCommandsRegisterEvent.registerListener { commandManager, _ ->
             voiceMessageCommand.register(commandManager)
@@ -97,10 +105,7 @@ class VoiceMessagesAddon :
 
         val config = reloadConfig()
         if (config.usePacketEventsIntegration) {
-            try {
-                PaperIntegration(BuildConfig.PROJECT_NAME).load()
-            } catch (_: LinkageError) {
-            }
+            paperIntegration?.load()
         }
     }
 
@@ -170,6 +175,9 @@ class VoiceMessagesAddon :
         messageSenderRegistry.register("default", DefaultMessageSender(voiceServer.minecraftServer, config.chatFormat))
         messageSenderRegistry.register("direct", DefaultDirectMessageSender(voiceServer.minecraftServer, config.chatFormat))
         MessageSenderRegistrationEvent.invoker.onRegistration(messageSenderRegistry)
+        if (config.usePacketEventsIntegration) {
+            paperIntegration?.registerSenders(messageSenderRegistry)
+        }
 
         messageStorage =
             when (config.storageType) {
