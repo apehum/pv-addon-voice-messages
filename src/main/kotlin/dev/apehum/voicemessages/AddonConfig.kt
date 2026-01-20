@@ -46,7 +46,9 @@ data class AddonConfig(
         REDIS,
     }
 
-    @Config
+    @Config(
+        loadConfigFieldOnly = false,
+    )
     data class RedisStorageConfig(
         val host: String = "localhost",
         val port: Int = 6379,
