@@ -1,2 +1,0 @@
-- Fixed packevents chat integration not loading properly.
-- Fixed LateInitCommand#hasPermission throwing an exception when not initialized yet.

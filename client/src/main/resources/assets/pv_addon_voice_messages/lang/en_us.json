@@ -1,0 +1,9 @@
+{
+  "pv.addon.voice_messages.chat.record": "Record a voice message",
+  "pv.addon.voice_messages.chat.stop": "Stop recording",
+  "pv.addon.voice_messages.chat.cancel": "Cancel",
+  "pv.addon.voice_messages.chat.cancel.tooltip": "Discard the recording",
+  "pv.addon.voice_messages.chat.draft": "Voice message, %s",
+  "pv.addon.voice_messages.chat.delete": "Discard the recording",
+  "pv.addon.voice_messages.chat.send": "Send the voice message"
+}

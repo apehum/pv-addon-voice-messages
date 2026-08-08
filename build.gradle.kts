@@ -37,10 +37,12 @@ dependencies {
     testImplementation(libs.oggus)
 }
 
-java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-
 allprojects {
+    if (path == ":client") return@allprojects
+
     apply(plugin = "kotlin")
+
+    java.toolchain.languageVersion.set(JavaLanguageVersion.of(21))
 
     dependencies {
         compileOnly(kotlin("stdlib-jdk8"))
@@ -97,8 +99,10 @@ tasks {
             modrinth("plasmo-voice", "spigot-${libs.versions.plasmovoice.get()}")
             modrinth("packetevents", "2.11.1+spigot")
 
-            modrinth("carbon", "6gfp1kIe")
+//            modrinth("carbon", "6gfp1kIe")
             modrinth("LuckPerms", "v5.5.17-bukkit")
+            modrinth("placeholderapi", "2.11.7")
+            modrinth("commandapi", "jKB5ZyW7")
         }
     }
 }

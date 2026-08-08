@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "id": "pv-addon-voice-messages",
+  "name": "pv-addon-voice-messages",
+  "version": "${version}",
+  "description": "Voice messages addon",
+  "license": "MIT",
+  "authors": [
+    "Apehum"
+  ],
+  "contact": {
+    "homepage": "https://github.com/apehum/pv-addon-voice-messages",
+    "sources": "https://github.com/apehum/pv-addon-voice-messages",
+    "issues": "https://github.com/apehum/pv-addon-voice-messages/issues"
+  },
+  "environment": "client",
+  "entrypoints": {
+    "main": [
+      "dev.apehum.voicemessages.client.entrypoint.FabricVoiceMessagesLoader"
+    ],
+    "client": [
+      "dev.apehum.voicemessages.client.entrypoint.FabricVoiceMessagesLoader"
+    ]
+  },
+  "mixins": [
+    {
+      "config": "pv-addon-voice-messages-client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "depends": {
+    "fabricloader": "*",
+    "minecraft": "~${minecraftVersion}",
+    "plasmovoice": ">=${plasmoVoiceVersion}"
+  }
+}

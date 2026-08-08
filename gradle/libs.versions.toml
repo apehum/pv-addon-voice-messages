@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.0.21"
+kotlin = "2.3.0"
 kotlinx-coroutines = "1.7.3"
 
 minecraft = "1.21.11"
@@ -7,7 +7,7 @@ minecraft = "1.21.11"
 paper = "1.21.11-R0.1-SNAPSHOT"
 packetevents = "2.11.1"
 
-plasmovoice = "2.1.7"
+plasmovoice = "2.1.13"
 pv-gradle-plugin = "1.0.9"
 run-paper = "3.0.2"
 buildconfig = "5.7.0"

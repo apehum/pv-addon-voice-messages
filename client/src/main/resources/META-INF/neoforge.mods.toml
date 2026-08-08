@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "[1,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/apehum/pv-addon-voice-messages/issues"
+
+[[mods]]
+modId = "pv_addon_voice_messages"
+version = "${version}"
+displayName = "pv-addon-voice-messages"
+displayURL = "https://github.com/apehum/pv-addon-voice-messages"
+authors = "Apehum"
+description = "Voice messages addon"
+
+[[mixins]]
+config = "pv-addon-voice-messages-client.mixins.json"
+
+[[dependencies.pv_addon_voice_messages]]
+modId = "neoforge"
+type = "required"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.pv_addon_voice_messages]]
+modId = "minecraft"
+type = "required"
+versionRange = "[${minecraftVersion},)"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.pv_addon_voice_messages]]
+modId = "plasmovoice"
+type = "required"
+versionRange = "[${plasmoVoiceVersion},)"
+ordering = "AFTER"
+side = "CLIENT"
