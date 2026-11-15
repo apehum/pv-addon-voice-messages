@@ -15,3 +15,4 @@ ktlint_standard_no-single-line-block-comment = disabled
 ktlint_standard_block-comment-initial-star-alignment = disabled
 ktlint_standard_no-consecutive-comments = disabled
 ktlint_standard_no-empty-file = disabled
+ktlint_standard_import-ordering = disabled

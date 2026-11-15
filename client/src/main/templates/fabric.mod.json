@@ -1,0 +1,30 @@
+{
+    "schemaVersion": 1,
+    "id": "${mod_id}",
+    "name": "${mod_name}",
+    "version": "${mod_version}",
+    "description": "${mod_description}",
+    "license": "${mod_license}",
+    "authors": [
+        "Apehum"
+    ],
+    "contact": {
+        "homepage": "https://github.com/apehum/pv-addon-voice-messages",
+        "sources": "https://github.com/apehum/pv-addon-voice-messages",
+        "issues": "https://github.com/apehum/pv-addon-voice-messages/issues"
+    },
+    "environment": "client",
+    "entrypoints": {
+        "main": [
+            "dev.apehum.voicemessages.client.entrypoint.FabricVoiceMessagesLoader"
+        ],
+        "client": [
+            "dev.apehum.voicemessages.client.entrypoint.FabricVoiceMessagesLoader"
+        ]
+    },
+    "depends": {
+        "fabricloader": "*",
+        "minecraft": "~${minecraft_version}",
+        "plasmovoice": ">=${plasmovoice_version}"
+    }
+}

@@ -4,7 +4,12 @@
   "package": "dev.apehum.voicemessages.client.mixin",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "ChatScreenMixin"
+    "ChatScreenMixin",
+
+    //? if >=1.21.6 {
+    /*"RenderPipelinesAccessor",
+    "RenderSystemMixin",
+    *///?}
   ],
   "injectors": {
     "defaultRequire": 1

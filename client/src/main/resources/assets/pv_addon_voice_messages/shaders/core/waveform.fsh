@@ -1,13 +1,44 @@
+//? if >=26.3 {
+//#version 330
+//#extension GL_ARB_separate_shader_objects : require
+//
+//layout(std140) uniform WaveformParams {
+//    vec4 RadiiA;
+//    vec4 RadiiB;
+//    vec4 Scalars;
+//    vec4 Rect;
+//};
+//
+//layout(location = 0) in vec2 texCoord0;
+//layout(location = 1) in vec4 vertexColor;
+//
+//layout(location = 0) out vec4 fragColor;
+//?} else if >=1.21.6 {
+//#version 150
+//
+//layout(std140) uniform WaveformParams {
+//    vec4 RadiiA;
+//    vec4 RadiiB;
+//    vec4 Scalars;
+//    vec4 Rect;
+//};
+//
+//in vec2 texCoord0;
+//in vec4 vertexColor;
+//
+//out vec4 fragColor;
+//?} else {
 #version 150
 
-#moj_import <minecraft:dynamictransforms.glsl>
-
-uniform sampler2D Sampler0;
+uniform vec4 RadiiA;
+uniform vec4 RadiiB;
+uniform vec4 Scalars;
 
 in vec2 texCoord0;
 in vec4 vertexColor;
 
 out vec4 fragColor;
+//?}
 
 const float TAU = 6.28318530718;
 const int SEGMENTS = 8;
@@ -17,21 +48,17 @@ const float CIRCLE_GROWTH = 0.25;
 // how far out the outline sits in silence
 const float IDLE_REACH = 0.25;
 
-vec4 parameterAt(int index) {
-    return texelFetch(Sampler0, ivec2(index, 0), 0);
-}
-
 float radiusAt(int segment) {
-    return parameterAt(segment % SEGMENTS).r;
+    int index = segment % SEGMENTS;
+    vec4 radii = index < 4 ? RadiiA : RadiiB;
+    return radii[index % 4];
 }
 
 void main() {
-    vec4 scalars = parameterAt(SEGMENTS);
-
-    float amplitude = scalars.r;
-    float outerSize = floor(scalars.g * 255.0 + 0.5);
-    float circleSize = floor(scalars.b * 255.0 + 0.5);
-    float blobAlpha = scalars.a;
+    float amplitude = Scalars.x;
+    float outerSize = Scalars.y;
+    float circleSize = Scalars.z;
+    float blobAlpha = Scalars.w;
 
     float pixelSize = 1.0 / outerSize;
     float circleRadius = circleSize * 0.5 / outerSize;

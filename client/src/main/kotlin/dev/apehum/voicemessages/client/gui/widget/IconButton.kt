@@ -1,7 +1,5 @@
 package dev.apehum.voicemessages.client.gui.widget
 
-import dev.apehum.voicemessages.client.gui.render.ICON_SIZE
-import dev.apehum.voicemessages.client.gui.render.blitIcon
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Tooltip
@@ -16,6 +14,8 @@ import java.awt.Color
 /*import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.client.renderer.RenderPipelines
 *///?}
+
+private const val ICON_SIZE = 8
 
 private val ICON_IDLE_COLOR = Color(187, 187, 187)
 
@@ -61,6 +61,7 @@ open class IconButton(
             icon,
             x + offset + iconOffset.first,
             y + offset + iconOffset.second,
+            iconSize,
             iconSize,
             if (isHovered) hoverColor else color,
         )

@@ -10,6 +10,12 @@ import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.server.PlasmoVoiceServer
 
+//? if <1.21.6 {
+import dev.apehum.voicemessages.client.gui.render.WaveformShader
+import net.minecraft.client.renderer.ShaderInstance
+import net.neoforged.neoforge.client.event.RegisterShadersEvent
+//?}
+
 @Mod("pv_addon_voice_messages")
 class NeoForgeVoiceMessagesLoader(modBus: IEventBus, dist: Dist) {
     init {
@@ -19,6 +25,16 @@ class NeoForgeVoiceMessagesLoader(modBus: IEventBus, dist: Dist) {
             modBus.addListener(FMLClientSetupEvent::class.java) {
                 PlasmoVoiceClient.getAddonsLoader().load(ClientVoiceMessagesAddon())
             }
+
+            //? if <1.21.6 {
+            modBus.addListener(RegisterShadersEvent::class.java) { event ->
+                WaveformShader.register {
+                    event.registerShader(
+                        ShaderInstance(event.resourceProvider, WaveformShader.LOCATION, WaveformShader.VERTEX_FORMAT),
+                    ) { WaveformShader.instance = it }
+                }
+            }
+            //?}
         }
     }
 }

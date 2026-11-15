@@ -27,7 +27,7 @@ class TextButton(
     private val label = McTextComponent.translatable(translationKey)
 
     init {
-        width = RenderUtil.getStringWidth(RenderUtil.getFormattedString(label))
+        width = RenderUtil.getTextWidth(label)
     }
 
     override fun renderWidget(

@@ -2,7 +2,6 @@ package dev.apehum.voicemessages.client.gui.chat
 
 import dev.apehum.voicemessages.client.VoiceMessagesClient
 import dev.apehum.voicemessages.client.gui.render.ACCENT_COLOR
-import dev.apehum.voicemessages.client.gui.render.blitIcon
 import dev.apehum.voicemessages.client.gui.render.fillRounded
 import dev.apehum.voicemessages.client.gui.render.roundedInset
 import dev.apehum.voicemessages.client.gui.render.shade

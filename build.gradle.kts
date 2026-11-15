@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.pv.kotlin.relocate)
     alias(libs.plugins.buildconfig)
     alias(libs.plugins.runpaper)
+    alias(libs.plugins.modstitch) apply false
 }
 
 dependencies {
@@ -38,7 +39,7 @@ dependencies {
 }
 
 allprojects {
-    if (path == ":client") return@allprojects
+    if (path == ":client" || path.startsWith(":client:")) return@allprojects
 
     apply(plugin = "kotlin")
 

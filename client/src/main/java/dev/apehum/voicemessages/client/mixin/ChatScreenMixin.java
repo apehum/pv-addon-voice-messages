@@ -70,6 +70,7 @@ abstract class ChatScreenMixin extends Screen {
         input.setWidth(input.getWidth() - barHeight - voicemessages$INPUT_GAP);
     }
 
+    //~ if >=26.3 'render' -> 'extractRenderState'
     @Inject(method = "render", at = @At("HEAD"))
     private void voicemessages$swapInputForRecording(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         if (voicemessages$recordingBar == null) {
