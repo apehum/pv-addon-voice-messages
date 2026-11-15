@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.pv.entrypoints)
     alias(libs.plugins.pv.kotlin.relocate)
     alias(libs.plugins.buildconfig)
@@ -13,18 +14,25 @@ dependencies {
     // access for shaded adventure library
     compileOnly(variantOf(libs.slib) { classifier("all") })
 
-    shadow(project(":api")) {
-        isTransitive = false
-    }
-    shadow(project(":integration:paper"))
+    compileOnly(libs.kotlinx.serialization.core)
 
-    shadow(libs.oggus) {
+    implementation(project(":api")) {
         isTransitive = false
     }
-    shadow(libs.jedis) {
+
+    implementation(libs.oggus) {
+        isTransitive = false
+    }
+    implementation(libs.jedis) {
         exclude("org.slf4j")
         exclude("com.google.code.gson")
     }
+
+    implementation(libs.msgpack) {
+        isTransitive = false
+    }
+
+    implementation(project(":integration:paper"))
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("stdlib-jdk8"))
@@ -34,6 +42,8 @@ dependencies {
     testImplementation(libs.plasmovoice)
     testImplementation(libs.kotlinx.coroutines)
     testImplementation(libs.kotlinx.coroutines.jdk8)
+    testImplementation(libs.kotlinx.serialization.core)
+    testImplementation(libs.msgpack)
 
     testImplementation(libs.oggus)
 }
@@ -55,6 +65,7 @@ allprojects {
         mavenCentral()
         mavenLocal()
         maven("https://repo.plasmoverse.com/releases")
+        maven("https://repo.plasmoverse.com/snapshots")
     }
 }
 
@@ -78,15 +89,21 @@ tasks {
         useJUnitPlatform()
     }
 
-    shadowJar {
-        configurations = listOf(project.configurations.shadow.get())
+    jar {
+        exclude(
+            "fabric.mod.json",
+            "plugin.yml",
+            "extension.json",
+            "pack.mcmeta",
+            "META-INF/*.toml",
+            "dev/apehum/voicemessages/*EntryPoint.class",
+        )
+    }
 
-        listOf(
-            "redis.clients" to "redis",
-            "org.chenliang.oggus" to "oggus",
-            "org.apache" to "apache",
-            "org.json" to "json",
-        ).forEach { (packageName, libraryName) ->
+    shadowJar {
+        configurations = listOf(project.configurations.runtimeClasspath.get())
+
+        SHADED_LIBRARIES.forEach { (packageName, libraryName) ->
             relocate(packageName, "${project.group}.libraries.$libraryName")
         }
 

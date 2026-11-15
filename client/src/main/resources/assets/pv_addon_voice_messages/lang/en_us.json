@@ -5,5 +5,12 @@
   "pv.addon.voice_messages.chat.cancel.tooltip": "Discard the recording",
   "pv.addon.voice_messages.chat.draft": "Voice message, %s",
   "pv.addon.voice_messages.chat.delete": "Discard the recording",
-  "pv.addon.voice_messages.chat.send": "Send the voice message"
+  "pv.addon.voice_messages.chat.send": "Send the voice message",
+  "pv.addon.voice_messages.chat.send_failed.no_permission": "You don't have permissions to send voice messages",
+  "pv.addon.voice_messages.chat.send_failed.unknown_sender": "The server can't send this voice message to chat",
+  "pv.addon.voice_messages.chat.send_failed.bad_arguments": "The server rejected the voice message parameters",
+  "pv.addon.voice_messages.chat.send_failed.bad_request": "The server rejected the voice message, try again",
+  "pv.addon.voice_messages.chat.send_failed.upload_expired": "The voice message took too long to upload, try again",
+  "pv.addon.voice_messages.chat.send_failed.too_long": "The voice message is too long",
+  "pv.addon.voice_messages.chat.send_failed.internal": "Failed to send the voice message"
 }

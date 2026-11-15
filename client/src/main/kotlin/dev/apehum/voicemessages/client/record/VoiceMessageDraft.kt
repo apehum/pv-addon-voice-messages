@@ -1,6 +1,6 @@
 package dev.apehum.voicemessages.client.record
 
-import dev.apehum.voicemessages.playback.WaveformKt
+import dev.apehum.voicemessages.playback.generateWaveform
 import su.plo.voice.api.audio.codec.AudioEncoder
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
@@ -41,7 +41,7 @@ class VoiceMessageDraft(
         if (bars == waveformBars) return waveformLevels
 
         waveformBars = bars
-        waveformLevels = WaveformKt.generateWaveform(frames, bars.coerceIn(1, frames.size * frames.first().size))
+        waveformLevels = generateWaveform(frames, bars.coerceIn(1, frames.size * frames.first().size))
 
         return waveformLevels
     }

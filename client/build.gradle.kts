@@ -6,6 +6,7 @@ plugins {
     id("org.jetbrains.kotlin.jvm")
     id("dev.isxander.modstitch.base")
     id("com.gradleup.shadow")
+    alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.buildconfig)
     alias(ft.plugins.relocate)
 }
@@ -108,7 +109,7 @@ fun DependencyHandler.modLocalRuntimeNested(notation: Any) {
 
 fun ZipFile.nestedJarEntries(): List<String> {
     val modJson = getEntry("fabric.mod.json") ?: return emptyList()
-    val json = getInputStream(modJson).use { JsonSlurper().parse(it) } as Map<*, *>`
+    val json = getInputStream(modJson).use { JsonSlurper().parse(it) } as Map<*, *>
 
     return (json["jars"] as? List<*>)
         .orEmpty()
@@ -171,12 +172,13 @@ dependencies {
     compileOnly(kotlin("stdlib-jdk8"))
     compileOnly(rootProject.libs.kotlinx.coroutines)
     compileOnly(rootProject.libs.kotlinx.coroutines.jdk8)
+    compileOnly(rootProject.libs.kotlinx.serialization.core)
 
-    val plasmoVoice ="maven.modrinth:plasmo-voice:$loader-$mcVersion-$plasmoVoiceVersion"
+    val plasmoVoice = "maven.modrinth:plasmo-voice:$loader-$mcVersion-$plasmoVoiceVersion"
 
     modstitchModCompileOnly(plasmoVoice)
 
-    shaded(files(serverAddonJar))
+    shaded(project(":"))
 
     if (isFabric) {
         modstitchModCompileOnly("net.fabricmc.fabric-api:fabric-api:${propertyVersion("fabric_api")}")
@@ -187,6 +189,8 @@ dependencies {
         modstitchModLocalRuntime(kotlin("stdlib-jdk8"))
         modstitchModLocalRuntime(rootProject.libs.kotlinx.coroutines)
         modstitchModLocalRuntime(rootProject.libs.kotlinx.coroutines.jdk8)
+        modstitchModLocalRuntime(rootProject.libs.kotlinx.serialization.core)
+        modstitchModLocalRuntime(rootProject.libs.msgpack)
 
         modstitchModLocalRuntime(files(provider { unpackNestedJars() }))
     } else {
@@ -195,6 +199,8 @@ dependencies {
         modstitchLocalRuntime(kotlin("stdlib-jdk8"))
         modstitchLocalRuntime(rootProject.libs.kotlinx.coroutines)
         modstitchLocalRuntime(rootProject.libs.kotlinx.coroutines.jdk8)
+        modstitchLocalRuntime(rootProject.libs.kotlinx.serialization.core)
+        modstitchLocalRuntime(rootProject.libs.msgpack)
     }
 }
 
@@ -266,6 +272,13 @@ tasks {
 
         relocate("kotlin", "su.plo.voice.libs.kotlin")
         relocate("kotlinx.coroutines", "su.plo.voice.libs.kotlinx.coroutines")
+        relocate("kotlinx.serialization", "su.plo.voice.libs.kotlinx.serialization")
+
+        SHADED_LIBRARIES.forEach { (packageName, libraryName) ->
+            relocate(packageName, "${rootProject.group}.libraries.$libraryName")
+        }
+
+        mergeServiceFiles()
     }
 
     if (modstitch.platform.isLoomRemap) {

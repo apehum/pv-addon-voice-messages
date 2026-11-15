@@ -8,6 +8,7 @@ import dev.apehum.voicemessages.client.gui.render.shade
 import dev.apehum.voicemessages.client.gui.render.tint
 import dev.apehum.voicemessages.client.modResource
 import dev.apehum.voicemessages.client.record.VoiceMessageDraft
+import dev.apehum.voicemessages.client.record.VoiceMessageDraftPlayer
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.narration.NarratedElementType
@@ -81,18 +82,20 @@ class DraftTrack(
         mouseY: Int,
         partialTick: Float,
     ) {
-        val draft = VoiceMessagesClient.draft ?: return
+        val session = VoiceMessagesClient.session ?: return
+        val draft = session.recorder.draft ?: return
+        val preview = session.preview
         val context = GuiRenderContext(guiGraphics)
 
         val trimLeft = draft.frameX(draft.trimStart)
         val trimRight = draft.frameX(draft.trimEnd)
-        val playhead = draft.frameX(draft.playheadFrame())
+        val playhead = draft.frameX(draft.playheadFrame(preview))
 
         renderTrack(context, trimLeft, trimRight, playhead)
         renderBars(context, draft, trimLeft, trimRight, playhead)
         renderHandle(context, trimLeft - HANDLE_WIDTH)
         renderHandle(context, trimRight)
-        renderChip(context, draft)
+        renderChip(context, draft, preview)
     }
 
     //? if >=1.21.11 {
@@ -128,26 +131,28 @@ class DraftTrack(
     //?}
 
     private fun press(mouseX: Double) {
-        val draft = VoiceMessagesClient.draft ?: return
+        val session = VoiceMessagesClient.session ?: return
+        val draft = session.recorder.draft ?: return
+        val preview = session.preview
 
         dragging = draft.grabbedHandle(mouseX)
         if (dragging != null) {
-            VoiceMessagesClient.stopPreview()
+            preview.stop()
             return
         }
 
-        val chip = draft.chip()
+        val chip = draft.chip(preview)
         if (chip != null && mouseX >= chip.left && mouseX < chip.left + chip.width) {
-            VoiceMessagesClient.togglePreview()
+            preview.toggle(draft)
             return
         }
 
         val frame = draft.frameAt(mouseX).coerceIn(draft.trimStart, draft.trimEnd)
-        VoiceMessagesClient.playPreview(frame - draft.trimStart)
+        preview.play(draft, frame - draft.trimStart)
     }
 
     private fun drag(mouseX: Double) {
-        val draft = VoiceMessagesClient.draft ?: return
+        val draft = VoiceMessagesClient.session?.recorder?.draft ?: return
         val frame = draft.frameAt(mouseX)
 
         when (dragging) {
@@ -162,7 +167,7 @@ class DraftTrack(
     }
 
     override fun updateWidgetNarration(output: NarrationElementOutput) {
-        val duration = VoiceMessagesClient.draft?.trimmedDuration ?: Duration.ZERO
+        val duration = VoiceMessagesClient.session?.recorder?.draft?.trimmedDuration ?: Duration.ZERO
         output.add(NarratedElementType.TITLE, Component.translatable(DRAFT_KEY, duration.formatted()))
     }
 
@@ -227,15 +232,16 @@ class DraftTrack(
     private fun renderChip(
         context: GuiRenderContext,
         draft: VoiceMessageDraft,
+        preview: VoiceMessageDraftPlayer,
     ) {
-        val chip = draft.chip() ?: return
+        val chip = draft.chip(preview) ?: return
         val chipHeight = height - 2
         val top = y + 1
 
         context.fillRounded(chip.left, top, chip.left + chip.width, top + chipHeight, chipHeight / 2, CHIP_COLOR)
 
         context.blitIcon(
-            if (VoiceMessagesClient.isPreviewPlaying) PAUSE_ICON else PLAY_ICON,
+            if (preview.isPlaying) PAUSE_ICON else PLAY_ICON,
             chip.left + CHIP_PADDING,
             top + (chipHeight - GLYPH_HEIGHT) / 2,
             GLYPH_WIDTH,
@@ -257,8 +263,8 @@ class DraftTrack(
     private fun VoiceMessageDraft.frameAt(mouseX: Double): Int =
         ((mouseX - waveLeft) / waveWidth * frames.size).roundToInt().coerceIn(0, frames.size)
 
-    private fun VoiceMessageDraft.playheadFrame(): Int =
-        trimStart + ((trimEnd - trimStart) * VoiceMessagesClient.previewProgress).roundToInt()
+    private fun VoiceMessageDraft.playheadFrame(preview: VoiceMessageDraftPlayer): Int =
+        trimStart + ((trimEnd - trimStart) * preview.progress(this)).roundToInt()
 
     private fun VoiceMessageDraft.grabbedHandle(mouseX: Double): Handle? {
         val trimLeft = frameX(trimStart)
@@ -271,12 +277,12 @@ class DraftTrack(
         }
     }
 
-    private fun VoiceMessageDraft.chip(): Chip? {
+    private fun VoiceMessageDraft.chip(preview: VoiceMessageDraftPlayer): Chip? {
         val trimLeft = frameX(trimStart)
         val trimRight = frameX(trimEnd)
         val room = trimRight - trimLeft - 2
 
-        val label = chipLabel()
+        val label = chipLabel(preview)
         val labelled = CHIP_PADDING * 2 + GLYPH_WIDTH + CHIP_GAP + RenderUtil.getStringWidth(label)
         val bare = CHIP_PADDING * 2 + GLYPH_WIDTH
 
@@ -290,9 +296,9 @@ class DraftTrack(
         return Chip(trimLeft + 1 + (room - chipWidth) / 2, chipWidth, label.takeIf { chipWidth == labelled })
     }
 
-    private fun VoiceMessageDraft.chipLabel(): String =
-        if (VoiceMessagesClient.isPreviewPlaying) {
-            (trimmedDuration * VoiceMessagesClient.previewProgress).formatted()
+    private fun VoiceMessageDraft.chipLabel(preview: VoiceMessageDraftPlayer): String =
+        if (preview.isPlaying) {
+            (trimmedDuration * preview.progress(this)).formatted()
         } else {
             trimmedDuration.formatted()
         }

@@ -1,108 +1,70 @@
 package dev.apehum.voicemessages.client
 
-import dev.apehum.voicemessages.client.record.VoiceMessageDraft
-import dev.apehum.voicemessages.client.record.VoiceMessageDraftPlayer
-import dev.apehum.voicemessages.client.record.VoiceMessageRecorder
+import dev.apehum.voicemessages.client.channel.VoiceMessagesChannelClient
+import dev.apehum.voicemessages.client.channel.createChannelClient
+import dev.apehum.voicemessages.client.session.VoiceMessageSession
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import net.minecraft.client.Minecraft
+import kotlinx.coroutines.launch
+import su.plo.slib.api.logging.McLoggerFactory
 import su.plo.voice.api.client.PlasmoVoiceClient
-import kotlin.time.Duration
 
 object VoiceMessagesClient {
-    // todo: replace with an actual handshake?
-    private const val RECORD_COMMAND = "vm"
+    private val logger = McLoggerFactory.createLogger(BuildConfig.ADDON_ID)
 
     private val scope = CoroutineScope(Dispatchers.Default)
 
-    private var recorder: VoiceMessageRecorder? = null
-    private var preview: VoiceMessageDraftPlayer? = null
+    private lateinit var addon: ClientVoiceMessagesAddon
+    private lateinit var voiceClient: PlasmoVoiceClient
+    private lateinit var channel: VoiceMessagesChannelClient
+
+    private val sessionLock = Any()
 
     @JvmStatic
-    val isRecording: Boolean
-        get() = recorder?.isRecording == true
+    @Volatile
+    var session: VoiceMessageSession? = null
+        private set
 
-    val elapsed: Duration
-        get() = recorder?.elapsed ?: Duration.ZERO
-
-    val draft: VoiceMessageDraft?
-        get() = recorder?.draft
-
-    val isPreviewPlaying: Boolean
-        get() = preview?.isPlaying == true
-
-    val previewProgress: Double
-        get() {
-            val draft = draft ?: return 0.0
-            val frames = draft.trimEnd - draft.trimStart
-            if (frames <= 0) return 0.0
-
-            return ((preview?.playedFrames ?: 0).toDouble() / frames).coerceIn(0.0, 1.0)
-        }
-
-    fun initialize(voiceClient: PlasmoVoiceClient): VoiceMessageRecorder =
-        VoiceMessageRecorder(voiceClient).also {
-            recorder = it
-            preview = VoiceMessageDraftPlayer(voiceClient, scope)
-        }
-
-    @JvmStatic
-    fun canRecord(): Boolean {
-        val connection = Minecraft.getInstance().connection ?: return false
-        if (connection.commands.root.getChild(RECORD_COMMAND) == null) return false
-
-        return recorder?.canRecord() == true
+    fun initialize(
+        addon: ClientVoiceMessagesAddon,
+        voiceClient: PlasmoVoiceClient,
+    ) {
+        this.addon = addon
+        this.voiceClient = voiceClient
+        channel = VoiceMessagesChannelClient(createChannelClient(modResource("channel")))
     }
 
-    @JvmStatic
-    fun isActive(): Boolean = isRecording || draft != null
+    fun handshake() {
+        scope.launch {
+            val response =
+                try {
+                    channel.handshake()
+                } catch (e: Throwable) {
+                    logger.debug("Voice messages handshake failed", e)
+                    null
+                } ?: return@launch
 
-    @JvmStatic
-    fun toggleRecording() {
-        if (isRecording) {
-            stopRecording()
-        } else {
-            startRecording()
+            synchronized(sessionLock) {
+                if (channel.session !== response) return@launch
+
+                session?.close()
+                session =
+                    VoiceMessageSession(
+                        addon,
+                        voiceClient,
+                        channel,
+                        scope,
+                        response,
+                    )
+            }
         }
     }
 
-    fun recentLevels(count: Int): List<Double> = recorder?.recentLevels(count) ?: emptyList()
-
-    fun startRecording(): Boolean {
-        preview?.stop()
-        return recorder?.start() == true
-    }
-
-    fun stopRecording(): VoiceMessageDraft? = recorder?.stop()
-
-    fun playPreview(fromFrame: Int) {
-        draft?.let { preview?.play(it, fromFrame) }
-    }
-
-    fun togglePreview() {
-        val preview = preview ?: return
-
-        if (preview.isPlaying) {
-            preview.pause()
-        } else {
-            draft?.let { preview.play(it) }
+    fun disconnect() {
+        synchronized(sessionLock) {
+            session?.close()
+            session = null
+            channel.reset()
         }
-    }
-
-    fun stopPreview() {
-        preview?.stop()
-    }
-
-    fun send() {
-        if (draft == null) return
-
-        // todo: proper send
-        discard()
-    }
-
-    @JvmStatic
-    fun discard() {
-        preview?.stop()
-        recorder?.cancel()
     }
 }

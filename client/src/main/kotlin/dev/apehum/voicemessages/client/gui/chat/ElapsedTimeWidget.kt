@@ -30,7 +30,7 @@ class ElapsedTimeWidget(
         partialTick: Float,
     ) {
         GuiRenderContext(guiGraphics).drawString(
-            VoiceMessagesClient.elapsed.formatted(),
+            elapsed().formatted(),
             x,
             y + (height - FONT_HEIGHT) / 2,
             Color.WHITE,
@@ -40,9 +40,11 @@ class ElapsedTimeWidget(
     override fun updateWidgetNarration(output: NarrationElementOutput) {
         output.add(
             NarratedElementType.TITLE,
-            Component.literal(VoiceMessagesClient.elapsed.formatted()),
+            Component.literal(elapsed().formatted()),
         )
     }
 }
+
+private fun elapsed(): Duration = VoiceMessagesClient.session?.recorder?.elapsed ?: Duration.ZERO
 
 private fun Duration.formatted(): String = "%02d:%02d".format(inWholeMinutes, inWholeSeconds % 60)

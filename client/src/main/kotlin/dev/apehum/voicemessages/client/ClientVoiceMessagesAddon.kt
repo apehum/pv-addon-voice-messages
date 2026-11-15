@@ -6,6 +6,7 @@ import su.plo.voice.api.addon.InjectPlasmoVoice
 import su.plo.voice.api.addon.annotation.Addon
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent
+import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent
 import su.plo.voice.api.event.EventSubscribe
 
 @Addon(
@@ -19,12 +20,16 @@ class ClientVoiceMessagesAddon : AddonInitializer {
     private lateinit var voiceClient: PlasmoVoiceClient
 
     override fun onAddonInitialize() {
-        val recorder = VoiceMessagesClient.initialize(voiceClient)
-        voiceClient.eventBus.register(this, recorder)
+        VoiceMessagesClient.initialize(this, voiceClient)
+    }
+
+    @EventSubscribe
+    fun onVoiceConnect(event: UdpClientConnectedEvent) {
+        VoiceMessagesClient.handshake()
     }
 
     @EventSubscribe
     fun onVoiceDisconnect(event: UdpClientClosedEvent) {
-        VoiceMessagesClient.discard()
+        VoiceMessagesClient.disconnect()
     }
 }

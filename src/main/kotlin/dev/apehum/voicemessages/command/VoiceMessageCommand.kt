@@ -14,6 +14,7 @@ import dev.apehum.voicemessages.command.dsl.dslCommand
 import dev.apehum.voicemessages.playback.component
 import dev.apehum.voicemessages.record.VoiceMessageRecorder
 import dev.apehum.voicemessages.util.extension.asVoicePlayer
+import dev.apehum.voicemessages.util.extension.canRecordWith
 import dev.apehum.voicemessages.util.extension.sendTranslatable
 import kotlinx.coroutines.future.await
 import su.plo.slib.api.chat.component.McTextComponent
@@ -75,10 +76,7 @@ private fun sendChatVoiceMessageCommand(
             argument(name, argument)
         }
 
-    checkPermission { context ->
-        context.source.hasPermission("pv.addon.voice_messages.record.*") ||
-            context.source.hasPermission("pv.addon.voice_messages.record.$chatSenderName")
-    }
+    checkPermission { context -> context.source.canRecordWith(chatSenderName) }
 
     executesCoroutine { context ->
         val player =
@@ -114,10 +112,7 @@ fun voiceMessageCommand(
 ): DslCommand =
     dslCommand(name) {
         checkPermission { context ->
-            context.source.hasPermission("pv.addon.voice_messages.record.*") ||
-                senderRegistry.getSenders().map { it.key }.any {
-                    context.source.hasPermission("pv.addon.voice_messages.record.$it")
-                }
+            senderRegistry.getSenders().any { context.source.canRecordWith(it.key) }
         }
 
         senderRegistry.getSenders().forEach { (senderName, sender) ->

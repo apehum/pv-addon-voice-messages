@@ -93,14 +93,14 @@ class StopRecordingButton(
         event: MouseButtonEvent,
         doubled: Boolean,
     ) {
-        VoiceMessagesClient.stopRecording()
+        VoiceMessagesClient.session?.recorder?.stop()
     }
     *///?} else {
     override fun onClick(
         mouseX: Double,
         mouseY: Double,
     ) {
-        VoiceMessagesClient.stopRecording()
+        VoiceMessagesClient.session?.recorder?.stop()
     }
     //?}
 
@@ -113,7 +113,7 @@ class StopRecordingButton(
         val delta = if (lastFrameNanos == 0L) 0f else (now - lastFrameNanos) / 1_000_000_000f
         lastFrameNanos = now
 
-        val level = VoiceMessagesClient.recentLevels(1).lastOrNull()?.toFloat() ?: 0f
+        val level = VoiceMessagesClient.session?.recorder?.recentLevels(1)?.lastOrNull()?.toFloat() ?: 0f
         val target = ((level - NOISE_FLOOR) / (LEVEL_CEILING - NOISE_FLOOR)).coerceIn(0f, 1f)
 
         val smoothingSeconds = if (target > amplitude) ATTACK_SECONDS else RELEASE_SECONDS

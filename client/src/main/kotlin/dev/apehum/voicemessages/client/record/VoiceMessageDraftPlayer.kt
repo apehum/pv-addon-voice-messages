@@ -57,6 +57,17 @@ class VoiceMessageDraftPlayer(
             }
     }
 
+    fun progress(draft: VoiceMessageDraft): Double {
+        val frames = draft.trimEnd - draft.trimStart
+        if (frames <= 0) return 0.0
+
+        return (playedFrames.toDouble() / frames).coerceIn(0.0, 1.0)
+    }
+
+    fun toggle(draft: VoiceMessageDraft) {
+        if (isPlaying) pause() else play(draft)
+    }
+
     fun pause() {
         cancel()
     }

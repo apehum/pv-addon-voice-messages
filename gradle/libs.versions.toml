@@ -1,13 +1,14 @@
 [versions]
 kotlin = "2.3.0"
 kotlinx-coroutines = "1.7.3"
+kotlinx-serialization = "1.10.0"
 
 minecraft = "1.21.11"
 
 paper = "1.21.11-R0.1-SNAPSHOT"
 packetevents = "2.11.1"
 
-plasmovoice = "2.1.13"
+plasmovoice = "2.2.0-beta.3"
 pv-client = "2.2.0-beta.3"
 pv-gradle-plugin = "1.0.9"
 run-paper = "3.0.2"
@@ -18,19 +19,23 @@ modstitch = "0.8.5"
 slib = "1.1.4"
 oggus = "1.2.0"
 jedis = "7.0.0"
+msgpack = "0.6.0"
 
 [libraries]
 slib = { module = "su.plo.slib:common", version.ref = "slib" }
 oggus = { module = "org.chenliang.oggus:oggus", version.ref = "oggus" }
 jedis = { module = "redis.clients:jedis", version.ref = "jedis" }
+msgpack = { module = "com.ensarsarajcic.kotlinx:serialization-msgpack", version.ref = "msgpack" }
 plasmovoice = { module = "su.plo.voice.api:server", version.ref = "plasmovoice" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 packetevents = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 pv-entrypoints = { id = "su.plo.voice.plugin.entrypoints", version.ref = "pv-gradle-plugin" }
 pv-kotlin-relocate = { id = "su.plo.voice.plugin.relocate-kotlin", version.ref = "pv-gradle-plugin" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }

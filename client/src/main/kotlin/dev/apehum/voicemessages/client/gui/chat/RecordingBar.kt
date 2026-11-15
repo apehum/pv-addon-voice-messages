@@ -26,7 +26,7 @@ class RecordingBar(
     private val elapsed = ElapsedTimeWidget(x, y, height)
     private val cancel =
         TextButton(x, y, height, CANCEL_KEY, CANCEL_COLOR, CANCEL_HOVER_COLOR) {
-            VoiceMessagesClient.discard()
+            VoiceMessagesClient.session?.discard()
         }
 
     override val children = listOf(stop, elapsed, cancel)

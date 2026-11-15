@@ -35,7 +35,7 @@ class DraftBar(
             DELETE_KEY,
             DELETE_ICON,
             hoverColor = DELETE_HOVER_COLOR,
-        ) { VoiceMessagesClient.discard() }
+        ) { VoiceMessagesClient.session?.discard() }
 
     private val send =
         IconButton(
@@ -46,7 +46,7 @@ class DraftBar(
             SEND_ICON,
             color = SEND_COLOR,
             hoverColor = SEND_HOVER_COLOR,
-        ) { VoiceMessagesClient.send() }
+        ) { VoiceMessagesClient.session?.send() }
 
     private val track = DraftTrack(x, y, 0, height)
 

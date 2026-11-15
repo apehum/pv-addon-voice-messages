@@ -7,12 +7,10 @@ import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.util.AudioUtil
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 class VoiceMessageRecorder(
     private val voiceClient: PlasmoVoiceClient,
-    // todo: isn't max duration server-sided?
-    private val maxDuration: Duration = 60.seconds,
+    private val maxDuration: Duration,
 ) {
     private val frames = mutableListOf<ShortArray>()
     private val levels = mutableListOf<Double>()

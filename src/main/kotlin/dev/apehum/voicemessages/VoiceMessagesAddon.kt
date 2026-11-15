@@ -7,6 +7,10 @@ import dev.apehum.voicemessages.api.chat.ChatMessageSenderRegistry
 import dev.apehum.voicemessages.api.event.MessageSenderRegistrationEvent
 import dev.apehum.voicemessages.api.storage.draft.VoiceMessageDraftStorage
 import dev.apehum.voicemessages.api.storage.message.VoiceMessageStorage
+import dev.apehum.voicemessages.channel.codec.CHANNEL_KEY
+import dev.apehum.voicemessages.channel.server.ChannelServer
+import dev.apehum.voicemessages.channel.server.createChannelServer
+import dev.apehum.voicemessages.channel.server.registerVoiceMessagesHandler
 import dev.apehum.voicemessages.chat.builtin.DefaultDirectMessageSender
 import dev.apehum.voicemessages.chat.builtin.DefaultMessageSender
 import dev.apehum.voicemessages.command.LateInitCommand
@@ -28,6 +32,7 @@ import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.logging.McLoggerFactory
 import su.plo.slib.api.permission.PermissionDefault
 import su.plo.slib.api.server.McServerLib
+import su.plo.slib.api.server.channel.McServerChannelRegistry
 import su.plo.slib.api.server.event.command.McServerCommandsRegisterEvent
 import su.plo.voice.api.addon.AddonInitializer
 import su.plo.voice.api.addon.AddonLoaderScope
@@ -77,6 +82,9 @@ class VoiceMessagesAddon :
     private val voiceMessageCommand = LateInitCommand("vm")
     private val voiceMessageActionsCommand = LateInitCommand("vm-actions")
 
+    private lateinit var config: AddonConfig
+    private var channelServer: ChannelServer? = null
+
     private val paperIntegration by lazy {
         try {
             PaperIntegration(BuildConfig.PROJECT_NAME)
@@ -86,6 +94,8 @@ class VoiceMessagesAddon :
     }
 
     init {
+        McServerChannelRegistry.register(CHANNEL_KEY)
+
         McServerCommandsRegisterEvent.registerListener { commandManager, _ ->
             voiceMessageCommand.register(commandManager)
             voiceMessageActionsCommand.register(commandManager)
@@ -103,10 +113,22 @@ class VoiceMessagesAddon :
         permissions.register("pv.addon.voice_messages.record.direct", PermissionDefault.TRUE)
         permissions.register("pv.addon.voice_messages.record.*", PermissionDefault.OP)
 
-        val config = reloadConfig()
+        reloadConfig()
         if (config.usePacketEventsIntegration) {
             paperIntegration?.load()
         }
+
+        channelServer =
+            createChannelServer(CHANNEL_KEY, minecraftServer.channelManager)
+                .also { it.registerVoiceMessagesHandler(voiceServer, this, ::config) }
+    }
+
+    override fun onAddonShutdown() {
+        channelServer?.let {
+            minecraftServer.channelManager.unregisterChannelHandler(CHANNEL_KEY, it)
+            it.shutdown()
+        }
+        channelServer = null
     }
 
     override fun playVoiceMessage(
@@ -150,7 +172,7 @@ class VoiceMessagesAddon :
         val oldVoiceRecorder = if (::voiceRecorder.isInitialized) voiceRecorder else null
         val oldMessagePlayer = if (::messagePlayer.isInitialized) messagePlayer else null
 
-        val config = loadConfig<AddonConfig>(addonFolder)
+        val config = loadConfig<AddonConfig>(addonFolder).also { this.config = it }
         voiceServer.languages.register(
             ::getLanguageResource,
             File(addonFolder, "languages"),

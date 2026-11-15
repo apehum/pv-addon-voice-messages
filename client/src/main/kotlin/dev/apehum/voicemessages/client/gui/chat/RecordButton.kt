@@ -22,5 +22,5 @@ class RecordButton(
         RECORD_ICON,
         color = RECORD_ICON_COLOR,
         background = true,
-        onPress = { VoiceMessagesClient.startRecording() },
+        onPress = { VoiceMessagesClient.session?.startRecording() },
     )
