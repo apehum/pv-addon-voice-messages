@@ -5,6 +5,7 @@ import dev.apehum.voicemessages.channel.codec.SuggestResponse
 import dev.apehum.voicemessages.client.gui.chat.SEND_COLOR
 import dev.apehum.voicemessages.client.gui.chat.SEND_ICON
 import dev.apehum.voicemessages.client.gui.render.DANGER_COLOR
+import dev.apehum.voicemessages.client.gui.render.TEXT_HEIGHT
 import dev.apehum.voicemessages.client.session.ClientSender
 import dev.apehum.voicemessages.client.session.SendTarget
 import dev.apehum.voicemessages.client.session.VoiceMessageSession
@@ -31,7 +32,7 @@ class ArgumentsPage(
     private val font = Minecraft.getInstance().font
 
     private val input =
-        EditBox(font, 0, 0, 0, FONT_HEIGHT, Component.empty()).apply {
+        EditBox(font, 0, 0, 0, TEXT_HEIGHT, Component.empty()).apply {
             setBordered(false)
             setMaxLength(MAX_INPUT_LENGTH)
         }

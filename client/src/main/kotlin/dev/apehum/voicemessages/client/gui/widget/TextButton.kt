@@ -1,5 +1,6 @@
 package dev.apehum.voicemessages.client.gui.widget
 
+import dev.apehum.voicemessages.client.gui.render.TEXT_HEIGHT
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.narration.NarratedElementType
 import net.minecraft.client.gui.narration.NarrationElementOutput
@@ -8,8 +9,6 @@ import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import su.plo.slib.api.chat.component.McTextComponent
 import java.awt.Color
-
-private const val FONT_HEIGHT = 8
 
 class TextButton(
     x: Int,
@@ -35,7 +34,7 @@ class TextButton(
         GuiRenderContext(guiGraphics).drawString(
             label,
             x,
-            y + (height - FONT_HEIGHT) / 2,
+            y + (height - TEXT_HEIGHT) / 2,
             if (isHovered) hoverColor else color,
         )
     }

@@ -2,6 +2,7 @@ package dev.apehum.voicemessages.client.gui.chat
 
 import dev.apehum.voicemessages.client.VoiceMessagesClient
 import dev.apehum.voicemessages.client.gui.render.ACCENT_COLOR
+import dev.apehum.voicemessages.client.gui.render.TEXT_HEIGHT
 import dev.apehum.voicemessages.client.gui.render.fillRounded
 import dev.apehum.voicemessages.client.gui.render.roundedInset
 import dev.apehum.voicemessages.client.gui.render.shade
@@ -39,9 +40,6 @@ private const val CHIP_PADDING = 3
 private const val CHIP_GAP = 3
 private const val GLYPH_WIDTH = 3
 private const val GLYPH_HEIGHT = 5
-
-// todo: why it's hard-coded? shouldn't it be resolved from actual mc font?
-private const val FONT_HEIGHT = 8
 
 private val TRACK_COLOR = ACCENT_COLOR.shade(0.35f)
 private val TRIMMED_COLOR = TRACK_COLOR.shade(0.4f)
@@ -235,7 +233,7 @@ class DraftTrack(
         context.drawString(
             label,
             chip.left + CHIP_PADDING + GLYPH_WIDTH + CHIP_GAP,
-            top + (chipHeight - FONT_HEIGHT) / 2,
+            top + (chipHeight - TEXT_HEIGHT) / 2,
             Color.WHITE,
         )
     }

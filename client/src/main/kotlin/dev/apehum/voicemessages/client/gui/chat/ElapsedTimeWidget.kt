@@ -1,6 +1,7 @@
 package dev.apehum.voicemessages.client.gui.chat
 
 import dev.apehum.voicemessages.client.VoiceMessagesClient
+import dev.apehum.voicemessages.client.gui.render.TEXT_HEIGHT
 import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.narration.NarratedElementType
@@ -11,7 +12,6 @@ import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import java.awt.Color
 import kotlin.time.Duration
 
-private const val FONT_HEIGHT = 8
 private const val WIDEST_ELAPSED = "00:00"
 
 class ElapsedTimeWidget(
@@ -32,7 +32,7 @@ class ElapsedTimeWidget(
         GuiRenderContext(guiGraphics).drawString(
             elapsed().formatted(),
             x,
-            y + (height - FONT_HEIGHT) / 2,
+            y + (height - TEXT_HEIGHT) / 2,
             Color.WHITE,
         )
     }
