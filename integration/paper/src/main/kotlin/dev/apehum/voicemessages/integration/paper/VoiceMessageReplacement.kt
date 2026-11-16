@@ -1,7 +1,6 @@
 package dev.apehum.voicemessages.integration.paper
 
 import dev.apehum.voicemessages.api.VoiceMessagesAPIProvider
-import kotlinx.coroutines.runBlocking
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.entity.Player
@@ -17,7 +16,7 @@ fun createVoiceMessageReplacement(player: Player): TextReplacementConfig {
         .replacement { match, builder ->
             val voiceMessageId = UUID.fromString(match.group(1))
             val voiceMessage =
-                runBlocking { voiceMessages.messageStorage.getById(voiceMessageId) }
+                voiceMessages.messageStorage.getById(voiceMessageId).join()
                     ?: return@replacement builder.build()
 
             val json = voiceMessages.formatVoiceMessageToJson(voiceMessage, player.locale)

@@ -1,0 +1,169 @@
+public final class dev/apehum/voicemessages/api/VoiceMessage {
+	public fun <init> (Ljava/util/UUID;Ljava/util/List;Ljava/util/List;)V
+	public final fun component1 ()Ljava/util/UUID;
+	public final fun component2 ()Ljava/util/List;
+	public final fun component3 ()Ljava/util/List;
+	public final fun copy (Ljava/util/UUID;Ljava/util/List;Ljava/util/List;)Ldev/apehum/voicemessages/api/VoiceMessage;
+	public static synthetic fun copy$default (Ldev/apehum/voicemessages/api/VoiceMessage;Ljava/util/UUID;Ljava/util/List;Ljava/util/List;ILjava/lang/Object;)Ldev/apehum/voicemessages/api/VoiceMessage;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getDuration ()Ljava/time/Duration;
+	public final fun getEncodedFrames ()Ljava/util/List;
+	public final fun getId ()Ljava/util/UUID;
+	public final fun getWaveform ()Ljava/util/List;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/apehum/voicemessages/api/VoiceMessagesAPI {
+	public abstract fun createVoiceMessage (Ljava/util/List;)Ldev/apehum/voicemessages/api/VoiceMessage;
+	public abstract fun formatVoiceMessage (Ldev/apehum/voicemessages/api/VoiceMessage;)Lsu/plo/slib/api/chat/component/McTextComponent;
+	public abstract fun formatVoiceMessageToJson (Ldev/apehum/voicemessages/api/VoiceMessage;)Ljava/lang/String;
+	public abstract fun formatVoiceMessageToJson (Ldev/apehum/voicemessages/api/VoiceMessage;Ljava/lang/String;)Ljava/lang/String;
+	public abstract fun getDraftMessageStorage ()Ldev/apehum/voicemessages/api/storage/draft/VoiceMessageDraftStorage;
+	public abstract fun getMessageSenderRegistry ()Ldev/apehum/voicemessages/api/chat/ChatMessageSenderRegistry;
+	public abstract fun getMessageStorage ()Ldev/apehum/voicemessages/api/storage/message/VoiceMessageStorage;
+	public abstract fun playVoiceMessage (Lsu/plo/voice/api/server/player/VoiceServerPlayer;Ldev/apehum/voicemessages/api/VoiceMessage;Z)V
+	public static synthetic fun playVoiceMessage$default (Ldev/apehum/voicemessages/api/VoiceMessagesAPI;Lsu/plo/voice/api/server/player/VoiceServerPlayer;Ldev/apehum/voicemessages/api/VoiceMessage;ZILjava/lang/Object;)V
+	public abstract fun recordVoiceMessage (Lsu/plo/voice/api/server/player/VoiceServerPlayer;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun stopVoiceMessage (Lsu/plo/voice/api/server/player/VoiceServerPlayer;)Z
+	public abstract fun wrapVoiceMessageInOgg (Ldev/apehum/voicemessages/api/VoiceMessage;)[B
+}
+
+public final class dev/apehum/voicemessages/api/VoiceMessagesAPIProvider {
+	public static final field INSTANCE Ldev/apehum/voicemessages/api/VoiceMessagesAPIProvider;
+	public static final fun getInstance ()Ldev/apehum/voicemessages/api/VoiceMessagesAPI;
+	public final fun setInstance (Ldev/apehum/voicemessages/api/VoiceMessagesAPI;)V
+}
+
+public abstract interface class dev/apehum/voicemessages/api/chat/ChatContext {
+}
+
+public abstract interface class dev/apehum/voicemessages/api/chat/ChatMessageSender {
+	public abstract fun canSendMessage (Ldev/apehum/voicemessages/api/chat/ChatContext;)Z
+	public fun createArguments ()Ljava/util/List;
+	public abstract fun createContext (Ldev/apehum/voicemessages/api/command/dsl/CommandContext;)Ljava/util/concurrent/CompletableFuture;
+	public fun displayName (Lsu/plo/slib/api/command/McCommandSource;)Lsu/plo/slib/api/chat/component/McTextComponent;
+	public abstract fun sendVoiceMessage (Ldev/apehum/voicemessages/api/chat/ChatContext;Ldev/apehum/voicemessages/api/VoiceMessage;)V
+}
+
+public final class dev/apehum/voicemessages/api/chat/ChatMessageSenderRegistry {
+	public fun <init> ()V
+	public final fun getSender (Ljava/lang/String;)Ldev/apehum/voicemessages/api/chat/ChatMessageSender;
+	public final fun getSenders ()Ljava/util/Set;
+	public final fun register (Ljava/lang/String;Ldev/apehum/voicemessages/api/chat/ChatMessageSender;)V
+	public final fun unregister (Ljava/lang/String;)Z
+}
+
+public abstract interface class dev/apehum/voicemessages/api/command/dsl/CommandContext {
+	public abstract fun getArgumentValue (Ljava/lang/String;)Ljava/lang/Object;
+	public abstract fun getSource ()Lsu/plo/slib/api/command/McCommandSource;
+}
+
+public abstract interface class dev/apehum/voicemessages/api/command/dsl/argument/CommandArgument {
+	public abstract fun parse (Lsu/plo/slib/api/command/McCommandSource;Ldev/apehum/voicemessages/api/command/dsl/argument/StringReader;)Ljava/lang/Object;
+	public fun suggest (Lsu/plo/slib/api/command/McCommandSource;Ldev/apehum/voicemessages/api/command/dsl/argument/StringReader;)Ljava/util/List;
+}
+
+public final class dev/apehum/voicemessages/api/command/dsl/argument/NamedCommandArgument {
+	public fun <init> (Ljava/lang/String;Ldev/apehum/voicemessages/api/command/dsl/argument/CommandArgument;)V
+	public fun <init> (Ljava/lang/String;Ldev/apehum/voicemessages/api/command/dsl/argument/CommandArgument;Ldev/apehum/voicemessages/api/command/dsl/argument/NamedCommandArgument$DisplayNameProvider;)V
+	public final fun component1 ()Ljava/lang/String;
+	public final fun component2 ()Ldev/apehum/voicemessages/api/command/dsl/argument/CommandArgument;
+	public final fun component3 ()Ldev/apehum/voicemessages/api/command/dsl/argument/NamedCommandArgument$DisplayNameProvider;
+	public final fun copy (Ljava/lang/String;Ldev/apehum/voicemessages/api/command/dsl/argument/CommandArgument;Ldev/apehum/voicemessages/api/command/dsl/argument/NamedCommandArgument$DisplayNameProvider;)Ldev/apehum/voicemessages/api/command/dsl/argument/NamedCommandArgument;
+	public static synthetic fun copy$default (Ldev/apehum/voicemessages/api/command/dsl/argument/NamedCommandArgument;Ljava/lang/String;Ldev/apehum/voicemessages/api/command/dsl/argument/CommandArgument;Ldev/apehum/voicemessages/api/command/dsl/argument/NamedCommandArgument$DisplayNameProvider;ILjava/lang/Object;)Ldev/apehum/voicemessages/api/command/dsl/argument/NamedCommandArgument;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getArgument ()Ldev/apehum/voicemessages/api/command/dsl/argument/CommandArgument;
+	public final fun getDisplayName ()Ldev/apehum/voicemessages/api/command/dsl/argument/NamedCommandArgument$DisplayNameProvider;
+	public final fun getName ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/apehum/voicemessages/api/command/dsl/argument/NamedCommandArgument$DisplayNameProvider {
+	public abstract fun invoke (Lsu/plo/slib/api/command/McCommandSource;)Lsu/plo/slib/api/chat/component/McTextComponent;
+}
+
+public final class dev/apehum/voicemessages/api/command/dsl/argument/PlayerArgument : dev/apehum/voicemessages/api/command/dsl/argument/CommandArgument {
+	public fun <init> (Lsu/plo/slib/api/server/McServerLib;)V
+	public synthetic fun parse (Lsu/plo/slib/api/command/McCommandSource;Ldev/apehum/voicemessages/api/command/dsl/argument/StringReader;)Ljava/lang/Object;
+	public fun parse (Lsu/plo/slib/api/command/McCommandSource;Ldev/apehum/voicemessages/api/command/dsl/argument/StringReader;)Lsu/plo/slib/api/server/entity/player/McServerPlayer;
+	public fun suggest (Lsu/plo/slib/api/command/McCommandSource;Ldev/apehum/voicemessages/api/command/dsl/argument/StringReader;)Ljava/util/List;
+}
+
+public final class dev/apehum/voicemessages/api/command/dsl/argument/StringArgument : dev/apehum/voicemessages/api/command/dsl/argument/CommandArgument {
+	public fun <init> ()V
+	public synthetic fun parse (Lsu/plo/slib/api/command/McCommandSource;Ldev/apehum/voicemessages/api/command/dsl/argument/StringReader;)Ljava/lang/Object;
+	public fun parse (Lsu/plo/slib/api/command/McCommandSource;Ldev/apehum/voicemessages/api/command/dsl/argument/StringReader;)Ljava/lang/String;
+}
+
+public final class dev/apehum/voicemessages/api/command/dsl/argument/StringReader {
+	public fun <init> (Ljava/lang/String;)V
+	public final fun getReaderIndex ()I
+	public final fun isReadable ()Z
+	public final fun isReadable (I)Z
+	public final fun read ()C
+	public final fun readString ()Ljava/lang/String;
+	public final fun remaining ()I
+	public final fun setReaderIndex (I)V
+	public final fun skipWhitespaces ()V
+}
+
+public final class dev/apehum/voicemessages/api/event/MessageSenderRegistrationEvent : su/plo/slib/api/event/GlobalEvent {
+	public static final field INSTANCE Ldev/apehum/voicemessages/api/event/MessageSenderRegistrationEvent;
+}
+
+public abstract interface class dev/apehum/voicemessages/api/event/MessageSenderRegistrationEvent$Callback {
+	public abstract fun onRegistration (Ldev/apehum/voicemessages/api/chat/ChatMessageSenderRegistry;)V
+}
+
+public final class dev/apehum/voicemessages/api/record/NewRecordingStartCause : dev/apehum/voicemessages/api/record/RecordingStopCause {
+	public fun <init> ()V
+}
+
+public final class dev/apehum/voicemessages/api/record/PlayerLeftStopCause : dev/apehum/voicemessages/api/record/RecordingStopCause {
+	public fun <init> ()V
+}
+
+public final class dev/apehum/voicemessages/api/record/RecordingCancelCause : dev/apehum/voicemessages/api/record/RecordingStopCause {
+	public fun <init> ()V
+}
+
+public abstract class dev/apehum/voicemessages/api/record/RecordingStopCause : java/util/concurrent/CancellationException {
+	public synthetic fun <init> (Ljava/lang/String;Lkotlin/jvm/internal/DefaultConstructorMarker;)V
+}
+
+public final class dev/apehum/voicemessages/api/record/RecordingTimeoutCause : dev/apehum/voicemessages/api/record/RecordingStopCause {
+	public fun <init> (Ljava/time/Duration;)V
+	public final fun getTimeout ()Ljava/time/Duration;
+}
+
+public final class dev/apehum/voicemessages/api/storage/draft/VoiceMessageDraft {
+	public fun <init> (Ldev/apehum/voicemessages/api/VoiceMessage;Ljava/lang/String;Ldev/apehum/voicemessages/api/chat/ChatContext;)V
+	public final fun component1 ()Ldev/apehum/voicemessages/api/VoiceMessage;
+	public final fun component2 ()Ljava/lang/String;
+	public final fun component3 ()Ldev/apehum/voicemessages/api/chat/ChatContext;
+	public final fun copy (Ldev/apehum/voicemessages/api/VoiceMessage;Ljava/lang/String;Ldev/apehum/voicemessages/api/chat/ChatContext;)Ldev/apehum/voicemessages/api/storage/draft/VoiceMessageDraft;
+	public static synthetic fun copy$default (Ldev/apehum/voicemessages/api/storage/draft/VoiceMessageDraft;Ldev/apehum/voicemessages/api/VoiceMessage;Ljava/lang/String;Ldev/apehum/voicemessages/api/chat/ChatContext;ILjava/lang/Object;)Ldev/apehum/voicemessages/api/storage/draft/VoiceMessageDraft;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getChatContext ()Ldev/apehum/voicemessages/api/chat/ChatContext;
+	public final fun getChatSenderName ()Ljava/lang/String;
+	public final fun getMessage ()Ldev/apehum/voicemessages/api/VoiceMessage;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class dev/apehum/voicemessages/api/storage/draft/VoiceMessageDraftStorage {
+	public abstract fun getByPlayerId (Ljava/util/UUID;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun remove (Ljava/util/UUID;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun save (Ljava/util/UUID;Ldev/apehum/voicemessages/api/storage/draft/VoiceMessageDraft;)Ljava/util/concurrent/CompletableFuture;
+}
+
+public abstract interface class dev/apehum/voicemessages/api/storage/message/VoiceMessageStorage {
+	public abstract fun close ()V
+	public abstract fun getById (Ljava/util/UUID;)Ljava/util/concurrent/CompletableFuture;
+	public fun remove (Ldev/apehum/voicemessages/api/VoiceMessage;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun remove (Ljava/util/UUID;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun save (Ldev/apehum/voicemessages/api/VoiceMessage;)Ljava/util/concurrent/CompletableFuture;
+}
+

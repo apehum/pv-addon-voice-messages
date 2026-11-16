@@ -204,7 +204,7 @@ private suspend fun sendVoiceMessage(
             return SendResponse(failure = SendFailure.INTERNAL)
         }
 
-    api.messageStorage.save(voiceMessage)
+    api.messageStorage.save(voiceMessage).await()
     sender.sendVoiceMessage(chatContext, voiceMessage)
 
     return SendResponse(messageId = voiceMessage.id.toString())

@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder
 import dev.apehum.voicemessages.api.storage.draft.VoiceMessageDraft
 import dev.apehum.voicemessages.api.storage.draft.VoiceMessageDraftStorage
 import java.util.UUID
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
@@ -18,16 +19,19 @@ class MemoryVoiceMessageDraftStorage(
             .expireAfterAccess(expireAfter.toJavaDuration().toNanos(), TimeUnit.NANOSECONDS)
             .build()
 
-    override suspend fun getByPlayerId(playerId: UUID): VoiceMessageDraft? = cache.getIfPresent(playerId)
+    override fun getByPlayerId(playerId: UUID): CompletableFuture<VoiceMessageDraft?> =
+        CompletableFuture.completedFuture(cache.getIfPresent(playerId))
 
-    override suspend fun save(
+    override fun save(
         playerId: UUID,
         draft: VoiceMessageDraft,
-    ) {
+    ): CompletableFuture<Void> {
         cache.put(playerId, draft)
+        return CompletableFuture.completedFuture(null)
     }
 
-    override suspend fun remove(playerId: UUID) {
+    override fun remove(playerId: UUID): CompletableFuture<Void> {
         cache.invalidate(playerId)
+        return CompletableFuture.completedFuture(null)
     }
 }

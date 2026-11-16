@@ -48,7 +48,7 @@ private suspend fun recordAndSaveVoiceMessage(
 
     // todo: check min length?
 
-    draftStore.save(player.uuid, VoiceMessageDraft(voiceMessage, chatSenderName, chatContext))
+    draftStore.save(player.uuid, VoiceMessageDraft(voiceMessage, chatSenderName, chatContext)).await()
 
     player.sendTranslatable(
         "pv.addon.voice_messages.command.draft_saved",

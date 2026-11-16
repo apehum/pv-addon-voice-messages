@@ -2,6 +2,7 @@ package dev.apehum.voicemessages.api.storage.message
 
 import dev.apehum.voicemessages.api.VoiceMessage
 import java.util.UUID
+import java.util.concurrent.CompletableFuture
 
 /**
  * Storage interface for persisting voice messages.
@@ -16,30 +17,28 @@ interface VoiceMessageStorage {
      * @param id The UUID of the voice message
      * @return The voice message if found, null otherwise
      */
-    suspend fun getById(id: UUID): VoiceMessage?
+    fun getById(id: UUID): CompletableFuture<VoiceMessage?>
 
     /**
      * Saves a voice message to storage.
      *
      * @param message The voice message to persist
      */
-    suspend fun save(message: VoiceMessage)
+    fun save(message: VoiceMessage): CompletableFuture<Void>
 
     /**
      * Removes a voice message from storage.
      *
      * @param message The voice message to remove
      */
-    suspend fun remove(message: VoiceMessage) {
-        remove(message.id)
-    }
+    fun remove(message: VoiceMessage): CompletableFuture<Void> = remove(message.id)
 
     /**
      * Removes a voice message from storage by its ID.
      *
      * @param id The UUID of the voice message to remove
      */
-    suspend fun remove(id: UUID)
+    fun remove(id: UUID): CompletableFuture<Void>
 
     /**
      * Closes the storage connection and releases resources.

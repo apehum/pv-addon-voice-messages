@@ -6,12 +6,13 @@ import dev.apehum.voicemessages.BuildConfig
 import dev.apehum.voicemessages.api.VoiceMessage
 import dev.apehum.voicemessages.api.storage.message.VoiceMessageStorage
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.asExecutor
 import redis.clients.jedis.DefaultJedisClientConfig
 import redis.clients.jedis.HostAndPort
 import redis.clients.jedis.JedisPooled
 import java.util.Base64
 import java.util.UUID
+import java.util.concurrent.CompletableFuture
 import kotlin.time.Duration
 
 fun createJedisStore(
@@ -36,32 +37,39 @@ class JedisVoiceMessageStorage(
     private val jedis: JedisPooled,
     private val expireAfter: Duration,
 ) : VoiceMessageStorage {
-    override suspend fun getById(id: UUID): VoiceMessage? =
-        withContext(Dispatchers.IO) {
-            val messageKey = id.asKey()
+    private val ioExecutor = Dispatchers.IO.asExecutor()
 
-            jedis
-                .get(messageKey)
-                ?.let {
-                    jedis.expire(messageKey, expireAfter.inWholeSeconds)
-                    fromBase64(it)
-                }
-        }
+    override fun getById(id: UUID): CompletableFuture<VoiceMessage?> =
+        CompletableFuture.supplyAsync(
+            {
+                val messageKey = id.asKey()
 
-    override suspend fun save(message: VoiceMessage) {
-        withContext(Dispatchers.IO) {
-            val messageKey = message.id.asKey()
+                jedis
+                    .get(messageKey)
+                    ?.let {
+                        jedis.expire(messageKey, expireAfter.inWholeSeconds)
+                        fromBase64(it)
+                    }
+            },
+            ioExecutor,
+        )
 
-            jedis.set(messageKey, message.base64())
-            jedis.expire(messageKey, expireAfter.inWholeSeconds)
-        }
-    }
+    override fun save(message: VoiceMessage): CompletableFuture<Void> =
+        CompletableFuture.runAsync(
+            {
+                val messageKey = message.id.asKey()
 
-    override suspend fun remove(id: UUID) {
-        withContext(Dispatchers.IO) {
-            jedis.del(id.asKey())
-        }
-    }
+                jedis.set(messageKey, message.base64())
+                jedis.expire(messageKey, expireAfter.inWholeSeconds)
+            },
+            ioExecutor,
+        )
+
+    override fun remove(id: UUID): CompletableFuture<Void> =
+        CompletableFuture.runAsync(
+            { jedis.del(id.asKey()) },
+            ioExecutor,
+        )
 
     override fun close() {
         jedis.close()

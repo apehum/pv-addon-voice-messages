@@ -11,6 +11,7 @@ import dev.apehum.voicemessages.playback.VoiceMessagePlayer
 import dev.apehum.voicemessages.record.VoiceActivationRecorder
 import dev.apehum.voicemessages.util.extension.asVoicePlayer
 import dev.apehum.voicemessages.util.extension.sendTranslatable
+import kotlinx.coroutines.future.await
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.chat.style.McTextClickEvent
 import su.plo.slib.api.server.entity.player.McServerPlayer
@@ -35,7 +36,7 @@ private fun playVoiceMessageCommand(
         }
 
         val voiceMessage =
-            messageStore.getById(id) ?: run {
+            messageStore.getById(id).await() ?: run {
                 player.sendTranslatable("pv.addon.voice_messages.command.message_not_found")
                 return@executesCoroutine
             }
@@ -101,7 +102,7 @@ fun voiceMessageActionsCommand(
             val player = context.source as? McServerPlayer ?: throw IllegalStateException("Player only command")
 
             val draft =
-                draftStore.getByPlayerId(player.uuid) ?: run {
+                draftStore.getByPlayerId(player.uuid).await() ?: run {
                     player.sendTranslatable("pv.addon.voice_messages.command.no_draft")
                     return@executesCoroutine
                 }
@@ -122,7 +123,7 @@ fun voiceMessageActionsCommand(
             val player = context.source as? McServerPlayer ?: throw IllegalStateException("Player only command")
 
             val draft =
-                draftStore.getByPlayerId(player.uuid) ?: run {
+                draftStore.getByPlayerId(player.uuid).await() ?: run {
                     player.sendTranslatable("pv.addon.voice_messages.command.no_draft")
                     return@executesCoroutine
                 }
@@ -136,8 +137,8 @@ fun voiceMessageActionsCommand(
 
             if (!chatSender.canSendMessage(draft.chatContext)) return@executesCoroutine
 
-            messageStore.save(draft.message)
-            draftStore.remove(player.uuid)
+            messageStore.save(draft.message).await()
+            draftStore.remove(player.uuid).await()
 
             chatSender.sendVoiceMessage(draft.chatContext, draft.message)
         }

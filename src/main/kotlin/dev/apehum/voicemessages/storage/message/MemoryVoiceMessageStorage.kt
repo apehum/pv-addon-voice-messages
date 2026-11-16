@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder
 import dev.apehum.voicemessages.api.VoiceMessage
 import dev.apehum.voicemessages.api.storage.message.VoiceMessageStorage
 import java.util.UUID
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import kotlin.time.Duration
 import kotlin.time.toJavaDuration
@@ -18,14 +19,17 @@ class MemoryVoiceMessageStorage(
             .expireAfterAccess(expireAfter.toJavaDuration().toNanos(), TimeUnit.NANOSECONDS)
             .build()
 
-    override suspend fun getById(id: UUID): VoiceMessage? = cache.getIfPresent(id)
+    override fun getById(id: UUID): CompletableFuture<VoiceMessage?> =
+        CompletableFuture.completedFuture(cache.getIfPresent(id))
 
-    override suspend fun save(message: VoiceMessage) {
+    override fun save(message: VoiceMessage): CompletableFuture<Void> {
         cache.put(message.id, message)
+        return CompletableFuture.completedFuture(null)
     }
 
-    override suspend fun remove(id: UUID) {
+    override fun remove(id: UUID): CompletableFuture<Void> {
         cache.invalidate(id)
+        return CompletableFuture.completedFuture(null)
     }
 
     override fun close() {

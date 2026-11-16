@@ -1,3 +1,7 @@
+@file:OptIn(ExperimentalAbiValidation::class)
+
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
+
 plugins {
     alias(libs.plugins.kotlin.jvm)
     alias(libs.plugins.publish)
@@ -9,6 +13,10 @@ dependencies {
 }
 
 kotlin {
+    abiValidation {
+        enabled = true
+    }
+
     compilerOptions {
         freeCompilerArgs.add("-Xjvm-default=all")
     }

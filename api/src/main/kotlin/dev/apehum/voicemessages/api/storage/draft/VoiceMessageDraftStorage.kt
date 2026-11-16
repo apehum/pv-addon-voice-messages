@@ -3,6 +3,7 @@ package dev.apehum.voicemessages.api.storage.draft
 import dev.apehum.voicemessages.api.VoiceMessage
 import dev.apehum.voicemessages.api.chat.ChatContext
 import java.util.UUID
+import java.util.concurrent.CompletableFuture
 
 /**
  * Represents a voice message draft recorded by a player.
@@ -30,7 +31,7 @@ interface VoiceMessageDraftStorage {
      * @param playerId The UUID of the player
      * @return The player's draft if it exists, null otherwise
      */
-    suspend fun getByPlayerId(playerId: UUID): VoiceMessageDraft?
+    fun getByPlayerId(playerId: UUID): CompletableFuture<VoiceMessageDraft?>
 
     /**
      * Saves a draft for a specific player.
@@ -38,15 +39,15 @@ interface VoiceMessageDraftStorage {
      * @param playerId The UUID of the player
      * @param draft The draft to save
      */
-    suspend fun save(
+    fun save(
         playerId: UUID,
         draft: VoiceMessageDraft,
-    )
+    ): CompletableFuture<Void>
 
     /**
      * Removes a draft for a specific player.
      *
      * @param playerId The UUID of the player
      */
-    suspend fun remove(playerId: UUID)
+    fun remove(playerId: UUID): CompletableFuture<Void>
 }
