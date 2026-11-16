@@ -78,8 +78,10 @@ class VoiceMessageSession(
                 when (val result = uploader.upload(draft, target)) {
                     UploadResult.Sent -> {
                         this@VoiceMessageSession.target = target
-                        discard()
-                        Minecraft.getInstance().execute(onSent)
+                        if (recorder.draft === draft) {
+                            discard()
+                            Minecraft.getInstance().execute(onSent)
+                        }
                     }
 
                     is UploadResult.Failed -> {
