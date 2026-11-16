@@ -99,5 +99,5 @@ private fun sendToTarget(
     val session = VoiceMessagesClient.session ?: return
     val target = session.target ?: return menu.toggle(anchorRight, anchorTop)
 
-    session.send(target)
+    session.sendAndCloseChat(target)
 }

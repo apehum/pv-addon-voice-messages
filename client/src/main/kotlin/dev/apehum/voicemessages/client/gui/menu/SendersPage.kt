@@ -1,6 +1,7 @@
 package dev.apehum.voicemessages.client.gui.menu
 
 import com.mojang.blaze3d.platform.InputConstants
+import dev.apehum.voicemessages.client.gui.chat.sendAndCloseChat
 import dev.apehum.voicemessages.client.session.ClientSender
 import dev.apehum.voicemessages.client.session.SendTarget
 import dev.apehum.voicemessages.client.session.VoiceMessageSession
@@ -87,6 +88,6 @@ class SendersPage(
         if (sender.hasArguments) return menu.showArguments(sender)
 
         menu.close()
-        session.send(SendTarget(sender))
+        session.sendAndCloseChat(SendTarget(sender))
     }
 }

@@ -62,7 +62,10 @@ class VoiceMessageSession(
         recorder.cancel()
     }
 
-    fun send(target: SendTarget) {
+    fun send(
+        target: SendTarget,
+        onSent: () -> Unit,
+    ) {
         val draft = recorder.draft ?: return
 
         if (sending) return
@@ -76,6 +79,7 @@ class VoiceMessageSession(
                     UploadResult.Sent -> {
                         this@VoiceMessageSession.target = target
                         discard()
+                        Minecraft.getInstance().execute(onSent)
                     }
 
                     is UploadResult.Failed -> {

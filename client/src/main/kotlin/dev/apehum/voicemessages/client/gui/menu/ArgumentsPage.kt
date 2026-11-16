@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants
 import dev.apehum.voicemessages.channel.codec.SuggestResponse
 import dev.apehum.voicemessages.client.gui.chat.SEND_COLOR
 import dev.apehum.voicemessages.client.gui.chat.SEND_ICON
+import dev.apehum.voicemessages.client.gui.chat.sendAndCloseChat
 import dev.apehum.voicemessages.client.gui.render.DANGER_COLOR
 import dev.apehum.voicemessages.client.gui.render.TEXT_HEIGHT
 import dev.apehum.voicemessages.client.session.ClientSender
@@ -215,7 +216,7 @@ class ArgumentsPage(
                 }
 
                 menu.close()
-                session.send(target)
+                session.sendAndCloseChat(target)
             }
     }
 
