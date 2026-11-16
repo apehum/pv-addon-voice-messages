@@ -7,6 +7,8 @@ import dev.apehum.voicemessages.api.command.dsl.CommandContext
 import dev.apehum.voicemessages.api.command.dsl.argument.NamedCommandArgument
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
+import su.plo.slib.api.chat.component.McTextComponent
+import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.entity.player.McServerPlayer
 import java.util.concurrent.CompletableFuture
 
@@ -43,6 +45,11 @@ class PaperDirectMessageSender(
 
     override fun createArguments(): List<NamedCommandArgument<out Any>> =
         listOf(
-            NamedCommandArgument("target", PlayerNameArgument()),
+            NamedCommandArgument("target", PlayerNameArgument()) {
+                McTextComponent.translatable("pv.addon.voice_messages.argument.target")
+            },
         )
+
+    override fun displayName(source: McCommandSource): McTextComponent =
+        McTextComponent.translatable("pv.addon.voice_messages.sender.direct")
 }

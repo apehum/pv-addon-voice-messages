@@ -9,6 +9,7 @@ import dev.apehum.voicemessages.playback.component
 import dev.apehum.voicemessages.util.extension.miniMessage
 import dev.apehum.voicemessages.util.extension.toAdventure
 import dev.apehum.voicemessages.util.extension.toMc
+import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.entity.player.McServerPlayer
@@ -51,4 +52,7 @@ class DefaultMessageSender(
 
     override fun createContext(context: CommandContext): CompletableFuture<DefaultChatContext> =
         CompletableFuture.completedFuture(DefaultChatContext(context.source))
+
+    override fun displayName(source: McCommandSource): McTextComponent =
+        McTextComponent.translatable("pv.addon.voice_messages.sender.default")
 }

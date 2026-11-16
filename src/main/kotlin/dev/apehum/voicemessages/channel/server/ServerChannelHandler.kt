@@ -5,26 +5,31 @@ import dev.apehum.voicemessages.VoiceMessagesAddon
 import dev.apehum.voicemessages.api.VoiceMessagesAPI
 import dev.apehum.voicemessages.api.chat.ChatContext
 import dev.apehum.voicemessages.api.chat.ChatMessageSender
-import dev.apehum.voicemessages.api.command.dsl.argument.StringReader
 import dev.apehum.voicemessages.channel.UploadResult
 import dev.apehum.voicemessages.channel.VoiceMessageUploads
+import dev.apehum.voicemessages.channel.codec.ArgumentInfo
 import dev.apehum.voicemessages.channel.codec.FRAME_DURATION_MS
 import dev.apehum.voicemessages.channel.codec.HandshakeRequest
 import dev.apehum.voicemessages.channel.codec.HandshakeResponse
 import dev.apehum.voicemessages.channel.codec.MAX_CHUNK_BYTES
 import dev.apehum.voicemessages.channel.codec.MIN_PROTOCOL_VERSION
 import dev.apehum.voicemessages.channel.codec.PROTOCOL_VERSION
+import dev.apehum.voicemessages.channel.codec.ResolveRequest
 import dev.apehum.voicemessages.channel.codec.Routes
 import dev.apehum.voicemessages.channel.codec.SendFailure
 import dev.apehum.voicemessages.channel.codec.SendParameters
 import dev.apehum.voicemessages.channel.codec.SendResponse
 import dev.apehum.voicemessages.channel.codec.SenderInfo
+import dev.apehum.voicemessages.channel.codec.SuggestRequest
+import dev.apehum.voicemessages.channel.codec.SuggestResponse
 import dev.apehum.voicemessages.channel.codec.UploadRequest
 import dev.apehum.voicemessages.channel.codec.isProtocolCompatible
-import dev.apehum.voicemessages.command.dsl.DslCommandContext
-import dev.apehum.voicemessages.command.dsl.DslParsedCommandArgument
+import dev.apehum.voicemessages.command.dsl.ArgumentsParseResult
+import dev.apehum.voicemessages.command.dsl.parseArguments
+import dev.apehum.voicemessages.command.dsl.suggestArguments
 import dev.apehum.voicemessages.record.createVoiceMessage
 import dev.apehum.voicemessages.util.extension.canRecordWith
+import dev.apehum.voicemessages.util.extension.toJson
 import kotlinx.coroutines.future.await
 import su.plo.slib.api.server.entity.player.McServerPlayer
 import su.plo.voice.api.server.PlasmoVoiceServer
@@ -63,8 +68,29 @@ fun ChannelServer.registerVoiceMessagesHandler(
                 api.messageSenderRegistry
                     .getSenders()
                     .filter { player.canRecordWith(it.key) }
-                    .map { (name, sender) -> SenderInfo(name, sender.createArguments().map { it.name }) },
+                    .map { (name, sender) -> senderInfo(player, name, sender) },
         )
+    }
+
+    registerRequestHandler<SuggestRequest, SuggestResponse>(Routes.SUGGEST) { player, request ->
+        val sender =
+            findSender(api, player, request.senderName)
+                ?: return@registerRequestHandler SuggestResponse(request.arguments.length)
+
+        val (replaceFrom, suggestions) =
+            suggestArguments(
+                player,
+                sender.createArguments(),
+                request.arguments,
+            )
+        SuggestResponse(replaceFrom, suggestions)
+    }
+
+    registerRequestHandler<ResolveRequest, SendResponse>(Routes.RESOLVE) { player, request ->
+        when (val result = resolveContext(api, player, request.senderName, request.arguments)) {
+            is ResolveResult.Resolved -> SendResponse()
+            is ResolveResult.Failed -> result.toResponse()
+        }
     }
 
     registerRequestHandler<UploadRequest, SendResponse>(Routes.UPLOAD_CHUNK) { player, request ->
@@ -84,6 +110,71 @@ fun ChannelServer.registerVoiceMessagesHandler(
     }
 }
 
+private sealed interface ResolveResult {
+    data class Resolved(
+        val sender: ChatMessageSender<ChatContext>,
+        val context: ChatContext,
+    ) : ResolveResult
+
+    data class Failed(
+        val failure: SendFailure,
+        val message: String? = null,
+    ) : ResolveResult
+}
+
+private fun ResolveResult.Failed.toResponse() = SendResponse(failure = failure, message = message)
+
+private fun senderInfo(
+    player: McServerPlayer,
+    name: String,
+    sender: ChatMessageSender<*>,
+) = SenderInfo(
+    name = name,
+    displayNameJson = sender.displayName(player)?.toJson(),
+    arguments = sender.createArguments().map { ArgumentInfo(it.name, it.displayName(player)?.toJson()) },
+)
+
+private fun findSender(
+    api: VoiceMessagesAPI,
+    player: McServerPlayer,
+    senderName: String,
+): ChatMessageSender<*>? =
+    api.messageSenderRegistry
+        .getSender(senderName)
+        ?.takeIf { player.canRecordWith(senderName) }
+
+private suspend fun resolveContext(
+    api: VoiceMessagesAPI,
+    player: McServerPlayer,
+    senderName: String,
+    arguments: String,
+): ResolveResult {
+    if (!player.canRecordWith(senderName)) return ResolveResult.Failed(SendFailure.NO_PERMISSION)
+
+    @Suppress("UNCHECKED_CAST")
+    val sender =
+        api.messageSenderRegistry.getSender(senderName) as? ChatMessageSender<ChatContext>
+            ?: return ResolveResult.Failed(SendFailure.UNKNOWN_SENDER)
+
+    val commandContext =
+        when (val result = parseArguments(player, sender.createArguments(), arguments)) {
+            is ArgumentsParseResult.Parsed -> result.context
+            is ArgumentsParseResult.Failed -> return ResolveResult.Failed(SendFailure.BAD_ARGUMENTS, result.message)
+        }
+
+    val chatContext =
+        try {
+            sender.createContext(commandContext).await()
+        } catch (e: Throwable) {
+            VoiceMessagesAddon.logger.debug("Failed to create context of \"{}\" for {}", senderName, player.name, e)
+            return ResolveResult.Failed(SendFailure.BAD_ARGUMENTS, e.message)
+        }
+
+    if (!sender.canSendMessage(chatContext)) return ResolveResult.Failed(SendFailure.NO_PERMISSION)
+
+    return ResolveResult.Resolved(sender, chatContext)
+}
+
 private suspend fun sendVoiceMessage(
     voiceServer: PlasmoVoiceServer,
     api: VoiceMessagesAPI,
@@ -91,22 +182,11 @@ private suspend fun sendVoiceMessage(
     send: SendParameters,
     frames: List<ByteArray>,
 ): SendResponse {
-    if (!player.canRecordWith(send.senderName)) return SendResponse(failure = SendFailure.NO_PERMISSION)
-
-    @Suppress("UNCHECKED_CAST")
-    val sender =
-        api.messageSenderRegistry.getSender(send.senderName) as? ChatMessageSender<ChatContext>
-            ?: return SendResponse(failure = SendFailure.UNKNOWN_SENDER)
-
-    val chatContext =
-        try {
-            sender.createContext(sender.parseArguments(player, send.arguments)).await()
-        } catch (e: Throwable) {
-            VoiceMessagesAddon.logger.debug("Failed to parse arguments of \"{}\" for {}", send.senderName, player.name, e)
-            return SendResponse(failure = SendFailure.BAD_ARGUMENTS)
+    val (sender, chatContext) =
+        when (val result = resolveContext(api, player, send.senderName, send.arguments)) {
+            is ResolveResult.Resolved -> result
+            is ResolveResult.Failed -> return result.toResponse()
         }
-
-    if (!sender.canSendMessage(chatContext)) return SendResponse(failure = SendFailure.NO_PERMISSION)
 
     val decryptedFrames =
         try {
@@ -128,24 +208,4 @@ private suspend fun sendVoiceMessage(
     sender.sendVoiceMessage(chatContext, voiceMessage)
 
     return SendResponse(messageId = voiceMessage.id.toString())
-}
-
-private fun ChatMessageSender<*>.parseArguments(
-    player: McServerPlayer,
-    values: List<String>,
-): DslCommandContext {
-    val arguments =
-        createArguments()
-            .mapIndexed { index, (name, argument) ->
-                val value =
-                    requireNotNull(values.getOrNull(index)) { "Missing value for argument \"$name\"" }
-
-                DslParsedCommandArgument(
-                    name,
-                    argument,
-                    argument.parse(player, StringReader(value)),
-                )
-            }.associateBy { it.name }
-
-    return DslCommandContext(player, arguments)
 }

@@ -26,6 +26,8 @@ fun isProtocolCompatible(
 object Routes {
     const val HANDSHAKE = "handshake"
     const val UPLOAD_CHUNK = "upload_chunk"
+    const val SUGGEST = "suggest"
+    const val RESOLVE = "resolve"
 }
 
 @Serializable
@@ -46,7 +48,14 @@ data class HandshakeResponse(
 @Serializable
 data class SenderInfo(
     val name: String,
-    val arguments: List<String> = emptyList(),
+    val displayNameJson: String? = null,
+    val arguments: List<ArgumentInfo> = emptyList(),
+)
+
+@Serializable
+data class ArgumentInfo(
+    val name: String,
+    val displayNameJson: String? = null,
 )
 
 @Serializable
@@ -60,13 +69,32 @@ data class UploadRequest(
 @Serializable
 data class SendParameters(
     val senderName: String,
-    val arguments: List<String> = emptyList(),
+    val arguments: String = "",
 )
 
 @Serializable
 data class SendResponse(
     val messageId: String? = null,
     val failure: SendFailure? = null,
+    val message: String? = null,
+)
+
+@Serializable
+data class SuggestRequest(
+    val senderName: String,
+    val arguments: String,
+)
+
+@Serializable
+data class SuggestResponse(
+    val replaceFrom: Int = 0,
+    val suggestions: List<String> = emptyList(),
+)
+
+@Serializable
+data class ResolveRequest(
+    val senderName: String,
+    val arguments: String,
 )
 
 @Serializable

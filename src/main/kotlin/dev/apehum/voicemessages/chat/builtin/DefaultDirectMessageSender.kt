@@ -15,6 +15,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.future.future
+import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.McServerLib
 import su.plo.slib.api.server.entity.player.McServerPlayer
@@ -68,6 +69,11 @@ open class DefaultDirectMessageSender(
 
     override fun createArguments(): List<NamedCommandArgument<out Any>> =
         listOf(
-            NamedCommandArgument("target", PlayerArgument(minecraftServer)),
+            NamedCommandArgument("target", PlayerArgument(minecraftServer)) {
+                McTextComponent.translatable("pv.addon.voice_messages.argument.target")
+            },
         )
+
+    override fun displayName(source: McCommandSource): McTextComponent =
+        McTextComponent.translatable("pv.addon.voice_messages.sender.direct")
 }

@@ -2,7 +2,6 @@ package dev.apehum.voicemessages.client.session
 
 import dev.apehum.voicemessages.channel.codec.SendFailure
 import dev.apehum.voicemessages.channel.codec.SendParameters
-import dev.apehum.voicemessages.channel.codec.SenderInfo
 import dev.apehum.voicemessages.client.BuildConfig
 import dev.apehum.voicemessages.client.channel.VoiceMessagesChannelClient
 import dev.apehum.voicemessages.client.record.VoiceMessageDraft
@@ -17,6 +16,7 @@ sealed interface UploadResult {
 
     data class Failed(
         val failure: SendFailure,
+        val message: String? = null,
     ) : UploadResult
 }
 
@@ -26,7 +26,7 @@ class VoiceMessageUploader(
 ) {
     suspend fun upload(
         draft: VoiceMessageDraft,
-        sender: SenderInfo,
+        target: SendTarget,
     ): UploadResult {
         val serverInfo = voiceClient.serverInfo.getOrNull() ?: return UploadResult.Failed(SendFailure.INTERNAL)
 
@@ -38,8 +38,14 @@ class VoiceMessageUploader(
                     .use(draft::encode)
                     .map { encryption?.encrypt(it) ?: it }
 
-            val failure = channel.sendVoiceMessage(frames, SendParameters(sender.name)).failure
-            if (failure == null) UploadResult.Sent else UploadResult.Failed(failure)
+            val response =
+                channel.sendVoiceMessage(
+                    frames,
+                    SendParameters(target.sender.name, target.arguments),
+                )
+            val failure = response.failure ?: return UploadResult.Sent
+
+            UploadResult.Failed(failure, response.message)
         } catch (e: Throwable) {
             logger.warn("Failed to send a voice message", e)
             UploadResult.Failed(SendFailure.INTERNAL)

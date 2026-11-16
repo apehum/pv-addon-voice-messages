@@ -1,7 +1,6 @@
 package dev.apehum.voicemessages.client.gui.widget
 
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.client.gui.narration.NarratedElementType
 import net.minecraft.client.gui.narration.NarrationElementOutput
@@ -10,10 +9,8 @@ import net.minecraft.resources.ResourceLocation
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import java.awt.Color
 
-//? if >=1.21.11 {
-/*import net.minecraft.client.input.MouseButtonEvent
-import net.minecraft.client.renderer.RenderPipelines
-*///?}
+//? if >=1.21.11
+/*import net.minecraft.client.renderer.RenderPipelines*/
 
 private const val ICON_SIZE = 8
 
@@ -67,21 +64,12 @@ open class IconButton(
         )
     }
 
-    //? if >=1.21.11 {
-    /*override fun onClick(
-        event: MouseButtonEvent,
-        doubled: Boolean,
-    ) {
-        onPress()
-    }
-    *///?} else {
-    override fun onClick(
+    override fun handleClick(
         mouseX: Double,
         mouseY: Double,
     ) {
         onPress()
     }
-    //?}
 
     override fun updateWidgetNarration(output: NarrationElementOutput) {
         output.add(NarratedElementType.TITLE, message)

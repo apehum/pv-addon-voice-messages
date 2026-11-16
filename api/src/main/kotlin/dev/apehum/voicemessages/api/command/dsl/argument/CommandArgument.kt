@@ -1,5 +1,6 @@
 package dev.apehum.voicemessages.api.command.dsl.argument
 
+import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.command.McCommandSource
 
 /**
@@ -7,11 +8,22 @@ import su.plo.slib.api.command.McCommandSource
  *
  * @property name The argument name
  * @property argument The argument implementation
+ * @property displayName Provides the name shown as the input placeholder in the client mod
  */
 data class NamedCommandArgument<T>(
     val name: String,
     val argument: CommandArgument<T>,
-)
+    val displayName: DisplayNameProvider,
+) {
+    constructor(
+        name: String,
+        argument: CommandArgument<T>,
+    ) : this(name, argument, { null })
+
+    fun interface DisplayNameProvider {
+        operator fun invoke(source: McCommandSource): McTextComponent?
+    }
+}
 
 /**
  * Represents a command argument used for parsing a value of type [T] from a [StringReader].

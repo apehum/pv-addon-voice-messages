@@ -6,6 +6,8 @@ import dev.apehum.voicemessages.api.chat.ChatMessageSender
 import dev.apehum.voicemessages.api.command.dsl.CommandContext
 import org.bukkit.entity.Player
 import org.bukkit.plugin.Plugin
+import su.plo.slib.api.chat.component.McTextComponent
+import su.plo.slib.api.command.McCommandSource
 import su.plo.slib.api.server.entity.player.McServerPlayer
 import java.util.concurrent.CompletableFuture
 
@@ -36,4 +38,7 @@ class PaperMessageSender(
 
         return CompletableFuture.completedFuture(PaperChatContext(player))
     }
+
+    override fun displayName(source: McCommandSource): McTextComponent =
+        McTextComponent.translatable("pv.addon.voice_messages.sender.default")
 }

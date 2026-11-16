@@ -4,9 +4,9 @@ import dev.apehum.voicemessages.client.VoiceMessagesClient
 import dev.apehum.voicemessages.client.gui.render.ACCENT_COLOR
 import dev.apehum.voicemessages.client.gui.render.WaveformShape
 import dev.apehum.voicemessages.client.gui.render.renderCircleWaveform
+import dev.apehum.voicemessages.client.gui.widget.AbstractWidget
 import dev.apehum.voicemessages.client.modResource
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.client.gui.narration.NarratedElementType
 import net.minecraft.client.gui.narration.NarrationElementOutput
@@ -14,9 +14,6 @@ import net.minecraft.network.chat.Component
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import kotlin.math.exp
 import kotlin.math.roundToInt
-
-//? if >=1.21.11
-/*import net.minecraft.client.input.MouseButtonEvent*/
 
 private val STOP_TEXTURE = modResource("textures/gui/sprites/stop.png")
 private const val STOP_TEXTURE_SIZE = 8
@@ -88,21 +85,12 @@ class StopRecordingButton(
         )
     }
 
-    //? if >=1.21.11 {
-    /*override fun onClick(
-        event: MouseButtonEvent,
-        doubled: Boolean,
-    ) {
-        VoiceMessagesClient.session?.recorder?.stop()
-    }
-    *///?} else {
-    override fun onClick(
+    override fun handleClick(
         mouseX: Double,
         mouseY: Double,
     ) {
         VoiceMessagesClient.session?.recorder?.stop()
     }
-    //?}
 
     override fun updateWidgetNarration(output: NarrationElementOutput) {
         output.add(NarratedElementType.TITLE, message)

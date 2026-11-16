@@ -6,11 +6,11 @@ import dev.apehum.voicemessages.client.gui.render.fillRounded
 import dev.apehum.voicemessages.client.gui.render.roundedInset
 import dev.apehum.voicemessages.client.gui.render.shade
 import dev.apehum.voicemessages.client.gui.render.tint
+import dev.apehum.voicemessages.client.gui.widget.AbstractWidget
 import dev.apehum.voicemessages.client.modResource
 import dev.apehum.voicemessages.client.record.VoiceMessageDraft
 import dev.apehum.voicemessages.client.record.VoiceMessageDraftPlayer
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.narration.NarratedElementType
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
@@ -21,9 +21,6 @@ import kotlin.math.max
 import kotlin.math.min
 import kotlin.math.roundToInt
 import kotlin.time.Duration
-
-//? if >=1.21.11
-/*import net.minecraft.client.input.MouseButtonEvent*/
 
 private const val DRAFT_KEY = "pv.addon.voice_messages.chat.draft"
 
@@ -98,37 +95,22 @@ class DraftTrack(
         renderChip(context, draft, preview)
     }
 
-    //? if >=1.21.11 {
-    /*override fun onClick(
-        event: MouseButtonEvent,
-        doubled: Boolean,
-    ) = press(event.x)
-
-    override fun onDrag(
-        event: MouseButtonEvent,
-        dragX: Double,
-        dragY: Double,
-    ) = drag(event.x)
-
-    override fun onRelease(event: MouseButtonEvent) = release()
-    *///?} else {
-    override fun onClick(
+    override fun handleClick(
         mouseX: Double,
         mouseY: Double,
     ) = press(mouseX)
 
-    override fun onDrag(
+    override fun handleRelease(
+        mouseX: Double,
+        mouseY: Double,
+    ) = release()
+
+    override fun handleDrag(
         mouseX: Double,
         mouseY: Double,
         dragX: Double,
         dragY: Double,
     ) = drag(mouseX)
-
-    override fun onRelease(
-        mouseX: Double,
-        mouseY: Double,
-    ) = release()
-    //?}
 
     private fun press(mouseX: Double) {
         val session = VoiceMessagesClient.session ?: return

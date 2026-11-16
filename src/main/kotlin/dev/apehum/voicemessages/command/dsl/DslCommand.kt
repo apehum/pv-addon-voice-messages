@@ -2,7 +2,7 @@ package dev.apehum.voicemessages.command.dsl
 
 import dev.apehum.voicemessages.api.command.dsl.CommandContext
 import dev.apehum.voicemessages.api.command.dsl.argument.CommandArgument
-import dev.apehum.voicemessages.api.command.dsl.argument.StringReader
+import dev.apehum.voicemessages.api.command.dsl.argument.NamedCommandArgument
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -151,6 +151,8 @@ class DslCommand(
     private val permissionCheck: DslCommandPermissionCheck?,
     private val redirect: DslCommandRedirect?,
 ) : McCommand {
+    private val namedArguments = arguments.map { NamedCommandArgument(it.name, it.inner) }
+
     override fun execute(
         source: McCommandSource,
         arguments: Array<String>,
@@ -186,31 +188,11 @@ class DslCommand(
             return
         }
 
-        val argumentsReader = StringReader(arguments.joinToString(" "))
-
-        val parsedArguments =
-            this.arguments
-                .map { argument ->
-                    argumentsReader.skipWhitespaces()
-
-                    val parsed =
-                        try {
-                            argument.inner.parse(source, argumentsReader)
-                        } catch (e: Throwable) {
-                            // todo: parse exception with friendly message
-                            source.sendMessage("Failed to parse argument ${argument.name}: ${e.message}")
-                            return
-                        }
-
-                    DslParsedCommandArgument(
-                        argument.name,
-                        argument.inner,
-                        parsed,
-                    )
-                }.associateBy { it.name }
-
-        val context = DslCommandContext(source, parsedArguments)
-        execute(context)
+        when (val result = parseArguments(source, namedArguments, arguments.joinToString(" "))) {
+            is ArgumentsParseResult.Parsed -> execute(result.context)
+            is ArgumentsParseResult.Failed ->
+                source.sendMessage("Failed to parse argument ${result.argumentName}: ${result.message}")
+        }
     }
 
     private fun execute(context: DslCommandContext) {
@@ -254,15 +236,7 @@ class DslCommand(
             return command.suggest(source, newArguments)
         }
 
-        val argumentIndex = arguments.size - 1
-        val argument = this.arguments.getOrNull(argumentIndex) ?: return emptyList()
-
-        val argumentsReader =
-            StringReader(
-                arguments.copyOfRange(argumentIndex, arguments.size).joinToString(" "),
-            )
-
-        return argument.inner.suggest(source, argumentsReader)
+        return suggestArguments(source, namedArguments, arguments.joinToString(" ")).suggestions
     }
 
     override fun hasPermission(

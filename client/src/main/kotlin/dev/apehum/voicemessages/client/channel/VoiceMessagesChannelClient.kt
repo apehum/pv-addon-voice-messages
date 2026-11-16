@@ -4,9 +4,12 @@ import dev.apehum.voicemessages.channel.codec.HandshakeRequest
 import dev.apehum.voicemessages.channel.codec.HandshakeResponse
 import dev.apehum.voicemessages.channel.codec.MIN_PROTOCOL_VERSION
 import dev.apehum.voicemessages.channel.codec.PROTOCOL_VERSION
+import dev.apehum.voicemessages.channel.codec.ResolveRequest
 import dev.apehum.voicemessages.channel.codec.Routes
 import dev.apehum.voicemessages.channel.codec.SendParameters
 import dev.apehum.voicemessages.channel.codec.SendResponse
+import dev.apehum.voicemessages.channel.codec.SuggestRequest
+import dev.apehum.voicemessages.channel.codec.SuggestResponse
 import dev.apehum.voicemessages.channel.codec.UploadRequest
 import dev.apehum.voicemessages.channel.codec.isProtocolCompatible
 import dev.apehum.voicemessages.client.BuildConfig
@@ -27,6 +30,8 @@ class VoiceMessagesChannelClient(
 ) {
     private val handshakeRequest = channel.createRequest<HandshakeRequest, HandshakeResponse>(Routes.HANDSHAKE)
     private val uploadRequest = channel.createRequest<UploadRequest, SendResponse>(Routes.UPLOAD_CHUNK, UPLOAD_TIMEOUT)
+    private val suggestRequest = channel.createRequest<SuggestRequest, SuggestResponse>(Routes.SUGGEST)
+    private val resolveRequest = channel.createRequest<ResolveRequest, SendResponse>(Routes.RESOLVE)
 
     @Volatile
     var session: HandshakeResponse? = null
@@ -70,6 +75,16 @@ class VoiceMessagesChannelClient(
 
         return uploadRequest(UploadRequest(uploadId, chunks.lastIndex, chunks.last(), send))
     }
+
+    suspend fun suggest(
+        senderName: String,
+        arguments: String,
+    ): SuggestResponse = suggestRequest(SuggestRequest(senderName, arguments))
+
+    suspend fun resolve(
+        senderName: String,
+        arguments: String,
+    ): SendResponse = resolveRequest(ResolveRequest(senderName, arguments))
 
     fun reset() {
         session = null

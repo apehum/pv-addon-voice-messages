@@ -12,11 +12,14 @@ import su.plo.slib.libs.adventure.adventure.text.TranslatableComponent
 import su.plo.slib.libs.adventure.adventure.text.event.HoverEvent
 import su.plo.slib.libs.adventure.adventure.text.format.NamedTextColor
 import su.plo.slib.libs.adventure.adventure.text.format.TextDecoration
+import su.plo.slib.libs.adventure.adventure.text.serializer.gson.GsonComponentSerializer
 import su.plo.slib.libs.adventure.adventure.text.serializer.legacy.LegacyComponentSerializer
 
 private val textConverter = AdventureComponentTextConverter()
 
 fun McTextComponent.toAdventure() = textConverter.convert(this)
+
+fun McTextComponent.toJson(): String = GsonComponentSerializer.gson().serialize(toAdventure())
 
 fun Component.toMc(): McTextComponent {
     val component =

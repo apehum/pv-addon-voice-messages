@@ -4,6 +4,7 @@ import dev.apehum.voicemessages.client.VoiceMessagesClient;
 import dev.apehum.voicemessages.client.gui.chat.DraftBar;
 import dev.apehum.voicemessages.client.gui.chat.RecordButton;
 import dev.apehum.voicemessages.client.gui.chat.RecordingBar;
+import dev.apehum.voicemessages.client.gui.menu.SenderMenu;
 import dev.apehum.voicemessages.client.session.VoiceMessageSession;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
@@ -15,6 +16,13 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+//? if >=1.21.11 {
+/*import net.minecraft.client.input.CharacterEvent;
+import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.input.MouseButtonEvent;
+*///?}
 
 @Mixin(ChatScreen.class)
 abstract class ChatScreenMixin extends Screen {
@@ -30,6 +38,8 @@ abstract class ChatScreenMixin extends Screen {
     private RecordingBar voicemessages$recordingBar;
     @Unique
     private DraftBar voicemessages$draftBar;
+    @Unique
+    private SenderMenu voicemessages$senderMenu;
 
     @Unique
     private int voicemessages$inputX;
@@ -43,6 +53,26 @@ abstract class ChatScreenMixin extends Screen {
         throw new AssertionError();
     }
 
+    //? if >=1.21.11 {
+    /*@Override
+    public boolean charTyped(CharacterEvent event) {
+        if (voicemessages$isMenuOpen()) {
+            return voicemessages$senderMenu.charTyped(event);
+        }
+
+        return super.charTyped(event);
+    }
+    *///?} else {
+    @Override
+    public boolean charTyped(char codePoint, int modifiers) {
+        if (voicemessages$isMenuOpen()) {
+            return voicemessages$senderMenu.charTyped(codePoint, modifiers);
+        }
+
+        return super.charTyped(codePoint, modifiers);
+    }
+    //?}
+
     @Inject(method = "init", at = @At("TAIL"))
     private void voicemessages$addRecordWidgets(CallbackInfo ci) {
         // added unconditionally and hidden in render, because the handshake, the voice connection
@@ -50,6 +80,8 @@ abstract class ChatScreenMixin extends Screen {
         int barLeft = input.getX() - 2;
         int barTop = input.getY() - 2;
         int barHeight = input.getHeight();
+
+        this.voicemessages$senderMenu = new SenderMenu();
 
         this.voicemessages$recordButton = addRenderableWidget(new RecordButton(
                 barLeft,
@@ -67,8 +99,11 @@ abstract class ChatScreenMixin extends Screen {
                 barLeft,
                 barTop,
                 this.width - barLeft * 2,
-                barHeight
+                barHeight,
+                voicemessages$senderMenu
         ));
+
+        addRenderableOnly(voicemessages$senderMenu);
 
         this.voicemessages$inputX = input.getX();
         this.voicemessages$inputWidth = input.getWidth();
@@ -91,6 +126,10 @@ abstract class ChatScreenMixin extends Screen {
         voicemessages$recordingBar.visible = recording;
         voicemessages$draftBar.visible = active && !recording;
 
+        if (!voicemessages$draftBar.visible) {
+            voicemessages$senderMenu.close();
+        }
+
         int offset = available ? voicemessages$inputOffset : 0;
         input.setX(voicemessages$inputX + offset);
         input.setWidth(voicemessages$inputWidth - offset);
@@ -98,12 +137,58 @@ abstract class ChatScreenMixin extends Screen {
         input.setEditable(!active);
     }
 
+    //? if >=1.21.11 {
+    /*@Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    private void voicemessages$routeMenuClick(MouseButtonEvent event, boolean doubled, CallbackInfoReturnable<Boolean> cir) {
+        if (voicemessages$isMenuOpen()) {
+            cir.setReturnValue(voicemessages$senderMenu.mouseClicked(event, doubled));
+        }
+    }
+
+    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
+    private void voicemessages$routeMenuKey(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
+        if (voicemessages$isMenuOpen()) {
+            cir.setReturnValue(voicemessages$senderMenu.keyPressed(event));
+        }
+    }
+    *///?} else {
+    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
+    private void voicemessages$routeMenuClick(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
+        if (voicemessages$isMenuOpen()) {
+            cir.setReturnValue(voicemessages$senderMenu.mouseClicked(mouseX, mouseY, button));
+        }
+    }
+
+    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
+    private void voicemessages$routeMenuKey(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+        if (voicemessages$isMenuOpen()) {
+            cir.setReturnValue(voicemessages$senderMenu.keyPressed(keyCode, scanCode, modifiers));
+        }
+    }
+    //?}
+
+    @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
+    private void voicemessages$routeMenuScroll(double mouseX, double mouseY, double scrollX, double scrollY, CallbackInfoReturnable<Boolean> cir) {
+        if (voicemessages$isMenuOpen()) {
+            cir.setReturnValue(voicemessages$senderMenu.mouseScrolled(mouseX, mouseY, scrollX, scrollY));
+        }
+    }
+
     @Inject(method = "removed", at = @At("TAIL"))
     private void voicemessages$discardRecording(CallbackInfo ci) {
+        if (voicemessages$senderMenu != null) {
+            voicemessages$senderMenu.close();
+        }
+
         // todo: stop & discard prompt?
         VoiceMessageSession session = VoiceMessagesClient.getSession();
         if (session != null) {
             session.discard();
         }
+    }
+
+    @Unique
+    private boolean voicemessages$isMenuOpen() {
+        return voicemessages$senderMenu != null && voicemessages$senderMenu.isOpen();
     }
 }

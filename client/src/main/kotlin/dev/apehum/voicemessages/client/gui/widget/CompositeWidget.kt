@@ -1,12 +1,9 @@
 package dev.apehum.voicemessages.client.gui.widget
 
 import net.minecraft.client.gui.GuiGraphics
-import net.minecraft.client.gui.components.AbstractWidget
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
-
-//? if >=1.21.11
-/*import net.minecraft.client.input.MouseButtonEvent*/
+import net.minecraft.client.gui.components.AbstractWidget as MinecraftAbstractWidget
 
 abstract class CompositeWidget(
     x: Int,
@@ -15,9 +12,9 @@ abstract class CompositeWidget(
     height: Int,
     message: Component,
 ) : AbstractWidget(x, y, width, height, message) {
-    protected abstract val children: List<AbstractWidget>
+    protected abstract val children: List<MinecraftAbstractWidget>
 
-    private var pressed: AbstractWidget? = null
+    private var pressed: MinecraftAbstractWidget? = null
 
     override fun renderWidget(
         guiGraphics: GuiGraphics,
@@ -29,60 +26,36 @@ abstract class CompositeWidget(
         children.forEach { it.render(guiGraphics, mouseX, mouseY, partialTick) }
     }
 
-    //? if >=1.21.11 {
-    /*override fun mouseClicked(
-        event: MouseButtonEvent,
-        doubled: Boolean,
-    ): Boolean {
+    override fun handleMouseClicked(input: MouseInput): Boolean {
         if (!active || !visible) return false
 
-        pressed = children.firstOrNull { it.mouseClicked(event, doubled) }
+        pressed = children.firstOrNull { it.mouseClicked(input) }
         return pressed != null
     }
 
-    override fun mouseDragged(
-        event: MouseButtonEvent,
-        dragX: Double,
-        dragY: Double,
-    ): Boolean = pressed?.mouseDragged(event, dragX, dragY) == true
-
-    override fun mouseReleased(event: MouseButtonEvent): Boolean {
+    override fun handleMouseReleased(input: MouseInput): Boolean {
         val widget = pressed ?: return false
         pressed = null
 
-        return widget.mouseReleased(event)
-    }
-    *///?} else {
-    override fun mouseClicked(
-        mouseX: Double,
-        mouseY: Double,
-        button: Int,
-    ): Boolean {
-        if (!active || !visible) return false
-
-        pressed = children.firstOrNull { it.mouseClicked(mouseX, mouseY, button) }
-        return pressed != null
+        return widget.mouseReleased(input)
     }
 
-    override fun mouseDragged(
-        mouseX: Double,
-        mouseY: Double,
-        button: Int,
+    override fun handleMouseDragged(
+        input: MouseInput,
         dragX: Double,
         dragY: Double,
-    ): Boolean = pressed?.mouseDragged(mouseX, mouseY, button, dragX, dragY) == true
+    ): Boolean = pressed?.mouseDragged(input, dragX, dragY) == true
 
-    override fun mouseReleased(
+    override fun handleKeyPressed(input: KeyInput): Boolean = children.any { it.isFocused && it.keyPressed(input) }
+
+    override fun handleCharTyped(input: CharInput): Boolean = children.any { it.isFocused && it.charTyped(input) }
+
+    override fun mouseScrolled(
         mouseX: Double,
         mouseY: Double,
-        button: Int,
-    ): Boolean {
-        val widget = pressed ?: return false
-        pressed = null
-
-        return widget.mouseReleased(mouseX, mouseY, button)
-    }
-    //?}
+        scrollX: Double,
+        scrollY: Double,
+    ): Boolean = children.any { it.isMouseOver(mouseX, mouseY) && it.mouseScrolled(mouseX, mouseY, scrollX, scrollY) }
 
     override fun updateWidgetNarration(output: NarrationElementOutput) {
         children.forEach { it.updateNarration(output.nest()) }

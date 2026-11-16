@@ -3,6 +3,8 @@ package dev.apehum.voicemessages.api.chat
 import dev.apehum.voicemessages.api.VoiceMessage
 import dev.apehum.voicemessages.api.command.dsl.CommandContext
 import dev.apehum.voicemessages.api.command.dsl.argument.NamedCommandArgument
+import su.plo.slib.api.chat.component.McTextComponent
+import su.plo.slib.api.command.McCommandSource
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -47,4 +49,15 @@ interface ChatMessageSender<T : ChatContext> {
      * @return List of command arguments, empty by default
      */
     fun createArguments(): List<NamedCommandArgument<out Any>> = emptyList()
+
+    /**
+     * Name of this sender shown in the client mod's sender menu.
+     *
+     * Use [source] to resolve the name server-side, e.g. to translate it into the player's language.
+     * Translatable components are resolved on the client, so their keys must exist in the client's language files.
+     *
+     * @param source The command source the name is shown to
+     * @return The display name, or null to let the client derive one from the registered context name
+     */
+    fun displayName(source: McCommandSource): McTextComponent? = null
 }
