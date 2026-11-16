@@ -16,6 +16,7 @@ import net.minecraft.client.gui.narration.NarratedElementType
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 import su.plo.lib.mod.client.render.RenderUtil
+import su.plo.lib.mod.client.render.gui.GuiCursor
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import java.awt.Color
 import kotlin.math.max
@@ -80,6 +81,7 @@ class DraftTrack(
         val draft = session.recorder.draft ?: return
         val preview = session.preview
         val context = GuiRenderContext(guiGraphics)
+        cursor(draft, mouseX)?.let { context.requestCursor(it) }
 
         val trimLeft = draft.frameX(draft.trimStart)
         val trimRight = draft.frameX(draft.trimEnd)
@@ -153,6 +155,17 @@ class DraftTrack(
                 ?.trimmedDuration ?: Duration.ZERO
         output.add(NarratedElementType.TITLE, Component.translatable(DRAFT_KEY, duration.formatted()))
     }
+
+    private fun cursor(
+        draft: VoiceMessageDraft,
+        mouseX: Int,
+    ): GuiCursor? =
+        when {
+            dragging != null -> GuiCursor.RESIZE_EW
+            !isHovered -> null
+            draft.grabbedHandle(mouseX.toDouble()) != null -> GuiCursor.RESIZE_EW
+            else -> GuiCursor.POINTING_HAND
+        }
 
     private fun renderTrack(
         context: GuiRenderContext,

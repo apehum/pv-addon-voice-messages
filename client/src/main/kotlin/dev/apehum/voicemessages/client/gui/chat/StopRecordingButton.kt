@@ -11,6 +11,7 @@ import net.minecraft.client.gui.components.Tooltip
 import net.minecraft.client.gui.narration.NarratedElementType
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
+import su.plo.lib.mod.client.render.gui.GuiCursor
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import kotlin.math.exp
 import kotlin.math.roundToInt
@@ -53,6 +54,7 @@ class StopRecordingButton(
         partialTick: Float,
     ) {
         val context = GuiRenderContext(guiGraphics)
+        if (isHovered) context.requestCursor(GuiCursor.POINTING_HAND)
 
         val outerSize = (width * BLOB_SCALE).roundToInt() / 2 * 2
 

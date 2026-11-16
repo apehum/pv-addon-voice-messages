@@ -6,6 +6,7 @@ import net.minecraft.client.gui.narration.NarratedElementType
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
+import su.plo.lib.mod.client.render.gui.GuiCursor
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import java.awt.Color
 
@@ -42,6 +43,9 @@ open class IconButton(
         mouseY: Int,
         partialTick: Float,
     ) {
+        val context = GuiRenderContext(guiGraphics)
+        if (isHovered) context.requestCursor(GuiCursor.POINTING_HAND)
+
         if (background) {
             val sprite = if (isHoveredOrFocused) BUTTON_HOVER_SPRITE else BUTTON_SPRITE
 
@@ -54,7 +58,7 @@ open class IconButton(
 
         val offset = (width - iconSize) / 2
 
-        GuiRenderContext(guiGraphics).blitIcon(
+        context.blitIcon(
             icon,
             x + offset + iconOffset.first,
             y + offset + iconOffset.second,

@@ -6,6 +6,7 @@ import net.minecraft.client.gui.narration.NarratedElementType
 import net.minecraft.client.gui.narration.NarrationElementOutput
 import net.minecraft.network.chat.Component
 import su.plo.lib.mod.client.render.RenderUtil
+import su.plo.lib.mod.client.render.gui.GuiCursor
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import su.plo.slib.api.chat.component.McTextComponent
 import java.awt.Color
@@ -31,7 +32,10 @@ class TextButton(
         mouseY: Int,
         partialTick: Float,
     ) {
-        GuiRenderContext(guiGraphics).drawString(
+        val context = GuiRenderContext(guiGraphics)
+        if (isHovered) context.requestCursor(GuiCursor.POINTING_HAND)
+
+        context.drawString(
             label,
             x,
             y + (height - TEXT_HEIGHT) / 2,
