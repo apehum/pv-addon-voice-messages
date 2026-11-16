@@ -8,13 +8,7 @@ import dev.apehum.voicemessages.client.gui.widget.IconButton
 import dev.apehum.voicemessages.client.modResource
 import net.minecraft.network.chat.Component
 
-private val DELETE_ICON = modResource("textures/gui/sprites/delete.png")
-
-private const val DELETE_KEY = "pv.addon.voice_messages.chat.delete"
-
 private const val ELEMENTS_GAP = 2
-
-private val DELETE_HOVER_COLOR = DANGER_COLOR
 
 class DraftBar(
     x: Int,
@@ -28,9 +22,9 @@ class DraftBar(
             x,
             y,
             height,
-            DELETE_KEY,
-            DELETE_ICON,
-            hoverColor = DELETE_HOVER_COLOR,
+            "pv.addon.voice_messages.chat.delete",
+            modResource("textures/gui/sprites/delete.png"),
+            hoverColor = DANGER_COLOR,
         ) { VoiceMessagesClient.session?.discard() }
 
     private val send = SendButton(x + width - height, y, height, menu)

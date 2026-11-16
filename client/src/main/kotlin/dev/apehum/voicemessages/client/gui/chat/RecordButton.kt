@@ -5,11 +5,6 @@ import dev.apehum.voicemessages.client.gui.widget.IconButton
 import dev.apehum.voicemessages.client.modResource
 import su.plo.lib.mod.client.render.Colors
 
-private val RECORD_ICON = modResource("textures/gui/sprites/record.png")
-private val RECORD_ICON_COLOR = Colors.WHITE
-
-private const val RECORD_KEY = "pv.addon.voice_messages.chat.record"
-
 class RecordButton(
     x: Int,
     y: Int,
@@ -18,9 +13,9 @@ class RecordButton(
         x,
         y,
         size,
-        RECORD_KEY,
-        RECORD_ICON,
-        color = RECORD_ICON_COLOR,
+        "pv.addon.voice_messages.chat.record",
+        modResource("textures/gui/sprites/record.png"),
+        color = Colors.WHITE,
         background = true,
         onPress = { VoiceMessagesClient.session?.startRecording() },
     )
