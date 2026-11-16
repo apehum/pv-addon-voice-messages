@@ -21,7 +21,6 @@ private const val STOP_GLYPH_SIZE = 8
 
 private const val STOP_KEY = "pv.addon.voice_messages.chat.stop"
 
-// todo: i am still not sure about this color; right now it's just pv's accent color
 private val BUTTON_COLOR = ACCENT_COLOR
 
 private const val BLOB_ALPHA = 0.75f
@@ -101,7 +100,12 @@ class StopRecordingButton(
         val delta = if (lastFrameNanos == 0L) 0f else (now - lastFrameNanos) / 1_000_000_000f
         lastFrameNanos = now
 
-        val level = VoiceMessagesClient.session?.recorder?.recentLevels(1)?.lastOrNull()?.toFloat() ?: 0f
+        val level =
+            VoiceMessagesClient.session
+                ?.recorder
+                ?.recentLevels(1)
+                ?.lastOrNull()
+                ?.toFloat() ?: 0f
         val target = ((level - NOISE_FLOOR) / (LEVEL_CEILING - NOISE_FLOOR)).coerceIn(0f, 1f)
 
         val smoothingSeconds = if (target > amplitude) ATTACK_SECONDS else RELEASE_SECONDS

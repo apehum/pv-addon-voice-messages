@@ -44,7 +44,6 @@ private const val GLYPH_HEIGHT = 5
 private val TRACK_COLOR = ACCENT_COLOR.shade(0.35f)
 private val TRIMMED_COLOR = TRACK_COLOR.shade(0.4f)
 
-// todo: i am still not sure about this color; right now it's just pv's accent color
 private val PLAYED_COLOR = ACCENT_COLOR
 
 private val BAR_COLOR = Color(255, 255, 255, 140)
@@ -147,7 +146,11 @@ class DraftTrack(
     }
 
     override fun updateWidgetNarration(output: NarrationElementOutput) {
-        val duration = VoiceMessagesClient.session?.recorder?.draft?.trimmedDuration ?: Duration.ZERO
+        val duration =
+            VoiceMessagesClient.session
+                ?.recorder
+                ?.draft
+                ?.trimmedDuration ?: Duration.ZERO
         output.add(NarratedElementType.TITLE, Component.translatable(DRAFT_KEY, duration.formatted()))
     }
 
