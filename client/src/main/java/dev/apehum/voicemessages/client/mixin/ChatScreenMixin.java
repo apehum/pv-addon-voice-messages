@@ -8,6 +8,7 @@ import dev.apehum.voicemessages.client.gui.chat.DraftBar;
 import dev.apehum.voicemessages.client.gui.chat.RecordButton;
 import dev.apehum.voicemessages.client.gui.chat.RecordingBar;
 import dev.apehum.voicemessages.client.gui.menu.SenderMenu;
+import dev.apehum.voicemessages.client.gui.widget.AbstractWidget;
 import dev.apehum.voicemessages.client.session.VoiceMessageSession;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.CommandSuggestions;
@@ -139,6 +140,10 @@ abstract class ChatScreenMixin extends Screen {
         input.setWidth(voicemessages$inputWidth - offset);
         input.setVisible(!active);
         input.setEditable(!active);
+
+        if (!active && getFocused() instanceof AbstractWidget) {
+            setFocused(input);
+        }
     }
 
     //~ if >=26.3 'render' -> 'extractRenderState'
