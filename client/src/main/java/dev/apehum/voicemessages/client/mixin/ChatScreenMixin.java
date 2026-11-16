@@ -1,5 +1,8 @@
 package dev.apehum.voicemessages.client.mixin;
 
+import com.llamalad7.mixinextras.injector.v2.WrapWithCondition;
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import dev.apehum.voicemessages.client.VoiceMessagesClient;
 import dev.apehum.voicemessages.client.gui.chat.DraftBar;
 import dev.apehum.voicemessages.client.gui.chat.RecordButton;
@@ -7,6 +10,7 @@ import dev.apehum.voicemessages.client.gui.chat.RecordingBar;
 import dev.apehum.voicemessages.client.gui.menu.SenderMenu;
 import dev.apehum.voicemessages.client.session.VoiceMessageSession;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.components.CommandSuggestions;
 import net.minecraft.client.gui.components.EditBox;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
@@ -137,6 +141,12 @@ abstract class ChatScreenMixin extends Screen {
         input.setEditable(!active);
     }
 
+    //~ if >=26.3 'render' -> 'extractRenderState'
+    @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;render(Lnet/minecraft/client/gui/GuiGraphics;II)V"))
+    private boolean voicemessages$hideSuggestionsWithInput(CommandSuggestions suggestions, GuiGraphics guiGraphics, int mouseX, int mouseY) {
+        return input.isVisible();
+    }
+
     //? if >=1.21.11 {
     /*@Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void voicemessages$routeMenuClick(MouseButtonEvent event, boolean doubled, CallbackInfoReturnable<Boolean> cir) {
@@ -150,6 +160,16 @@ abstract class ChatScreenMixin extends Screen {
         if (voicemessages$isMenuOpen()) {
             cir.setReturnValue(voicemessages$senderMenu.keyPressed(event));
         }
+    }
+
+    @WrapOperation(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;mouseClicked(Lnet/minecraft/client/input/MouseButtonEvent;)Z"))
+    private boolean voicemessages$skipHiddenSuggestionsClick(CommandSuggestions suggestions, MouseButtonEvent event, Operation<Boolean> original) {
+        return input.isVisible() && original.call(suggestions, event);
+    }
+
+    @WrapOperation(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;keyPressed(Lnet/minecraft/client/input/KeyEvent;)Z"))
+    private boolean voicemessages$skipHiddenSuggestionsKey(CommandSuggestions suggestions, KeyEvent event, Operation<Boolean> original) {
+        return input.isVisible() && original.call(suggestions, event);
     }
     *///?} else {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
@@ -165,6 +185,16 @@ abstract class ChatScreenMixin extends Screen {
             cir.setReturnValue(voicemessages$senderMenu.keyPressed(keyCode, scanCode, modifiers));
         }
     }
+
+    @WrapOperation(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;mouseClicked(DDI)Z"))
+    private boolean voicemessages$skipHiddenSuggestionsClick(CommandSuggestions suggestions, double mouseX, double mouseY, int button, Operation<Boolean> original) {
+        return input.isVisible() && original.call(suggestions, mouseX, mouseY, button);
+    }
+
+    @WrapOperation(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;keyPressed(III)Z"))
+    private boolean voicemessages$skipHiddenSuggestionsKey(CommandSuggestions suggestions, int keyCode, int scanCode, int modifiers, Operation<Boolean> original) {
+        return input.isVisible() && original.call(suggestions, keyCode, scanCode, modifiers);
+    }
     //?}
 
     @Inject(method = "mouseScrolled", at = @At("HEAD"), cancellable = true)
@@ -172,6 +202,11 @@ abstract class ChatScreenMixin extends Screen {
         if (voicemessages$isMenuOpen()) {
             cir.setReturnValue(voicemessages$senderMenu.mouseScrolled(mouseX, mouseY, scrollX, scrollY));
         }
+    }
+
+    @WrapOperation(method = "mouseScrolled", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;mouseScrolled(D)Z"))
+    private boolean voicemessages$skipHiddenSuggestionsScroll(CommandSuggestions suggestions, double scroll, Operation<Boolean> original) {
+        return input.isVisible() && original.call(suggestions, scroll);
     }
 
     @Inject(method = "removed", at = @At("TAIL"))
