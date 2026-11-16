@@ -156,19 +156,16 @@ abstract class ChatScreenMixin extends Screen {
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void voicemessages$routeMenuKey(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
+    private void voicemessages$routeKey(KeyEvent event, CallbackInfoReturnable<Boolean> cir) {
         if (voicemessages$isMenuOpen()) {
             cir.setReturnValue(voicemessages$senderMenu.keyPressed(event));
+        } else if (!input.isVisible()) {
+            cir.setReturnValue(super.keyPressed(event));
         }
     }
 
     @WrapOperation(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;mouseClicked(Lnet/minecraft/client/input/MouseButtonEvent;)Z"))
     private boolean voicemessages$skipHiddenSuggestionsClick(CommandSuggestions suggestions, MouseButtonEvent event, Operation<Boolean> original) {
-        return input.isVisible() && original.call(suggestions, event);
-    }
-
-    @WrapOperation(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;keyPressed(Lnet/minecraft/client/input/KeyEvent;)Z"))
-    private boolean voicemessages$skipHiddenSuggestionsKey(CommandSuggestions suggestions, KeyEvent event, Operation<Boolean> original) {
         return input.isVisible() && original.call(suggestions, event);
     }
     *///?} else {
@@ -180,20 +177,17 @@ abstract class ChatScreenMixin extends Screen {
     }
 
     @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
-    private void voicemessages$routeMenuKey(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
+    private void voicemessages$routeKey(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (voicemessages$isMenuOpen()) {
             cir.setReturnValue(voicemessages$senderMenu.keyPressed(keyCode, scanCode, modifiers));
+        } else if (!input.isVisible()) {
+            cir.setReturnValue(super.keyPressed(keyCode, scanCode, modifiers));
         }
     }
 
     @WrapOperation(method = "mouseClicked", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;mouseClicked(DDI)Z"))
     private boolean voicemessages$skipHiddenSuggestionsClick(CommandSuggestions suggestions, double mouseX, double mouseY, int button, Operation<Boolean> original) {
         return input.isVisible() && original.call(suggestions, mouseX, mouseY, button);
-    }
-
-    @WrapOperation(method = "keyPressed", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;keyPressed(III)Z"))
-    private boolean voicemessages$skipHiddenSuggestionsKey(CommandSuggestions suggestions, int keyCode, int scanCode, int modifiers, Operation<Boolean> original) {
-        return input.isVisible() && original.call(suggestions, keyCode, scanCode, modifiers);
     }
     //?}
 
