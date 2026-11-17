@@ -115,7 +115,7 @@ abstract class ChatScreenMixin extends Screen {
         this.voicemessages$inputOffset = barHeight + voicemessages$INPUT_GAP;
     }
 
-    //~ if >=26.3 'render' -> 'extractRenderState'
+    //~ if >=26.1 'render' -> 'extractRenderState'
     @Inject(method = "render", at = @At("HEAD"))
     private void voicemessages$swapInputForRecording(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         if (voicemessages$recordingBar == null) {
@@ -146,7 +146,7 @@ abstract class ChatScreenMixin extends Screen {
         }
     }
 
-    //~ if >=26.3 'render' -> 'extractRenderState'
+    //~ if >=26.1 'render' -> 'extractRenderState'
     @WrapWithCondition(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/CommandSuggestions;render(Lnet/minecraft/client/gui/GuiGraphics;II)V"))
     private boolean voicemessages$hideSuggestionsWithInput(CommandSuggestions suggestions, GuiGraphics guiGraphics, int mouseX, int mouseY) {
         return input.isVisible();

@@ -5,14 +5,9 @@ import su.plo.lib.mod.client.render.gui.GuiColorPipeline
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import java.awt.Color
 
-//? if >=26.3 {
-/*import dev.apehum.voicemessages.client.modResource
-import com.mojang.renderpearl.api.pipeline.BindGroupLayout
-import com.mojang.renderpearl.api.pipeline.RenderPipeline
-import com.mojang.renderpearl.api.pipeline.UniformType
-import dev.apehum.voicemessages.client.mixin.RenderPipelinesAccessor
-import org.joml.Vector2f
-*///?} else if >=1.21.6 {
+//? if >=26.2
+/*import com.mojang.blaze3d.pipeline.BindGroupLayout*/
+//? if >=1.21.6 {
 /*import dev.apehum.voicemessages.client.modResource
 import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.shaders.UniformType
@@ -107,7 +102,7 @@ private fun writeParameters(
 }
 //?}
 
-//? if >=26.3 {
+//? if >=26.2 {
 /*private val WAVEFORM_SHADER = modResource("core/waveform")
 
 private val WAVEFORM_PIPELINE =

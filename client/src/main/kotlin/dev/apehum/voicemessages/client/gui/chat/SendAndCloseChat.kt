@@ -16,7 +16,7 @@ fun VoiceMessageSession.sendAndCloseChat(target: SendTarget) {
 }
 
 private fun currentScreen(): Screen? =
-    //? if >=26.3 {
+    //? if >=26.2 {
     /*Minecraft.getInstance().gui.screen()
     *///?} else {
     Minecraft.getInstance().screen

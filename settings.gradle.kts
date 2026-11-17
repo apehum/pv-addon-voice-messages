@@ -37,18 +37,17 @@ include("integration:paper")
 
 stonecutter {
     create("client") {
-        fun minecraftVersion(
+        fun target(
+            name: String,
             minecraftVersion: String,
-            loaders: List<String>,
-        ) {
-            for (loader in loaders) {
-                version("$minecraftVersion-$loader", minecraftVersion)
-            }
-        }
+            vararg loaders: String,
+        ) = loaders.forEach { version("$name-$it", minecraftVersion) }
 
-        minecraftVersion("1.21.1", loaders = listOf("fabric", "neoforge"))
-        minecraftVersion("1.21.11", loaders = listOf("fabric", "neoforge"))
-        minecraftVersion("26.3", loaders = listOf("fabric", "neoforge"))
+        target("1.21.1", "1.21.1", "fabric", "neoforge")
+        target("1.21.11", "1.21.11", "fabric", "neoforge")
+        target("26.1", "26.1.2", "fabric", "neoforge")
+        target("26.2", "26.2", "fabric", "neoforge")
+        target("26.3", "26.3", "fabric", "neoforge")
 
         vcsVersion = "1.21.1-fabric"
     }

@@ -64,7 +64,7 @@ class SenderMenu : AbstractWidget(0, 0, 0, 0, Component.empty()) {
         *///?}
 
         place(page)
-        //~ if >=26.3 'render' -> 'extractRenderState'
+        //~ if >=26.1 'render' -> 'extractRenderState'
         page.render(guiGraphics, mouseX, mouseY, partialTick)
 
         //? if <1.21.6

@@ -12,13 +12,14 @@ plugins {
 }
 
 val mcVersion = stonecutter.current.version
+val target = stonecutter.current.project.substringBeforeLast('-')
 val loader = stonecutter.current.project.substringAfterLast('-')
 val isFabric = loader == "fabric"
 val plasmoVoiceVersion =
     libs.versions.pv.client
         .get()
 
-base.archivesName = "${rootProject.name}-${rootProject.version}+$mcVersion-$loader"
+base.archivesName = "${rootProject.name}-${rootProject.version}+$target-$loader"
 
 fun propertyVersion(name: String) = property("versions.$name") as String
 
@@ -84,6 +85,7 @@ modstitch {
         modLicense = "MIT"
 
         replacementProperties.put("plasmovoice_version", plasmoVoiceVersion)
+        replacementProperties.put("minecraft_range", property("minecraft_range") as String)
     }
 
     mixin {
@@ -173,7 +175,7 @@ dependencies {
     compileOnly(rootProject.libs.kotlinx.coroutines.jdk8)
     compileOnly(rootProject.libs.kotlinx.serialization.core)
 
-    val plasmoVoice = "maven.modrinth:plasmo-voice:$loader-$mcVersion-$plasmoVoiceVersion"
+    val plasmoVoice = "maven.modrinth:plasmo-voice:$loader-$target-$plasmoVoiceVersion"
 
     modstitchModCompileOnly(plasmoVoice)
 
@@ -249,9 +251,17 @@ stonecutter {
         replace("Identifier", "ResourceLocation")
     }
 
-    replacements.string(current.parsed >= "26.3") {
+    replacements.string(current.parsed >= "26.1") {
         replace("GuiGraphics", "GuiGraphicsExtractor")
         replace("renderWidget", "extractWidgetRenderState")
+    }
+
+    replacements.string(current.parsed >= "26.3") {
+        replace("com.mojang.blaze3d.pipeline.BindGroupLayout", "com.mojang.renderpearl.api.pipeline.BindGroupLayout")
+        replace("com.mojang.blaze3d.pipeline.RenderPipeline", "com.mojang.renderpearl.api.pipeline.RenderPipeline")
+        replace("com.mojang.blaze3d.shaders.UniformType", "com.mojang.renderpearl.api.pipeline.UniformType")
+        replace("com.mojang.blaze3d.buffers.GpuBuffer", "com.mojang.renderpearl.api.buffers.GpuBuffer")
+        replace("com.mojang.blaze3d.systems.RenderPass", "com.mojang.renderpearl.api.commands.RenderPass")
     }
 }
 

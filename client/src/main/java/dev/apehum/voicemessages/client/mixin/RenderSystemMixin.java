@@ -1,13 +1,8 @@
 package dev.apehum.voicemessages.client.mixin;
 
-//? if >=26.3 {
-/*import com.mojang.renderpearl.api.commands.RenderPass;
-*///?} else if >=1.21.6 {
-/*import com.mojang.blaze3d.systems.RenderPass;
-*///?}
-
 //? if >=1.21.6 {
-/*import com.mojang.blaze3d.systems.RenderSystem;
+/*import com.mojang.blaze3d.systems.RenderPass;
+import com.mojang.blaze3d.systems.RenderSystem;
 import dev.apehum.voicemessages.client.gui.render.WaveformUniforms;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

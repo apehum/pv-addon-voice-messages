@@ -1,15 +1,9 @@
 package dev.apehum.voicemessages.client.gui.render
 
-//? if >=26.3 {
-/*import com.mojang.renderpearl.api.buffers.GpuBuffer
-import com.mojang.renderpearl.api.commands.RenderPass
-*///?} else if >=1.21.6 {
+//? if >=1.21.6 {
 /*import com.mojang.blaze3d.buffers.GpuBuffer
 import com.mojang.blaze3d.systems.RenderPass
-*///?}
-
-//? if >=1.21.6 {
-/*import com.mojang.blaze3d.buffers.Std140Builder
+import com.mojang.blaze3d.buffers.Std140Builder
 import com.mojang.blaze3d.buffers.Std140SizeCalculator
 import com.mojang.blaze3d.systems.RenderSystem
 import org.lwjgl.system.MemoryStack

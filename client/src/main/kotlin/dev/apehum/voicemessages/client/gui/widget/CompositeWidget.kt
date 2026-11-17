@@ -22,7 +22,7 @@ abstract class CompositeWidget(
         mouseY: Int,
         partialTick: Float,
     ) {
-        //~ if >=26.3 'render' -> 'extractRenderState'
+        //~ if >=26.1 'render' -> 'extractRenderState'
         children.forEach { it.render(guiGraphics, mouseX, mouseY, partialTick) }
     }
 
