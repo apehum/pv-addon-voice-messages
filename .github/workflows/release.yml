@@ -100,7 +100,7 @@ jobs:
       uses: apehum/mc-publish@master
       with:
         name: 'pv-addon-voice-messages ${{ needs.build.outputs.version }}'
-        files-primary: build/libs/pv-addon-voice-messages-*-all.jar
+        files-primary: build/libs/pv-addon-voice-messages-!(*-@(fabric|neoforge)).jar
 
         loaders: |
           paper
@@ -123,7 +123,7 @@ jobs:
         name: 'pv-addon-voice-messages'
         split-releases: true
         split-releases-version: '{version}+{minecraft}-{loader}'
-        files-primary: build/libs/pv-addon-voice-messages-client-*.jar
+        files-primary: build/libs/pv-addon-voice-messages-*-@(fabric|neoforge).jar
 
         environment: server_only_client_optional
 
@@ -156,7 +156,7 @@ jobs:
       with:
         name: 'pv-addon-voice-messages'
         split-releases: true
-        files-primary: build/libs/pv-addon-voice-messages-client-*.jar
+        files-primary: build/libs/pv-addon-voice-messages-*-@(fabric|neoforge).jar
 
         environment: server_only_client_optional
 

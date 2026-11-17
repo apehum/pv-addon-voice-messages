@@ -18,8 +18,7 @@ val plasmoVoiceVersion =
     libs.versions.pv.client
         .get()
 
-version = "${rootProject.version}+$mcVersion+$loader"
-base.archivesName = "${rootProject.name}-client"
+base.archivesName = "${rootProject.name}-${rootProject.version}+$mcVersion-$loader"
 
 fun propertyVersion(name: String) = property("versions.$name") as String
 
@@ -79,7 +78,7 @@ modstitch {
         // neoforge doesn't allow dashes in mod ids
         modId = if (isFabric) rootProject.name else rootProject.name.replace('-', '_')
         modName = rootProject.name
-        modVersion = project.version.toString()
+        modVersion = rootProject.version.toString()
         modGroup = rootProject.group.toString()
         modDescription = "Voice messages addon"
         modLicense = "MIT"
@@ -90,7 +89,7 @@ modstitch {
     mixin {
         addMixinsToModManifest = true
 
-        configs.register("pv-addon-voice-messages-client") {
+        configs.register("pv-addon-voice-messages") {
             side = CLIENT
         }
     }
@@ -240,7 +239,7 @@ fletchingTable {
     relocate.configure(sourceSets.main) {
         matching("(*).json5") {
             into("$1.json")
-            with(Json5ToJson(jsonIndent = "  "))
+            with(Json5ToJson(jsonIndent = "    "))
         }
     }
 }
@@ -257,6 +256,10 @@ stonecutter {
 }
 
 tasks {
+    withType<AbstractArchiveTask>().configureEach {
+        archiveVersion = ""
+    }
+
     processResources {
         if (stonecutter.current.parsed >= "1.21.6") {
             exclude("assets/pv_addon_voice_messages/shaders/core/*.json")

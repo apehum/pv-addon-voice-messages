@@ -90,6 +90,8 @@ tasks {
     }
 
     jar {
+        archiveClassifier.set("dev")
+
         exclude(
             "fabric.mod.json",
             "plugin.yml",
@@ -102,6 +104,7 @@ tasks {
 
     shadowJar {
         configurations = listOf(project.configurations.runtimeClasspath.get())
+        archiveClassifier.set("")
 
         SHADED_LIBRARIES.forEach { (packageName, libraryName) ->
             relocate(packageName, "${project.group}.libraries.$libraryName")
