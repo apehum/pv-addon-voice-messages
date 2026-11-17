@@ -116,14 +116,18 @@ tasks {
     runServer {
         minecraftVersion(libs.versions.minecraft.get())
 
-        downloadPlugins {
-            modrinth("plasmo-voice", "spigot-${libs.versions.plasmovoice.get()}")
-            modrinth("packetevents", "2.11.1+spigot")
+        javaLauncher =
+            project.javaToolchains.launcherFor {
+                languageVersion = JavaLanguageVersion.of(25)
+            }
 
-//            modrinth("carbon", "6gfp1kIe")
-            modrinth("LuckPerms", "v5.5.17-bukkit")
-            modrinth("placeholderapi", "2.11.7")
-            modrinth("commandapi", "jKB5ZyW7")
+        downloadPlugins {
+            modrinth("plasmo-voice", "paper-${libs.versions.plasmovoice.get()}")
+            modrinth("packetevents", "2.14.0+spigot")
+
+            modrinth("LuckPerms", "v5.5.71-bukkit")
+            modrinth("placeholderapi", "2.12.3")
+            modrinth("commandapi", "Niu5FiSP")
         }
     }
 }

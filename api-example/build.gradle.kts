@@ -21,12 +21,17 @@ tasks {
     runServer {
         minecraftVersion(libs.versions.minecraft.get())
 
+        javaLauncher =
+            project.javaToolchains.launcherFor {
+                languageVersion = JavaLanguageVersion.of(25)
+            }
+
         pluginJars.from(project(":").tasks.shadowJar)
 
         downloadPlugins {
-            modrinth("plasmo-voice", "spigot-${libs.versions.plasmovoice.get()}")
-            modrinth("carbon", "6gfp1kIe")
-            modrinth("LuckPerms", "v5.5.17-bukkit")
+            modrinth("plasmo-voice", "paper-${libs.versions.plasmovoice.get()}")
+            modrinth("carbon", "GM05Fv8t")
+            modrinth("LuckPerms", "v5.5.71-bukkit")
         }
     }
 }
