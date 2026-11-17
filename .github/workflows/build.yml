@@ -1,0 +1,81 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+  workflow_call:
+    outputs:
+      version:
+        value: ${{ jobs.discover.outputs.version }}
+
+concurrency:
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      client-targets: ${{ steps.targets.outputs.targets }}
+      version: ${{ steps.version.outputs.version }}
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - name: List client targets
+      id: targets
+      run: echo "targets=$(ls client/versions | jq -Rnc '[inputs]')" >> "$GITHUB_OUTPUT"
+
+    - name: Read version
+      id: version
+      run: echo "version=$(grep "^version=" gradle.properties | cut -d'=' -f2)" >> "$GITHUB_OUTPUT"
+
+  build-client:
+    needs: discover
+    name: build-client (${{ matrix.target }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        target: ${{ fromJson(needs.discover.outputs.client-targets) }}
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - uses: ./.github/actions/setup-build
+
+    - name: Build ${{ matrix.target }} with Gradle
+      run: ./gradlew :client:${{ matrix.target }}:build --stacktrace --configure-on-demand
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v7.0.2
+      with:
+        path: build/libs/pv-addon-voice-messages-client-*.jar
+        archive: false
+        retention-days: 7
+        if-no-files-found: error
+
+  build-server:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - uses: ./.github/actions/setup-build
+
+    - name: Build with Gradle (everything except client)
+      run: ./gradlew :build :api:build :api-example:build :integration:paper:build --stacktrace --configure-on-demand
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v7.0.2
+      with:
+        path: build/libs/pv-addon-voice-messages-*-all.jar
+        archive: false
+        retention-days: 7
+        if-no-files-found: error

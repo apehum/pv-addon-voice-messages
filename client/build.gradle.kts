@@ -295,4 +295,26 @@ tasks {
             archiveClassifier = ""
         }
     }
+
+    val finalJar = if (modstitch.platform.isLoomRemap) modstitch.finalJarTask else shadowJar
+
+    val copyJarToRootProject =
+        register("copyJarToRootProject") {
+            val source = finalJar.flatMap { it.archiveFile }
+            val target =
+                rootProject.layout.buildDirectory
+                    .dir("libs")
+                    .zip(finalJar.flatMap { it.archiveFileName }) { dir, name -> dir.file(name) }
+
+            inputs.file(source)
+            outputs.file(target)
+
+            doLast {
+                source.get().asFile.copyTo(target.get().asFile, overwrite = true)
+            }
+        }
+
+    build {
+        dependsOn(copyJarToRootProject)
+    }
 }

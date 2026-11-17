@@ -1,0 +1,193 @@
+name: Publish Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - release
+          - beta
+          - alpha
+      publish-maven:
+        description: 'Publish API to Maven Central'
+        type: boolean
+        default: true
+      publish-modrinth:
+        description: 'Publish to Modrinth'
+        type: boolean
+        default: true
+      publish-curseforge:
+        description: 'Publish to CurseForge'
+        type: boolean
+        default: true
+      publish-github:
+        description: 'Publish to GitHub Releases'
+        type: boolean
+        default: true
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  maven-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - uses: ./.github/actions/setup-build
+
+    - name: Build API with Gradle
+      run: ./gradlew :api:build --stacktrace --configure-on-demand
+
+    - name: Check if already published
+      id: maven-check
+      run: |
+        VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
+        URL="https://repo1.maven.org/maven2/dev/apehum/voicemessages/api/${VERSION}/api-${VERSION}.pom"
+        CODE=$(curl -s -o /dev/null -w '%{http_code}' -I \
+          --connect-timeout 10 --max-time 30 \
+          --retry 3 --retry-delay 2 --retry-all-errors "$URL" || true)
+        echo "HTTP $CODE for $URL"
+        case "$CODE" in
+          200)
+            echo "$VERSION is already published, skipping maven publication"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            ;;
+          404)
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            ;;
+          *)
+            echo "::error::unexpected HTTP $CODE checking $URL"
+            exit 1
+            ;;
+        esac
+
+    - name: Publish API to Maven Central
+      if: ${{ inputs.publish-maven && steps.maven-check.outputs.published != 'true' }}
+      env:
+        ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+        ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+        ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.MAVEN_CENTRAL_GPG }}
+      run: ./gradlew :api:publish --stacktrace --configure-on-demand
+
+  modrinth:
+    needs: build
+    if: ${{ inputs.publish-modrinth }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - name: Download build artifacts
+      uses: actions/download-artifact@v8.0.2
+      with:
+        pattern: '*.jar'
+        path: build/libs/
+        merge-multiple: true
+
+    - name: Publish Server to Modrinth
+      uses: apehum/mc-publish@master
+      with:
+        name: 'pv-addon-voice-messages ${{ needs.build.outputs.version }}'
+        files-primary: build/libs/pv-addon-voice-messages-*-all.jar
+
+        loaders: |
+          paper
+          purpur
+          folia
+
+        changelog-file: changelog.md
+        version-type: ${{ inputs.release-type }}
+
+        game-versions: |
+          >=1.21
+
+        modrinth-unfeature-mode: 'subset'
+        modrinth-id: OrjwT7hp
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+    - name: Publish Client to Modrinth
+      uses: apehum/mc-publish@master
+      with:
+        name: 'pv-addon-voice-messages'
+        split-releases: true
+        split-releases-version: '{version}+{minecraft}-{loader}'
+        files-primary: build/libs/pv-addon-voice-messages-client-*.jar
+
+        environment: server_only_client_optional
+
+        changelog-file: changelog.md
+        version-type: ${{ inputs.release-type }}
+
+        modrinth-unfeature-mode: 'subset'
+        modrinth-id: OrjwT7hp
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+  curseforge:
+    needs: build
+    if: ${{ inputs.publish-curseforge }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - name: Download build artifacts
+      uses: actions/download-artifact@v8.0.2
+      with:
+        pattern: '*.jar'
+        path: build/libs/
+        merge-multiple: true
+
+    - name: Publish Client to CurseForge
+      uses: apehum/mc-publish@master
+      with:
+        name: 'pv-addon-voice-messages'
+        split-releases: true
+        files-primary: build/libs/pv-addon-voice-messages-client-*.jar
+
+        environment: server_only_client_optional
+
+        changelog-file: changelog.md
+        version-type: ${{ inputs.release-type }}
+
+        curseforge-id: 1412711
+        curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+
+  github:
+    needs: build
+    if: ${{ inputs.publish-github }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - name: Download build artifacts
+      uses: actions/download-artifact@v8.0.2
+      with:
+        pattern: '*.jar'
+        path: build/libs/
+        merge-multiple: true
+
+    - name: Publish to GitHub
+      uses: apehum/mc-publish@master
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-generate-changelog: false
+        github-prerelease: ${{ inputs.release-type != 'release' }}
+        github-commitish: ${{ github.sha }}
+        changelog-file: changelog.md
