@@ -83,13 +83,15 @@ direct_outgoing = "<italic><gray><lang:commands.message.display.outgoing:'<targe
 ```
 ## API
 
+[![Maven Central](https://img.shields.io/maven-central/v/dev.apehum.voicemessages/api)](https://central.sonatype.com/artifact/dev.apehum.voicemessages/api)
+
 ```kotlin
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    compileOnly("dev.apehum.voicemessages:api:1.0.0-beta.1")
+    compileOnly("dev.apehum.voicemessages:api:$VERSION")
 }
 ```
 
