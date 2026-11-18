@@ -5,6 +5,7 @@
     "version": "${mod_version}",
     "description": "${mod_description}",
     "license": "${mod_license}",
+    "icon": "assets/pv_addon_voice_messages/icon.png",
     "authors": [
         "Apehum"
     ],

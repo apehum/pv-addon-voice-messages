@@ -1,6 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "[1,)"
 license = "${mod_license}"
+${iconKey} = "assets/pv_addon_voice_messages/icon.png"
 issueTrackerURL = "https://github.com/apehum/pv-addon-voice-messages/issues"
 
 [[mods]]

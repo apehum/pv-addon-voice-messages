@@ -86,6 +86,10 @@ modstitch {
 
         replacementProperties.put("plasmovoice_version", plasmoVoiceVersion)
         replacementProperties.put("minecraft_range", property("minecraft_range") as String)
+        replacementProperties.put(
+            "iconKey",
+            if (stonecutter.current.parsed >= "26.3") "iconFile" else "logoFile",
+        )
     }
 
     mixin {
