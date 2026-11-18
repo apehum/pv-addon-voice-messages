@@ -1,0 +1,2 @@
+- Fabric and NeoForge mods now ship with optional client-side part that adds handy UI for recording: [showcases](https://github.com/apehum/pv-addon-voice-messages#client-mod). [#3](https://github.com/apehum/pv-addon-voice-messages/issues/3)
+- API breaking change: `VoiceMessageStorage` and `VoiceMessageDraftStorage` now uses `CompletableFuture` instead of `suspend`.
