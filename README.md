@@ -5,6 +5,8 @@
     <span> | </span>
     <a href="https://modrinth.com/plugin/pv-addon-voice-messages">Modrinth</a>
     <span> | </span>
+    <a href="https://www.curseforge.com/minecraft/mc-mods/pv-addon-voice-messages">CurseForge</a>
+    <span> | </span>
     <a href="https://github.com/Apehum/pv-addon-voice-messages/">GitHub</a>
     <span> | </span>
     <a href="https://discord.com/invite/uueEqzwCJJ">Discord</a>
@@ -15,7 +17,7 @@
 
 # pv-addon-voice-messages
 
-Server-side [Plasmo Voice](https://github.com/plasmoapp/plasmo-voice) addon that adds voice messages.
+[Plasmo Voice](https://github.com/plasmoapp/plasmo-voice) addon that adds voice messages.
 
 ![Commands](.github/assets/showcase.gif)
 
