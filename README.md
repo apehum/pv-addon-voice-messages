@@ -17,7 +17,20 @@
 
 Server-side [Plasmo Voice](https://github.com/plasmoapp/plasmo-voice) addon that adds voice messages.
 
-![](.github/assets/showcase.gif)
+![Commands](.github/assets/showcase.gif)
+
+## Client mod
+
+Client-side mod adds handy recording interface in chat, so you don't have to use commands for recording.
+Playback is still handled via commands, but UI for playback is planned too.
+
+![Client Recording](.github/assets/showcase-client.gif)
+
+Send button sends to the chat by default, right-click it to pick where to send instead:
+
+![Client Select Target](.github/assets/showcase-client-select-target.gif)
+
+The mod is completely optional, without it voice messages will still work via commands.
 
 ## Commands
 
