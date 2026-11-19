@@ -97,7 +97,7 @@ class VoiceMessagesAddon :
 
     private val discordSrvIntegration by lazy {
         try {
-            DiscordSrvIntegration(BuildConfig.PROJECT_NAME)
+            DiscordSrvIntegration(BuildConfig.PROJECT_NAME) { config.discordSrv.voiceMessageLabel }
         } catch (_: LinkageError) {
             null
         }

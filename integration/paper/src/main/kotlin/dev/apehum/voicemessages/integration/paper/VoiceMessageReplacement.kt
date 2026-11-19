@@ -7,6 +7,9 @@ import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.entity.Player
 import java.util.UUID
 
+val VOICE_MESSAGE_PLACEHOLDER =
+    Regex("\\[vm:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})]")
+
 fun VoiceMessage.chatPlaceholder(): String = "[vm:$id]"
 
 fun createVoiceMessageReplacement(player: Player): TextReplacementConfig {
@@ -14,7 +17,7 @@ fun createVoiceMessageReplacement(player: Player): TextReplacementConfig {
 
     return TextReplacementConfig
         .builder()
-        .match("\\[vm:([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})]")
+        .match(VOICE_MESSAGE_PLACEHOLDER.toPattern())
         .once()
         .replacement { match, builder ->
             val voiceMessageId = UUID.fromString(match.group(1))

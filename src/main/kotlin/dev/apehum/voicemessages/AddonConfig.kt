@@ -33,6 +33,8 @@ data class AddonConfig(
     )
     val usePacketEventsIntegration: Boolean = true,
     val chatFormat: ChatFormatConfig = ChatFormatConfig(),
+    @ConfigField(path = "discordsrv")
+    val discordSrv: DiscordSrvConfig = DiscordSrvConfig(),
     @ConfigField(
         comment = """
             Available storage types: [MEMORY, REDIS]
@@ -73,5 +75,18 @@ data class AddonConfig(
         val default: String = "<lang:chat.type.text:'<player_name>':'<voice_message>'>",
         val directIncoming: String = "<italic><gray><lang:commands.message.display.incoming:'<source_player_name>':'<voice_message>'>",
         val directOutgoing: String = "<italic><gray><lang:commands.message.display.outgoing:'<target_player_name>':'<voice_message>'>",
+    )
+
+    @Config(
+        loadConfigFieldOnly = false,
+    )
+    data class DiscordSrvConfig(
+        @ConfigField(
+            comment = """
+                Text that replaces voice message in chat line sent to Discord
+                Voice message itself is sent as a reply to this line
+            """,
+        )
+        val voiceMessageLabel: String = "🎤 voice message",
     )
 }

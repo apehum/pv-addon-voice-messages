@@ -2,22 +2,23 @@ package dev.apehum.voicemessages.integration.discordsrv
 
 import dev.apehum.voicemessages.api.VoiceMessage
 import dev.apehum.voicemessages.api.VoiceMessagesAPIProvider
+import dev.apehum.voicemessages.integration.paper.VOICE_MESSAGE_PLACEHOLDER
 import dev.apehum.voicemessages.integration.paper.chatPlaceholder
 import github.scarsz.discordsrv.DiscordSRV
 import github.scarsz.discordsrv.api.Subscribe
 import github.scarsz.discordsrv.api.events.DiscordGuildMessagePostProcessEvent
-import github.scarsz.discordsrv.dependencies.jda.api.entities.Message
+import github.scarsz.discordsrv.api.events.GameChatMessagePostProcessEvent
+import github.scarsz.discordsrv.dependencies.jda.api.Permission
 import github.scarsz.discordsrv.dependencies.kyori.adventure.text.Component
 import github.scarsz.discordsrv.dependencies.kyori.adventure.text.TextReplacementConfig
+import github.scarsz.discordsrv.util.DiscordUtil
 import org.bukkit.Bukkit
-
-private const val IS_VOICE_MESSAGE_FLAG = 1L shl 13
-
-private val Message.isVoiceMessage: Boolean
-    get() = flagsRaw and IS_VOICE_MESSAGE_FLAG != 0L
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
 
 class DiscordSrvIntegration(
     pluginName: String,
+    private val voiceMessageLabel: () -> String,
 ) {
     private val plugin = Bukkit.getPluginManager().getPlugin(pluginName)!!
     private val isDiscordSrvInstalled = plugin.server.pluginManager.getPlugin("DiscordSRV") != null
@@ -77,6 +78,63 @@ class DiscordSrvIntegration(
                     author,
                 )
             }
+    }
+
+    @Subscribe
+    fun GameChatMessagePostProcessEvent.onGameChatMessage() {
+        if (isCancelled) return
+        val placeholder = VOICE_MESSAGE_PLACEHOLDER.find(processedMessage) ?: return
+        val voiceMessageId = UUID.fromString(placeholder.groupValues[1])
+
+        val discordSrv = DiscordSRV.getPlugin()
+        val textChannel =
+            discordSrv.getDestinationTextChannelForGameChannelName(channel ?: discordSrv.getOptionalChannel("global"))
+                ?: return
+
+        if (DiscordSRV.config().getBoolean("Experiment_WebhookChatMessageDelivery")) {
+            if (!DiscordUtil.checkPermission(textChannel, Permission.MANAGE_WEBHOOKS)) return
+
+            isCancelled = true
+            val player = player
+            val content = processedMessage.removeRange(placeholder.range).trim()
+
+            findVoiceMessage(voiceMessageId)
+                .thenAccept { voiceMessage ->
+                    textChannel.deliverWebhookVoiceMessage(
+                        player,
+                        content,
+                        voiceMessages.wrapVoiceMessageInOgg(voiceMessage),
+                    )
+                }.warnOnFailure(voiceMessageId)
+        } else {
+            isCancelled = true
+            val line = processedMessage.replaceRange(placeholder.range, voiceMessageLabel())
+
+            DiscordUtil.queueMessage(textChannel, line) { sentLine ->
+                findVoiceMessage(voiceMessageId)
+                    .thenCompose { voiceMessage ->
+                        textChannel
+                            .sendVoiceMessage(
+                                voiceMessage,
+                                voiceMessages.wrapVoiceMessageInOgg(voiceMessage),
+                                sentLine,
+                            ).submit()
+                    }.warnOnFailure(voiceMessageId)
+            }
+        }
+    }
+
+    private fun findVoiceMessage(id: UUID): CompletableFuture<VoiceMessage> =
+        voiceMessages.messageStorage
+            .getById(id)
+            .thenApply { checkNotNull(it) { "Voice message $id has expired" } }
+
+    private fun CompletableFuture<*>.warnOnFailure(voiceMessageId: UUID) {
+        whenComplete { _, error ->
+            if (error != null) {
+                logger.warn("Failed to send voice message {} to Discord", voiceMessageId, error)
+            }
+        }
     }
 
     private fun Component.replaceUrlWithPlaceholder(
