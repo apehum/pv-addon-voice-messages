@@ -83,6 +83,13 @@ direct_outgoing = "<italic><gray><lang:commands.message.display.outgoing:'<targe
 #user = ""
 #password = ""
 ```
+
+## DiscordSRV
+
+Paper plugin has integration with DiscordSRV.
+Voice messages sent in the Discord channel will be playable in the game chat, and vice versa:
+![DiscordSRV](.github/assets/showcase-discordsrv.gif)
+
 ## API
 
 [![Maven Central](https://img.shields.io/maven-central/v/dev.apehum.voicemessages/api)](https://central.sonatype.com/artifact/dev.apehum.voicemessages/api)
