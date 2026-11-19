@@ -7,6 +7,7 @@ minecraft = "26.3"
 
 paper = "1.21.11-R0.1-SNAPSHOT"
 packetevents = "2.14.0"
+discordsrv = "1.30.5"
 
 plasmovoice = "2.2.0-beta.3"
 pv-client = "2.2.0-beta.3"
@@ -32,6 +33,7 @@ kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-j
 kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
 paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 packetevents = { module = "com.github.retrooper:packetevents-spigot", version.ref = "packetevents" }
+discordsrv = { module = "com.discordsrv:discordsrv", version.ref = "discordsrv" }
 
 [plugins]
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }

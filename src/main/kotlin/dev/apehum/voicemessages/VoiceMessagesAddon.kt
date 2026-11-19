@@ -16,6 +16,7 @@ import dev.apehum.voicemessages.chat.builtin.DefaultMessageSender
 import dev.apehum.voicemessages.command.LateInitCommand
 import dev.apehum.voicemessages.command.voiceMessageActionsCommand
 import dev.apehum.voicemessages.command.voiceMessageCommand
+import dev.apehum.voicemessages.integration.discordsrv.DiscordSrvIntegration
 import dev.apehum.voicemessages.integration.paper.PaperIntegration
 import dev.apehum.voicemessages.playback.VoiceMessagePlayer
 import dev.apehum.voicemessages.playback.component
@@ -55,6 +56,7 @@ import kotlin.time.Duration.Companion.minutes
     scope = AddonLoaderScope.SERVER,
     dependencies = [
         Dependency(id = "packetevents", optional = true),
+        Dependency(id = "DiscordSRV", optional = true),
     ],
 )
 class VoiceMessagesAddon :
@@ -93,6 +95,14 @@ class VoiceMessagesAddon :
         }
     }
 
+    private val discordSrvIntegration by lazy {
+        try {
+            DiscordSrvIntegration(BuildConfig.PROJECT_NAME)
+        } catch (_: LinkageError) {
+            null
+        }
+    }
+
     init {
         McServerChannelRegistry.register(CHANNEL_KEY)
 
@@ -114,8 +124,9 @@ class VoiceMessagesAddon :
         permissions.register("pv.addon.voice_messages.record.*", PermissionDefault.OP)
 
         reloadConfig()
-        if (config.usePacketEventsIntegration) {
-            paperIntegration?.load()
+        val packetEventsLoaded = paperIntegration?.load() ?: false
+        if (config.usePacketEventsIntegration && packetEventsLoaded) {
+            discordSrvIntegration?.load()
         }
 
         channelServer =
@@ -124,6 +135,8 @@ class VoiceMessagesAddon :
     }
 
     override fun onAddonShutdown() {
+        discordSrvIntegration?.unload()
+
         channelServer?.let {
             minecraftServer.channelManager.unregisterChannelHandler(CHANNEL_KEY, it)
             it.shutdown()

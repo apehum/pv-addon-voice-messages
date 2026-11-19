@@ -11,14 +11,15 @@ class PaperIntegration(
     private val plugin = Bukkit.getPluginManager().getPlugin(pluginName)!!
     private val isPacketEventsInstalled = plugin.server.pluginManager.getPlugin("packetevents") != null
 
-    fun load() {
-        if (!isPacketEventsInstalled) return
+    fun load(): Boolean {
+        if (!isPacketEventsInstalled) return false
 
         PacketEvents.getAPI().eventManager.registerListener(
             PacketChatListener(),
             PacketListenerPriority.NORMAL,
         )
         plugin.slF4JLogger.info("packetevents chat integration loaded")
+        return true
     }
 
     fun registerSenders(registry: ChatMessageSenderRegistry) {

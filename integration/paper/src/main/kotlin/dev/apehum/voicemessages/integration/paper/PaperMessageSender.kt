@@ -25,7 +25,7 @@ class PaperMessageSender(
         context.source.scheduler.run(
             plugin,
             {
-                context.source.chat("[vm:${message.id}]")
+                context.source.chat(message.chatPlaceholder())
             },
             null,
         )

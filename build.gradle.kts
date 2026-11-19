@@ -33,6 +33,7 @@ dependencies {
     }
 
     implementation(project(":integration:paper"))
+    implementation(project(":integration:discordsrv"))
 
     testImplementation(kotlin("test"))
     testImplementation(kotlin("stdlib-jdk8"))

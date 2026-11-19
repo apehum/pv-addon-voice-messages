@@ -34,6 +34,7 @@ plugins {
 include("api")
 include("api-example")
 include("integration:paper")
+include("integration:discordsrv")
 
 stonecutter {
     create("client") {

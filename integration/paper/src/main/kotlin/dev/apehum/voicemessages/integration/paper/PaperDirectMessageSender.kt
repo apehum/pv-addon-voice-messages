@@ -27,7 +27,7 @@ class PaperDirectMessageSender(
         context.source.scheduler.run(
             plugin,
             {
-                context.source.performCommand("msg ${context.target} [vm:${message.id}]")
+                context.source.performCommand("msg ${context.target} ${message.chatPlaceholder()}")
             },
             null,
         )

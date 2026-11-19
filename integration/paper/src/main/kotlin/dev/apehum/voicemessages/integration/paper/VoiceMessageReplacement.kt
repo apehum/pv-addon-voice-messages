@@ -1,10 +1,13 @@
 package dev.apehum.voicemessages.integration.paper
 
+import dev.apehum.voicemessages.api.VoiceMessage
 import dev.apehum.voicemessages.api.VoiceMessagesAPIProvider
 import net.kyori.adventure.text.TextReplacementConfig
 import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer
 import org.bukkit.entity.Player
 import java.util.UUID
+
+fun VoiceMessage.chatPlaceholder(): String = "[vm:$id]"
 
 fun createVoiceMessageReplacement(player: Player): TextReplacementConfig {
     val voiceMessages = VoiceMessagesAPIProvider.getInstance()
