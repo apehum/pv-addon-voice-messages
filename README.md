@@ -86,7 +86,7 @@ direct_outgoing = "<italic><gray><lang:commands.message.display.outgoing:'<targe
 
 ## DiscordSRV
 
-Paper plugin has integration with DiscordSRV.
+Paper plugin has integration with [DiscordSRV](https://modrinth.com/plugin/discordsrv) ([packetevents](https://modrinth.com/plugin/packetevents) is required for this integration to work).
 Voice messages sent in the Discord channel will be playable in the game chat, and vice versa:
 ![DiscordSRV](.github/assets/showcase-discordsrv.gif)
 
