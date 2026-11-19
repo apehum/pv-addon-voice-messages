@@ -123,7 +123,7 @@ tasks {
 
         downloadPlugins {
             modrinth("plasmo-voice", "paper-${libs.versions.plasmovoice.get()}")
-            modrinth("packetevents", "2.14.0+spigot")
+            modrinth("packetevents", "${libs.versions.packetevents.get()}+spigot")
 
             modrinth("LuckPerms", "v5.5.71-bukkit")
             modrinth("placeholderapi", "2.12.3")

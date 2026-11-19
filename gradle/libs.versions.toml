@@ -6,7 +6,7 @@ kotlinx-serialization = "1.10.0"
 minecraft = "26.3"
 
 paper = "1.21.11-R0.1-SNAPSHOT"
-packetevents = "2.11.1"
+packetevents = "2.14.0"
 
 plasmovoice = "2.2.0-beta.3"
 pv-client = "2.2.0-beta.3"
