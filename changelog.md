@@ -1,2 +1,2 @@
-- Fabric and NeoForge mods now ship with optional client-side part that adds handy UI for recording: [showcases](https://github.com/apehum/pv-addon-voice-messages#client-mod). [#3](https://github.com/apehum/pv-addon-voice-messages/issues/3)
-- API breaking change: `VoiceMessageStorage` and `VoiceMessageDraftStorage` now uses `CompletableFuture` instead of `suspend`.
+- Fixed voice messages being plain `[vm:UUID]` in chat on Paper servers without `packetevents` installed.
+- Added [DiscordSRV integration](https://github.com/apehum/pv-addon-voice-messages#discordsrv), `packetvents` is required for integration to work.
