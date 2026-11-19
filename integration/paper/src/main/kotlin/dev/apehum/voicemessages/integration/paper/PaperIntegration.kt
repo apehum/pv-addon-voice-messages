@@ -9,9 +9,10 @@ class PaperIntegration(
     pluginName: String,
 ) {
     private val plugin = Bukkit.getPluginManager().getPlugin(pluginName)!!
+    private val isPacketEventsInstalled = plugin.server.pluginManager.getPlugin("packetevents") != null
 
     fun load() {
-        if (plugin.server.pluginManager.getPlugin("packetevents") == null) return
+        if (!isPacketEventsInstalled) return
 
         PacketEvents.getAPI().eventManager.registerListener(
             PacketChatListener(),
@@ -21,6 +22,8 @@ class PaperIntegration(
     }
 
     fun registerSenders(registry: ChatMessageSenderRegistry) {
+        if (!isPacketEventsInstalled) return
+
         registry.register("default", PaperMessageSender(plugin))
         registry.register("direct", PaperDirectMessageSender(plugin))
     }
